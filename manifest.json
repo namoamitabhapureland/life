@@ -1,0 +1,16 @@
+{
+  "name": "淨息流",
+  "short_name": "淨息流",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FDFDFD",
+  "theme_color": "#CBA37A",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
