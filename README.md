@@ -1,4 +1,11 @@
-# 🌐 淨息流 身心觀照生活記錄
+# 淨息流 · 身心觀照生活工具
+
+[![GitHub Pages](https://img.shields.io/badge/網站-淨息流-4A7043?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
+[![PWA](https://img.shields.io/badge/PWA-Ready-4285F4?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
+[![Free](https://img.shields.io/badge/完全免費-100%25-00C853?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
+[![No Ads](https://img.shields.io/badge/無廣告-純淨-FF9800?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
+[![Offline](https://img.shields.io/badge/離線可用-本地儲存-9C27B0?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
+
 
 生活記帳 健康日誌 孕期記錄 育兒日誌 寵物照護 加密筆記 減熵生活 佛教修行工具 離線記帳 正念生活 身心觀照 在家眾日誌 私人加密筆記 孕婦記錄 育兒追蹤 毛孩健康管理 記帳 情緒日誌 血壓血糖記錄 本地儲存 App PWA 生活工具
 
