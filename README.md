@@ -5,7 +5,7 @@
 [![Free](https://img.shields.io/badge/完全免費-100%25-00C853?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
 [![No Ads](https://img.shields.io/badge/無廣告-純淨-FF9800?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
 [![Offline](https://img.shields.io/badge/離線可用-本地儲存-9C27B0?style=for-the-badge)](https://namoamitabhapureland.github.io/life/)
-
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-4A7043?style=for-the-badge)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 生活記帳 健康日誌 孕期記錄 育兒日誌 寵物照護 加密筆記 減熵生活 佛教修行工具 離線記帳 正念生活 身心觀照 在家眾日誌 私人加密筆記 孕婦記錄 育兒追蹤 毛孩健康管理 記帳 情緒日誌 血壓血糖記錄 本地儲存 App PWA 生活工具
 
