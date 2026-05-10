@@ -337,21 +337,24 @@
     <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
 </radialGradient>
 
-                             <radialGradient id="palePinkGradient" cx="50%" cy="50%" r="50%">
+                                             <radialGradient id="pureGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
-                    <stop offset="60%" stop-color="#FFF0F5" />
-                    <stop offset="100%" stop-color="#FFC0CB" />
+                    <stop offset="40%" stop-color="#FFDF00" />
+                    <stop offset="100%" stop-color="#FFD700" />
                 </radialGradient>
-                <radialGradient id="paleBlueGradient" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#FFFFFF" />
-                    <stop offset="60%" stop-color="#F0F8FF" />
-                    <stop offset="100%" stop-color="#ADD8E6" />
+                
+                <radialGradient id="deepGoldGradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#FFDF00" />
+                    <stop offset="60%" stop-color="#D4AF37" />
+                    <stop offset="100%" stop-color="#B8860B" />
                 </radialGradient>
+                
                 <radialGradient id="whiteGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
                     <stop offset="60%" stop-color="#FFFAF0" />
                     <stop offset="100%" stop-color="#FFD700" stop-opacity="0.95"/>
                 </radialGradient>
+
                 
                 <g id="flower-base-model">
                     <path d="M 0 0 C 8 -12, 12 -22, 0 -26 C -12 -22, -8 -12, 0 0 Z" stroke-width="0.8"/>
@@ -711,13 +714,14 @@ document.getElementById('milestone-name-display').innerText = currentName;
 
     const stackedContainer = document.getElementById('stacked-flowers-container');
     const fallingRain = document.getElementById('falling-flowers-rain');
-    const flowerTypes = [
-        { id: 'palePinkGradient', size: 0.9, type: 'small', stroke: 'hsla(350, 80%, 85%, 0.7)' },
-        { id: 'palePinkGradient', size: 1.1, type: 'small', stroke: 'hsla(350, 80%, 85%, 0.7)' },
-        { id: 'paleBlueGradient', size: 0.8, type: 'small', stroke: 'hsla(195, 80%, 85%, 0.7)' },
-        { id: 'paleBlueGradient', size: 1.0, type: 'small', stroke: 'hsla(195, 80%, 85%, 0.7)' },
-        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' }
+       const flowerTypes = [
+        { id: 'pureGoldGradient', size: 0.9, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
+        { id: 'pureGoldGradient', size: 1.1, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
+        { id: 'deepGoldGradient', size: 0.8, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
+        { id: 'deepGoldGradient', size: 1.0, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
+        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' } // 碩大的琉璃白金花
     ];
+
 
     function spawnFlowerRain(totalFlowers = 35) {
         let spawned = 0;
