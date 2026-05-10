@@ -229,20 +229,18 @@
     100% { transform: scale(0.98) rotate(0deg); opacity: 0.9; }
 }
 
-             /* ✨ 天雨曼陀羅華 飄落並消散動畫 */
+        /* ✨ 天雨曼陀羅華：下落與消散動畫 */
         @keyframes heavenlyFall {
             0% { transform: translate(var(--startX), var(--startY)) scale(var(--size)) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
-            80% { opacity: 1; } /* 保持可見直到接近底部 */
+            80% { opacity: 1; }
             100% { transform: translate(var(--endX), var(--endY)) scale(var(--size)) rotate(var(--rot)); opacity: 0; }
         }
         .heavenly-flower {
             animation: heavenlyFall var(--dur) linear forwards; 
             transform-origin: center center;
+            pointer-events: none;
         }
-
-
-
 
     </style>
 </head>
@@ -338,8 +336,6 @@
     <stop offset="70%" stop-color="#FF8C00" stop-opacity="0.2"/>
     <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
 </radialGradient>
-
-                                             
 
                 <radialGradient id="pureGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
@@ -565,7 +561,8 @@
                     </g>
                 </g>
 
-                               <g id="falling-flowers-rain" style="pointer-events: none;"></g>
+
+                <g id="falling-flowers-rain" style="pointer-events: none;"></g>
 
             </svg>
         </div>
@@ -616,25 +613,75 @@
     
     function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
 
-       // ✨ 專屬：優雅關閉里程碑彈框，並觸發天雨曼陀羅華！
+        // ✨ 專屬：優雅關閉里程碑彈框，並觸發天雨曼陀羅華
     function closeMilestone() {
         const modal = document.getElementById('milestone-modal');
         if (!modal) return;
         
-        // 1. 移除 show 類別 (觸發 CSS 淡出動畫)
         modal.classList.remove('show');
         
-        // 🌟 2. 核心邏輯接軌：在按下「合十收攝」的瞬間，法界降下 35 朵曼陀羅華
+        // 里程碑圓滿，降下金花 45 朵
         if (typeof spawnFlowerRain === 'function') {
-            spawnFlowerRain(35);
+            spawnFlowerRain(45);
         }
         
-        // 3. 等待彈框淡出動畫結束後，徹底隱藏元素，並將能量棒優雅退回 0%
         setTimeout(() => { 
             modal.style.display = 'none'; 
             const bar = document.getElementById('streak-bar');
             if (bar) bar.style.width = '0%';
         }, 500);
+    }
+
+    // ✨ 曼陀羅華引擎：限制 45 朵，不堆疊，落地自動消散拔除
+    function spawnFlowerRain(totalFlowers = 45) {
+        const fallingRain = document.getElementById('falling-flowers-rain');
+        if (!fallingRain) return;
+
+        const flowerTypes = [
+            { id: 'pureGoldGradient', size: 1.5, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
+            { id: 'pureGoldGradient', size: 1.6, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
+            { id: 'deepGoldGradient', size: 1.6, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
+            { id: 'whiteGoldGradient', size: 1.9, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' }
+        ];
+
+        let spawned = 0;
+        let interval = setInterval(() => {
+            if (spawned >= totalFlowers) {
+                clearInterval(interval);
+                return;
+            }
+            spawned++;
+
+            const fType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+            if (fType.type === 'big' && Math.random() > 0.2) return;
+
+            const flower = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            flower.setAttribute('href', '#flower-base-model');
+            flower.setAttribute('fill', `url(#${fType.id})`);
+            flower.setAttribute('stroke', fType.stroke);
+            flower.setAttribute('class', 'heavenly-flower');
+
+            const durVal = (Math.random() * 4 + 8); // 8-12秒
+            const startX = (Math.random() * 800 + 100);
+            const endX = (startX + (Math.random() - 0.5) * 350);
+            const endY = (950 + Math.random() * 50); // 落在較低位置消散
+            const rot = ((Math.random() - 0.5) * 720) + 'deg';
+
+            flower.style.setProperty('--dur', durVal + 's');
+            flower.style.setProperty('--size', fType.size);
+            flower.style.setProperty('--startX', startX + 'px');
+            flower.style.setProperty('--startY', '-100px');
+            flower.style.setProperty('--endX', endX + 'px');
+            flower.style.setProperty('--endY', endY + 'px');
+            flower.style.setProperty('--rot', rot);
+
+            fallingRain.appendChild(flower);
+
+            // 嚴格釋放記憶體：動畫結束即移除節點，不留殘影
+            setTimeout(() => {
+                if (flower.parentNode) flower.remove();
+            }, durVal * 1000);
+        }, 220);
     }
 
 
@@ -706,83 +753,6 @@ document.getElementById('milestone-name-display').innerText = currentName;
     }
 
 
-        
-    // ==========================================
-    // 🌸 測試專區：天雨曼陀羅華 (清淨消散版)
-    // ==========================================
-    
-        // ==========================================
-    // 🌟 臨時測試專區：呼叫 10 日滿願彈框
-    // ==========================================
-    const testModalBtn = document.createElement('button');
-    testModalBtn.innerText = "🌟 測試 10 日彈框邏輯";
-    testModalBtn.style.cssText = "position: fixed; bottom: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background: #D4AF37; color: #000; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.5);";
-    testModalBtn.onclick = () => {
-        // 模擬 10 日達成的資料
-        document.getElementById('milestone-title').innerText = "【 十日 ‧ 初發心 】";
-        document.getElementById('milestone-text').innerHTML = "圓滿 10 日清淨觀相<br>獲 <b style='color:var(--gold-solid)'>+100</b> 資糧匯入主系統。";
-        
-        // 呼叫彈框
-        const modal = document.getElementById('milestone-modal');
-        modal.style.display = 'flex';
-        void modal.offsetWidth; // 強制重繪
-        modal.classList.add('show');
-    };
-    document.body.appendChild(testModalBtn);
-
-    const fallingRain = document.getElementById('falling-flowers-rain');
-    const flowerTypes = [
-        { id: 'pureGoldGradient', size: 1.5, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
-        { id: 'pureGoldGradient', size: 1.6, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
-        { id: 'deepGoldGradient', size: 1.5, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
-        { id: 'deepGoldGradient', size: 1.7, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
-        { id: 'whiteGoldGradient', size: 1.8, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' }
-    ];
-
-    function spawnFlowerRain(totalFlowers = 35) {
-        let spawned = 0;
-        let interval = setInterval(() => {
-            if (spawned >= totalFlowers) {
-                clearInterval(interval); 
-                return;
-            }
-            spawned++;
-            
-            const fType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-            // 大花機率較低，小花較多
-            if (fType.type === 'big' && Math.random() > 0.2) return; 
-            
-            const flower = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            flower.setAttribute('href', '#flower-base-model');
-            flower.setAttribute('fill', `url(#${fType.id})`);
-            flower.setAttribute('stroke', fType.stroke);
-            flower.setAttribute('class', 'heavenly-flower');
-            
-            const durVal = (Math.random() * 4 + 8); // 8-12秒
-            const startX = (Math.random() * 800 + 100); 
-            const endX = (startX + (Math.random() - 0.5) * 350); // 隨機亂飄
-            const endY = (950 + Math.random() * 50); // 飄到較低的位置
-            const rot = ((Math.random() - 0.5) * 720) + 'deg'; 
-            
-            flower.style.setProperty('--dur', durVal + 's');
-            flower.style.setProperty('--size', fType.size);
-            flower.style.setProperty('--startX', startX + 'px');
-            flower.style.setProperty('--startY', '-100px');
-            flower.style.setProperty('--endX', endX + 'px');
-            flower.style.setProperty('--endY', endY + 'px');
-            flower.style.setProperty('--rot', rot);
-            
-            fallingRain.appendChild(flower);
-            
-            // 動畫結束後自動移除元素，不留任何痕跡
-            setTimeout(() => {
-                if(flower.parentNode) flower.remove();
-            }, durVal * 1000);
-            
-        }, 250);
-    }
-
-
 
 
 
@@ -822,7 +792,7 @@ document.getElementById('milestone-name-display').innerText = currentName;
 
             然而，這是一條不容易的開創之路。佛身的每一道金光漸層、每一片蓮瓣的舒展、每一個手印的悲智弧度，都無法使用畫筆揮灑，必須將莊嚴的法相，化作一行行卻絕對精準的數字與貝茲曲線（Bézier curve）。一個座標的微小偏移、一數點的增減，都會牽動整體的莊嚴。<br><br>
 
-            這尊金身與整座淨土，是經過無數次的土法煉鋼，在無數的嘗試錯誤中，一步步推算座標、一次次測試光影所淬鍊而出。這不僅是美學的雕琢，這份反覆試錯、對純粹幾近苛求的堅持，本身即是一場點滴歸心的實修，亦是對法界最至誠的供養。
+            這尊金身與整座淨土，是經過無數次的土法煉鋼，在無數的嘗試錯誤中，一步步推算座標、一次次測試光影所淬鍊而出。這不僅是美學的雕琢，這份反覆試錯、對純粹幾近苛求的堅持，即是對法界最至誠的供養。
         </div>
     `;
     showModal("法界觀想導引", infoHtml, "合十收攝");
