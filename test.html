@@ -230,16 +230,6 @@
 }
 
 
-        /* ✨ 新增：天雨曼陀羅華 飄落動畫 */
-        @keyframes heavenlyFall {
-            0% { transform: translate(var(--startX), var(--startY)) scale(var(--size)) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translate(var(--endX), var(--endY)) scale(var(--size)) rotate(var(--rot)); opacity: 1; }
-        }
-        .heavenly-flower {
-            animation: heavenlyFall var(--dur) linear forwards; 
-            transform-origin: center center;
-        }
 
 
     </style>
@@ -698,12 +688,11 @@ document.getElementById('milestone-name-display').innerText = currentName;
     }
 
 
-
     // ==========================================
-    // 🌸 測試專區：天雨曼陀羅華 獨立引擎 
+    // 🌸 測試專區：天雨曼陀羅華 (防彈原生 JS 版)
     // ==========================================
     
-    // 建立臨時測試按鈕 (左下角)
+    // 建立臨時測試按鈕
     const testBtn = document.createElement('button');
     testBtn.innerText = "🌸 測試花雨";
     testBtn.style.cssText = "position: fixed; bottom: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background: #D4AF37; color: #000; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.5);";
@@ -735,39 +724,41 @@ document.getElementById('milestone-name-display').innerText = currentName;
             spawned++;
             
             const fType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-            // 嚴格控制：大的白金花出現機率極低 (不到 20%)
+            // 嚴格控制：大的白金花出現機率極低
             if (fType.type === 'big' && Math.random() > 0.2) return; 
             
             const flower = document.createElementNS('http://www.w3.org/2000/svg', 'use');
             flower.setAttribute('href', '#flower-base-model');
             flower.setAttribute('fill', `url(#${fType.id})`);
             flower.setAttribute('stroke', fType.stroke);
-            flower.className = 'heavenly-flower';
             
             const durVal = (Math.random() * 5 + 8); // 8-13秒緩慢落下
-            const dur = durVal + 's';
             const size = fType.size;
             const startX = (Math.random() * 800 + 100); 
             const endX = (startX + (Math.random() - 0.5) * 300); // 左右飄移
             const endY = (800 + Math.random() * 80); // 落在蓮台的高度
-            const rot = ((Math.random() - 0.5) * 720) + 'deg'; // 緩慢自轉
+            const rot = ((Math.random() - 0.5) * 720); // 緩慢自轉
             
-            flower.style.setProperty('--dur', dur);
-            flower.style.setProperty('--size', size);
-            flower.style.setProperty('--startX', startX + 'px');
-            flower.style.setProperty('--startY', '-100px');
-            flower.style.setProperty('--endX', endX + 'px');
-            flower.style.setProperty('--endY', endY + 'px');
-            flower.style.setProperty('--rot', rot);
+            // 🌟 防彈核心 1：設定初始位置並隱藏
+            flower.style.transform = `translate(${startX}px, -100px) scale(${size}) rotate(0deg)`;
+            flower.style.opacity = '0';
             
             fallingRain.appendChild(flower);
             
-            // 單朵花落地後，停留在堆疊區
+            // 🌟 防彈核心 2：強制瀏覽器重繪 (Reflow)，這步能破解所有卡頓 Bug
+            void flower.offsetWidth;
+            
+            // 🌟 防彈核心 3：啟動硬體加速過渡動畫，直接指定目的地
+            flower.style.transition = `transform ${durVal}s linear, opacity 1s linear`;
+            flower.style.transform = `translate(${endX}px, ${endY}px) scale(${size}) rotate(${rot}deg)`;
+            flower.style.opacity = '1';
+            
+            // 落地後停留在堆疊區
             setTimeout(() => {
                 if(!flower.parentNode) return;
-                flower.style.animation = 'none';
-                flower.className = '';
-                flower.setAttribute('transform', `translate(${endX}, ${endY}) scale(${size}) rotate(${parseFloat(rot)})`);
+                flower.style.transition = 'none'; // 拔除動畫避免衝突
+                flower.setAttribute('transform', `translate(${endX}, ${endY}) scale(${size}) rotate(${rot})`);
+                flower.style.transform = ''; // 清除 inline style，交還給 SVG 原生屬性
                 stackedContainer.appendChild(flower);
             }, durVal * 1000);
         }, 250);
@@ -785,6 +776,8 @@ document.getElementById('milestone-name-display').innerText = currentName;
             }, 4000); 
         }, 25000);
     }
+
+
 
 
     // 模態框操作函數
