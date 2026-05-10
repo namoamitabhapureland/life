@@ -204,15 +204,17 @@
 
 /* 花瓣飄落動畫 (測試用無限循環) */
 @keyframes testPetalFall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    0% { transform: translate(var(--start-x), var(--start-y)) scale(var(--s)) rotate(0deg); opacity: 0; }
     10% { opacity: 0.8; }
     80% { opacity: 0.8; }
-    100% { transform: translateY(1200px) rotate(360deg); opacity: 0; }
+    100% { transform: translate(var(--start-x), calc(var(--start-y) + 1200px)) scale(var(--s)) rotate(360deg); opacity: 0; }
 }
 
 .test-petal {
     animation: testPetalFall 12s linear infinite;
+    transform-origin: 0 0; /* 配合路徑 0 0 置中，讓花瓣自轉極度流暢 */
 }
+
 
 /* 寶塔化現與消散動畫 (測試用無限循環) */
 @keyframes testStupaDissolve {
@@ -348,9 +350,9 @@
             <stop offset="100%" stop-color="#FFF0F5" /> 
         </radialGradient>
         
-        <symbol id="flower-petal">
+               <g id="flower-petal">
             <path d="M 0 0 C -10 -15, 10 -15, 0 0 C -15 10, -15 -10, 0 0 C 10 15, -10 15, 0 0 C 15 -10, 15 10, 0 0 Z" fill="url(#holographicGold)" stroke="rgba(212,175,55,0.8)" stroke-width="0.8"/>
-        </symbol>
+        </g>
 
 
                 
@@ -496,15 +498,16 @@
                     <path id="beam-right-glow" fill="none" stroke="#FFD700" stroke-width="15" stroke-linecap="round" style="filter: blur(8px); opacity: 0.3;" />
                     <path id="beam-right-core" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" style="filter: drop-shadow(0 0 10px #FFD700); opacity: 0.9;" />
                 </g>
-    <g id="test-flower-rain" style="pointer-events: none;">
-        <use href="#flower-petal" x="300" y="-50" class="test-petal" style="animation-delay: 0s; transform: scale(1.5);" />
-        <use href="#flower-petal" x="450" y="-150" class="test-petal" style="animation-delay: 1.5s; transform: scale(1.2);" />
-        <use href="#flower-petal" x="600" y="-80" class="test-petal" style="animation-delay: 3s; transform: scale(1.8);" />
-        <use href="#flower-petal" x="750" y="-120" class="test-petal" style="animation-delay: 0.5s; transform: scale(1.3);" />
-        <use href="#flower-petal" x="350" y="-200" class="test-petal" style="animation-delay: 2.5s; transform: scale(1.6);" />
-        <use href="#flower-petal" x="550" y="-250" class="test-petal" style="animation-delay: 4s; transform: scale(1.1);" />
-        <use href="#flower-petal" x="700" y="-180" class="test-petal" style="animation-delay: 1s; transform: scale(1.4);" />
+       <g id="test-flower-rain" style="pointer-events: none;">
+        <use href="#flower-petal" class="test-petal" style="--start-x: 300px; --start-y: -50px; --s: 1.5; animation-delay: 0s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 450px; --start-y: -150px; --s: 1.2; animation-delay: 1.5s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 600px; --start-y: -80px; --s: 1.8; animation-delay: 3s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 750px; --start-y: -120px; --s: 1.3; animation-delay: 0.5s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 350px; --start-y: -200px; --s: 1.6; animation-delay: 2.5s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 550px; --start-y: -250px; --s: 1.1; animation-delay: 4s;" />
+        <use href="#flower-petal" class="test-petal" style="--start-x: 700px; --start-y: -180px; --s: 1.4; animation-delay: 1s;" />
     </g>
+
 
     <g id="test-stupa" style="transform-origin: 500px 850px;">
         <path d="M 400 850 L 600 850 L 580 830 L 420 830 Z" stroke="url(#goldBody)" stroke-width="1.2" fill="none" opacity="0.8"/>
