@@ -616,7 +616,7 @@
     
     function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
 
-    // ✨ 專屬：優雅關閉里程碑彈框 (保證能量棒退回 0%)
+       // ✨ 專屬：優雅關閉里程碑彈框，並觸發天雨曼陀羅華！
     function closeMilestone() {
         const modal = document.getElementById('milestone-modal');
         if (!modal) return;
@@ -624,13 +624,19 @@
         // 1. 移除 show 類別 (觸發 CSS 淡出動畫)
         modal.classList.remove('show');
         
-        // 2. 等待動畫結束後，徹底隱藏元素，並將能量棒優雅退回 0%
+        // 🌟 2. 核心邏輯接軌：在按下「合十收攝」的瞬間，法界降下 35 朵曼陀羅華
+        if (typeof spawnFlowerRain === 'function') {
+            spawnFlowerRain(35);
+        }
+        
+        // 3. 等待彈框淡出動畫結束後，徹底隱藏元素，並將能量棒優雅退回 0%
         setTimeout(() => { 
             modal.style.display = 'none'; 
             const bar = document.getElementById('streak-bar');
             if (bar) bar.style.width = '0%';
         }, 500);
     }
+
 
     // ✨ 修持邏輯：精準對接 bowData 專屬抽屜，解決資料遺失 Bug
     function handleStreak() {
@@ -705,11 +711,24 @@ document.getElementById('milestone-name-display').innerText = currentName;
     // 🌸 測試專區：天雨曼陀羅華 (清淨消散版)
     // ==========================================
     
-    const testBtn = document.createElement('button');
-    testBtn.innerText = "🌸 測試花雨";
-    testBtn.style.cssText = "position: fixed; bottom: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background: #D4AF37; color: #000; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.5);";
-    testBtn.onclick = () => spawnFlowerRain(35);
-    document.body.appendChild(testBtn);
+        // ==========================================
+    // 🌟 臨時測試專區：呼叫 10 日滿願彈框
+    // ==========================================
+    const testModalBtn = document.createElement('button');
+    testModalBtn.innerText = "🌟 測試 10 日彈框邏輯";
+    testModalBtn.style.cssText = "position: fixed; bottom: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background: #D4AF37; color: #000; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.5);";
+    testModalBtn.onclick = () => {
+        // 模擬 10 日達成的資料
+        document.getElementById('milestone-title').innerText = "【 十日 ‧ 初發心 】";
+        document.getElementById('milestone-text').innerHTML = "圓滿 10 日清淨觀相<br>獲 <b style='color:var(--gold-solid)'>+100</b> 資糧匯入主系統。";
+        
+        // 呼叫彈框
+        const modal = document.getElementById('milestone-modal');
+        modal.style.display = 'flex';
+        void modal.offsetWidth; // 強制重繪
+        modal.classList.add('show');
+    };
+    document.body.appendChild(testModalBtn);
 
     const fallingRain = document.getElementById('falling-flowers-rain');
     const flowerTypes = [
