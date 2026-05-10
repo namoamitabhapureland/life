@@ -229,16 +229,18 @@
     100% { transform: scale(0.98) rotate(0deg); opacity: 0.9; }
 }
 
-        /* ✨ 新增：天雨曼陀羅華 飄落動畫 */
+             /* ✨ 天雨曼陀羅華 飄落並消散動畫 */
         @keyframes heavenlyFall {
             0% { transform: translate(var(--startX), var(--startY)) scale(var(--size)) rotate(0deg); opacity: 0; }
             10% { opacity: 1; }
-            100% { transform: translate(var(--endX), var(--endY)) scale(var(--size)) rotate(var(--rot)); opacity: 1; }
+            80% { opacity: 1; } /* 保持可見直到接近底部 */
+            100% { transform: translate(var(--endX), var(--endY)) scale(var(--size)) rotate(var(--rot)); opacity: 0; }
         }
         .heavenly-flower {
             animation: heavenlyFall var(--dur) linear forwards; 
             transform-origin: center center;
         }
+
 
 
 
@@ -337,24 +339,23 @@
     <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
 </radialGradient>
 
-                                             <radialGradient id="pureGoldGradient" cx="50%" cy="50%" r="50%">
+                                             
+
+                <radialGradient id="pureGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
                     <stop offset="40%" stop-color="#FFDF00" />
                     <stop offset="100%" stop-color="#FFD700" />
                 </radialGradient>
-                
                 <radialGradient id="deepGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFDF00" />
                     <stop offset="60%" stop-color="#D4AF37" />
                     <stop offset="100%" stop-color="#B8860B" />
                 </radialGradient>
-                
                 <radialGradient id="whiteGoldGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
                     <stop offset="60%" stop-color="#FFFAF0" />
                     <stop offset="100%" stop-color="#FFD700" stop-opacity="0.95"/>
                 </radialGradient>
-
                 
                 <g id="flower-base-model">
                     <path d="M 0 0 C 8 -12, 12 -22, 0 -26 C -12 -22, -8 -12, 0 0 Z" stroke-width="0.8"/>
@@ -367,7 +368,6 @@
                     <path d="M 0 0 C 8 -12, 12 -22, 0 -26 C -12 -22, -8 -12, 0 0 Z" transform="rotate(315)" />
                     <circle cx="0" cy="0" r="3.5" fill="#FFFFFF" style="filter: drop-shadow(0 0 5px #FFD700);"/>
                 </g>
-
 
 
                 
@@ -565,8 +565,7 @@
                     </g>
                 </g>
 
-                <g id="stacked-flowers-container" style="pointer-events: none;"></g>
-                <g id="falling-flowers-rain" style="pointer-events: none;"></g>
+                               <g id="falling-flowers-rain" style="pointer-events: none;"></g>
 
             </svg>
         </div>
@@ -701,35 +700,28 @@ document.getElementById('milestone-name-display').innerText = currentName;
     }
 
 
-        // ==========================================
-    // 🌸 測試專區：天雨曼陀羅華 (修復 SVG Class 錯誤版)
+        
+    // ==========================================
+    // 🌸 測試專區：天雨曼陀羅華 (清淨消散版)
     // ==========================================
     
-    // 建立臨時測試按鈕
     const testBtn = document.createElement('button');
     testBtn.innerText = "🌸 測試花雨";
     testBtn.style.cssText = "position: fixed; bottom: 20px; left: 20px; z-index: 9999; padding: 10px 20px; background: #D4AF37; color: #000; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 0 10px rgba(212,175,55,0.5);";
     testBtn.onclick = () => spawnFlowerRain(35);
     document.body.appendChild(testBtn);
 
-    const stackedContainer = document.getElementById('stacked-flowers-container');
     const fallingRain = document.getElementById('falling-flowers-rain');
-       const flowerTypes = [
+    const flowerTypes = [
         { id: 'pureGoldGradient', size: 0.9, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
         { id: 'pureGoldGradient', size: 1.1, type: 'small', stroke: 'hsla(45, 100%, 70%, 0.7)' },
         { id: 'deepGoldGradient', size: 0.8, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
         { id: 'deepGoldGradient', size: 1.0, type: 'small', stroke: 'hsla(43, 74%, 49%, 0.8)' },
-        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' } // 碩大的琉璃白金花
+        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' }
     ];
-
 
     function spawnFlowerRain(totalFlowers = 35) {
         let spawned = 0;
-        
-        // 確保堆疊容器顯示
-        stackedContainer.style.transition = 'none';
-        stackedContainer.style.opacity = '1';
-
         let interval = setInterval(() => {
             if (spawned >= totalFlowers) {
                 clearInterval(interval); 
@@ -738,27 +730,23 @@ document.getElementById('milestone-name-display').innerText = currentName;
             spawned++;
             
             const fType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+            // 大花機率較低，小花較多
             if (fType.type === 'big' && Math.random() > 0.2) return; 
             
             const flower = document.createElementNS('http://www.w3.org/2000/svg', 'use');
             flower.setAttribute('href', '#flower-base-model');
             flower.setAttribute('fill', `url(#${fType.id})`);
             flower.setAttribute('stroke', fType.stroke);
-            
-            // 🌟 修復關鍵：SVG 必須使用 setAttribute 來設定 class
             flower.setAttribute('class', 'heavenly-flower');
             
-            const durVal = (Math.random() * 5 + 8); 
-            const dur = durVal + 's';
-            const size = fType.size;
+            const durVal = (Math.random() * 4 + 8); // 8-12秒
             const startX = (Math.random() * 800 + 100); 
-            const endX = (startX + (Math.random() - 0.5) * 300); 
-            const endY = (800 + Math.random() * 80); 
+            const endX = (startX + (Math.random() - 0.5) * 350); // 隨機亂飄
+            const endY = (950 + Math.random() * 50); // 飄到較低的位置
             const rot = ((Math.random() - 0.5) * 720) + 'deg'; 
             
-            // 設定 CSS 變數供 @keyframes 讀取
-            flower.style.setProperty('--dur', dur);
-            flower.style.setProperty('--size', size);
+            flower.style.setProperty('--dur', durVal + 's');
+            flower.style.setProperty('--size', fType.size);
             flower.style.setProperty('--startX', startX + 'px');
             flower.style.setProperty('--startY', '-100px');
             flower.style.setProperty('--endX', endX + 'px');
@@ -767,30 +755,12 @@ document.getElementById('milestone-name-display').innerText = currentName;
             
             fallingRain.appendChild(flower);
             
-            // 單朵花動畫結束後，停留在堆疊區
+            // 動畫結束後自動移除元素，不留任何痕跡
             setTimeout(() => {
-                if(!flower.parentNode) return;
-                flower.removeAttribute('class'); // 拔除動畫 class
-                flower.setAttribute('transform', `translate(${endX}, ${endY}) scale(${size}) rotate(${parseFloat(rot)})`);
-                
-                // 將花朵從下落區移到堆疊區
-                stackedContainer.appendChild(flower);
+                if(flower.parentNode) flower.remove();
             }, durVal * 1000);
             
         }, 250);
-
-        // 整場花雨結束並欣賞 3 秒後，優雅淡出
-        setTimeout(() => {
-            stackedContainer.style.transition = 'opacity 4s ease-in-out';
-            stackedContainer.style.opacity = '0';
-            
-            // 淡出完畢，徹底清空節點
-            setTimeout(() => {
-                stackedContainer.innerHTML = '';
-                stackedContainer.style.opacity = '1';
-                stackedContainer.style.transition = 'none';
-            }, 4000); 
-        }, 25000);
     }
 
 
