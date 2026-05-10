@@ -229,6 +229,16 @@
     100% { transform: scale(0.98) rotate(0deg); opacity: 0.9; }
 }
 
+        /* ✨ 新增：天雨曼陀羅華 飄落動畫 */
+        @keyframes heavenlyFall {
+            0% { transform: translate(var(--startX), var(--startY)) scale(var(--size)) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translate(var(--endX), var(--endY)) scale(var(--size)) rotate(var(--rot)); opacity: 1; }
+        }
+        .heavenly-flower {
+            animation: heavenlyFall var(--dur) linear forwards; 
+            transform-origin: center center;
+        }
 
 
 
@@ -327,7 +337,7 @@
     <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
 </radialGradient>
 
-                <radialGradient id="palePinkGradient" cx="50%" cy="50%" r="50%">
+                             <radialGradient id="palePinkGradient" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stop-color="#FFFFFF" />
                     <stop offset="60%" stop-color="#FFF0F5" />
                     <stop offset="100%" stop-color="#FFC0CB" />
@@ -354,6 +364,7 @@
                     <path d="M 0 0 C 8 -12, 12 -22, 0 -26 C -12 -22, -8 -12, 0 0 Z" transform="rotate(315)" />
                     <circle cx="0" cy="0" r="3.5" fill="#FFFFFF" style="filter: drop-shadow(0 0 5px #FFD700);"/>
                 </g>
+
 
 
                 
@@ -551,7 +562,6 @@
                     </g>
                 </g>
 
-
                 <g id="stacked-flowers-container" style="pointer-events: none;"></g>
                 <g id="falling-flowers-rain" style="pointer-events: none;"></g>
 
@@ -688,8 +698,8 @@ document.getElementById('milestone-name-display').innerText = currentName;
     }
 
 
-    // ==========================================
-    // 🌸 測試專區：天雨曼陀羅華 (防彈原生 JS 版)
+        // ==========================================
+    // 🌸 測試專區：天雨曼陀羅華 (修復 SVG Class 錯誤版)
     // ==========================================
     
     // 建立臨時測試按鈕
@@ -706,13 +716,13 @@ document.getElementById('milestone-name-display').innerText = currentName;
         { id: 'palePinkGradient', size: 1.1, type: 'small', stroke: 'hsla(350, 80%, 85%, 0.7)' },
         { id: 'paleBlueGradient', size: 0.8, type: 'small', stroke: 'hsla(195, 80%, 85%, 0.7)' },
         { id: 'paleBlueGradient', size: 1.0, type: 'small', stroke: 'hsla(195, 80%, 85%, 0.7)' },
-        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' } // 大白金花
+        { id: 'whiteGoldGradient', size: 1.6, type: 'big', stroke: 'hsla(45, 80%, 90%, 0.8)' }
     ];
 
     function spawnFlowerRain(totalFlowers = 35) {
         let spawned = 0;
         
-        // 重置容器狀態
+        // 確保堆疊容器顯示
         stackedContainer.style.transition = 'none';
         stackedContainer.style.opacity = '1';
 
@@ -724,7 +734,6 @@ document.getElementById('milestone-name-display').innerText = currentName;
             spawned++;
             
             const fType = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-            // 嚴格控制：大的白金花出現機率極低
             if (fType.type === 'big' && Math.random() > 0.2) return; 
             
             const flower = document.createElementNS('http://www.w3.org/2000/svg', 'use');
@@ -732,43 +741,46 @@ document.getElementById('milestone-name-display').innerText = currentName;
             flower.setAttribute('fill', `url(#${fType.id})`);
             flower.setAttribute('stroke', fType.stroke);
             
-            const durVal = (Math.random() * 5 + 8); // 8-13秒緩慢落下
+            // 🌟 修復關鍵：SVG 必須使用 setAttribute 來設定 class
+            flower.setAttribute('class', 'heavenly-flower');
+            
+            const durVal = (Math.random() * 5 + 8); 
+            const dur = durVal + 's';
             const size = fType.size;
             const startX = (Math.random() * 800 + 100); 
-            const endX = (startX + (Math.random() - 0.5) * 300); // 左右飄移
-            const endY = (800 + Math.random() * 80); // 落在蓮台的高度
-            const rot = ((Math.random() - 0.5) * 720); // 緩慢自轉
+            const endX = (startX + (Math.random() - 0.5) * 300); 
+            const endY = (800 + Math.random() * 80); 
+            const rot = ((Math.random() - 0.5) * 720) + 'deg'; 
             
-            // 🌟 防彈核心 1：設定初始位置並隱藏
-            flower.style.transform = `translate(${startX}px, -100px) scale(${size}) rotate(0deg)`;
-            flower.style.opacity = '0';
+            // 設定 CSS 變數供 @keyframes 讀取
+            flower.style.setProperty('--dur', dur);
+            flower.style.setProperty('--size', size);
+            flower.style.setProperty('--startX', startX + 'px');
+            flower.style.setProperty('--startY', '-100px');
+            flower.style.setProperty('--endX', endX + 'px');
+            flower.style.setProperty('--endY', endY + 'px');
+            flower.style.setProperty('--rot', rot);
             
             fallingRain.appendChild(flower);
             
-            // 🌟 防彈核心 2：強制瀏覽器重繪 (Reflow)，這步能破解所有卡頓 Bug
-            void flower.offsetWidth;
-            
-            // 🌟 防彈核心 3：啟動硬體加速過渡動畫，直接指定目的地
-            flower.style.transition = `transform ${durVal}s linear, opacity 1s linear`;
-            flower.style.transform = `translate(${endX}px, ${endY}px) scale(${size}) rotate(${rot}deg)`;
-            flower.style.opacity = '1';
-            
-            // 落地後停留在堆疊區
+            // 單朵花動畫結束後，停留在堆疊區
             setTimeout(() => {
                 if(!flower.parentNode) return;
-                flower.style.transition = 'none'; // 拔除動畫避免衝突
-                flower.setAttribute('transform', `translate(${endX}, ${endY}) scale(${size}) rotate(${rot})`);
-                flower.style.transform = ''; // 清除 inline style，交還給 SVG 原生屬性
+                flower.removeAttribute('class'); // 拔除動畫 class
+                flower.setAttribute('transform', `translate(${endX}, ${endY}) scale(${size}) rotate(${parseFloat(rot)})`);
+                
+                // 將花朵從下落區移到堆疊區
                 stackedContainer.appendChild(flower);
             }, durVal * 1000);
+            
         }, 250);
 
-        // 整場花雨結束並堆滿後 (25秒)，集體化為光影消散
+        // 整場花雨結束並欣賞 3 秒後，優雅淡出
         setTimeout(() => {
             stackedContainer.style.transition = 'opacity 4s ease-in-out';
             stackedContainer.style.opacity = '0';
             
-            // 徹底清空 DOM，釋放手機記憶體
+            // 淡出完畢，徹底清空節點
             setTimeout(() => {
                 stackedContainer.innerHTML = '';
                 stackedContainer.style.opacity = '1';
@@ -776,6 +788,7 @@ document.getElementById('milestone-name-display').innerText = currentName;
             }, 4000); 
         }, 25000);
     }
+
 
 
 
