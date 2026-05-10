@@ -489,7 +489,17 @@
                     <path id="beam-right-glow" fill="none" stroke="#FFD700" stroke-width="15" stroke-linecap="round" style="filter: blur(8px); opacity: 0.3;" />
                     <path id="beam-right-core" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" style="filter: drop-shadow(0 0 10px #FFD700); opacity: 0.9;" />
                 </g>
-        
+                <g id="flower-petal">
+            <g fill="url(#holographicGold)" stroke="rgba(212,175,55,0.8)" stroke-width="1">
+                <path d="M 0 0 C 8 -8, 10 -18, 0 -22 C -10 -18, -8 -8, 0 0 Z" />
+                <path d="M 0 0 C 8 -8, 10 -18, 0 -22 C -10 -18, -8 -8, 0 0 Z" transform="rotate(72)" />
+                <path d="M 0 0 C 8 -8, 10 -18, 0 -22 C -10 -18, -8 -8, 0 0 Z" transform="rotate(144)" />
+                <path d="M 0 0 C 8 -8, 10 -18, 0 -22 C -10 -18, -8 -8, 0 0 Z" transform="rotate(216)" />
+                <path d="M 0 0 C 8 -8, 10 -18, 0 -22 C -10 -18, -8 -8, 0 0 Z" transform="rotate(288)" />
+            </g>
+            <circle cx="0" cy="0" r="3" fill="#FFFFFF" style="filter: drop-shadow(0 0 4px #FFD700);"/>
+        </g>
+
             <g id="test-flower-rain" style="pointer-events: none;">
         <g transform="translate(300, -100) scale(1.5)"><use href="#flower-petal" class="test-petal" style="animation-delay: 0s;" /></g>
         <g transform="translate(450, -200) scale(1.2)"><use href="#flower-petal" class="test-petal" style="animation-delay: 1.5s;" /></g>
@@ -500,15 +510,17 @@
         <g transform="translate(700, -220) scale(1.4)"><use href="#flower-petal" class="test-petal" style="animation-delay: 1s;" /></g>
     </g>
 
-    <g transform="translate(680, 1020) scale(0.6)" style="pointer-events: none;">
+       <g transform="translate(730, 890) scale(0.65)" style="pointer-events: none;">
         <g id="test-stupa-anim">
-            <path d="M -100 0 L 100 0 C 110 0, 120 10, 120 20 L -120 20 C -120 10, -110 0, -100 0 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M -90 -20 L 90 -20 C 100 -20, 105 -10, 105 0 L -105 0 C -105 -10, -100 -20, -90 -20 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -130 Q -60 -40 -50 -40 L 50 -40 Q 60 -40 0 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -150 L 40 -130 C 42 -128, 38 -125, 30 -125 L -30 -125 C -38 -125, -42 -128, -40 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -220 L 15 -150 L -15 -150 Z" fill="#FFFFFF" stroke="#FFD700" stroke-width="1.2" style="filter: drop-shadow(0 0 3px #FFD700);"/>
+            <path d="M -60 0 L 60 0 L 50 -15 L -50 -15 Z" fill="#050505" stroke="#FFD700" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M -50 -15 L 50 -15 L 40 -25 L -40 -25 Z" fill="#050505" stroke="#FFD700" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M -40 -25 C -50 -80, 50 -80, 40 -25 Z" fill="#050505" stroke="#FFD700" stroke-width="1.2"/>
+            <rect x="-15" y="-95" width="30" height="70" fill="#050505" stroke="#FFD700" stroke-width="1.2"/>
+            <path d="M -15 -95 L 15 -95 L 0 -170 Z" fill="#050505" stroke="#FFD700" stroke-width="1.2" stroke-linejoin="round"/>
+            <circle cx="0" cy="-170" r="5" fill="#FFFFFF" style="filter: drop-shadow(0 0 6px #FFD700);"/>
         </g>
     </g>
+
 
 
 
