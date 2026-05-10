@@ -202,60 +202,35 @@
     100% { transform: scale(0.98) rotate(0deg); opacity: 0.9; }
 }
 /* ========================================= */
-/* 【測試專用】 清淨瑞相測試 CSS         */
-/* 無限循環，存檔整理後直接ㄘㄜ ㄕ        */
+/* 【測試專用】 防彈級動畫 CSS             */
 /* ========================================= */
 
-/* 1. 花瓣飄落動畫 (碩大圓潤水滴) (完美置中旋轉) */
+/* 1. 花瓣飄落動畫 (單純的 Y 軸移動，絕對不會亂飛) */
 @keyframes testPetalFall {
-    0% { transform: translate(var(--start-x), var(--start-y)) scale(var(--s)) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.8; } /* 顯示虹彩七彩光束 */
-    80% { opacity: 0.8; }
-    100% { transform: translate(var(--start-x), calc(var(--start-y) + 1200px)) scale(var(--s)) rotate(360deg); opacity: 0; }
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.95; }
+    80% { opacity: 0.95; }
+    100% { transform: translateY(1300px) rotate(360deg); opacity: 0; }
 }
 
 .test-petal {
     animation: testPetalFall 12s linear infinite;
-    transform-origin: center center; /* 硕大水滴 pointed bulb 置中完美旋轉 */
+    transform-origin: 0px 0px; /* 以中心為軸自轉 */
 }
 
-/* 2. 實心金塔化現消散動畫 (移出佛中間 -> 右側地面) (停留供養法界) */
+/* 2. 實心金塔化現消散動畫 (單純的上下浮動與透明度) */
 @keyframes testStupaDissolve {
-    0% { 
-        opacity: 0; 
-        transform: translate(var(--base-x), calc(var(--base-y) + 20px)) scale(calc(var(--base-s) * 0.95)); 
-        filter: blur(4px); 
-    }
-    15% { 
-        /* 化現完成 (實心金塔) */
-        opacity: 1; 
-        transform: translate(var(--base-x), var(--base-y)) scale(var(--base-s)); 
-        filter: blur(0px); 
-    }
-    75% { 
-        /* 停留供養法界 */
-        opacity: 1; 
-        transform: translate(var(--base-x), var(--base-y)) scale(var(--base-s)); 
-        filter: blur(0px); 
-    }
-    100% { 
-        /* 昇華消散，回歸虛空 */
-        opacity: 0; 
-        transform: translate(var(--base-x), calc(var(--base-y) - 40px)) scale(calc(var(--base-s) * 1.05)); 
-        filter: blur(8px); 
-    }
+    0% { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+    15% { opacity: 1; transform: translateY(0px); filter: blur(0px); }
+    75% { opacity: 1; transform: translateY(0px); filter: blur(0px); }
+    100% { opacity: 0; transform: translateY(-40px); filter: blur(8px); }
 }
 
-#test-stupa {
-    /* 🌟 精確位置：移至佛像右側地面 (x=680px, y=1070px)，且 scale=0.6 確保畫面乾淨 */
-    --base-x: 680px;
-    --base-y: 1070px;
-    --base-s: 0.6;
-    
-    transform: translate(var(--base-x), var(--base-y)) scale(var(--base-s));
+#test-stupa-anim {
     animation: testStupaDissolve 10s ease-in-out infinite;
-    transform-origin: center bottom; /* 從地面向上浮現消散 */
+    transform-origin: center bottom;
 }
+
 
 
 
@@ -355,19 +330,18 @@
 </radialGradient>
       
     
-            <radialGradient id="holographicGold" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#FFFAFA" stop-opacity="0.9" /> <stop offset="30%" stop-color="#FFD700" /> <stop offset="70%" stop-color="#D4AF37" /> <stop offset="85%" stop-color="#E6E6FA" /> <stop offset="92%" stop-color="#F0F8FF" /> <stop offset="100%" stop-color="#FFF0F5" /> </radialGradient>
+                   <radialGradient id="holographicGold" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFFAFA" stop-opacity="0.9" />
+            <stop offset="30%" stop-color="#FFD700" />
+            <stop offset="70%" stop-color="#D4AF37" />
+            <stop offset="85%" stop-color="#E6E6FA" />
+            <stop offset="92%" stop-color="#F0F8FF" />
+            <stop offset="100%" stop-color="#FFF0F5" />
+        </radialGradient>
         
         <g id="flower-petal">
-            <path d="M 0 -30 Q -25 10 0 40 Q 25 10 0 -30 Z" fill="url(#holographicGold)" stroke="rgba(212,175,55,0.8)" stroke-width="0.8"/>
-        </g>
-
-        <g id="pure-stupa">
-            <path d="M -100 0 L 100 0 C 110 0, 120 10, 120 20 L -120 20 C -120 10, -110 0, -100 0 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M -90 -20 L 90 -20 C 100 -20, 105 -10, 105 0 L -105 0 C -105 -10, -100 -20, -90 -20 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -130 Q -60 -40 -50 -40 L 50 -40 Q 60 -40 0 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -150 L 40 -130 C 42 -128, 38 -125, 30 -125 L -30 -125 C -38 -125, -42 -128, -40 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
-            <path d="M 0 -220 L 15 -150 L -15 -150 Z" fill="#FFFFFF" stroke="#FFD700" stroke-width="1.2" style="filter: drop-shadow(0 0 2px #FFD700);"/>
+            <path d="M 0 -5 C 15 -25, 30 -5, 5 0 C 30 5, 15 25, 0 5 C -15 25, -30 5, -5 0 C -30 -5, -15 -25, 0 -5 Z" fill="url(#holographicGold)" stroke="rgba(212,175,55,0.8)" stroke-width="1"/>
+            <circle cx="0" cy="0" r="3" fill="#FFFFFF" style="filter: drop-shadow(0 0 3px #FFD700);"/>
         </g>
 
 
@@ -515,19 +489,27 @@
                     <path id="beam-right-glow" fill="none" stroke="#FFD700" stroke-width="15" stroke-linecap="round" style="filter: blur(8px); opacity: 0.3;" />
                     <path id="beam-right-core" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" style="filter: drop-shadow(0 0 10px #FFD700); opacity: 0.9;" />
                 </g>
-           <g id="test-flower-rain" style="pointer-events: none;">
-        <use href="#flower-petal" class="test-petal" style="--start-x: 300px; --start-y: -150px; --s: 1.5; animation-delay: 0s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 450px; --start-y: -250px; --s: 1.2; animation-delay: 1.5s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 600px; --start-y: -180px; --s: 1.8; animation-delay: 3s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 750px; --start-y: -220px; --s: 1.3; animation-delay: 0.5s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 350px; --start-y: -300px; --s: 1.6; animation-delay: 2.5s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 550px; --start-y: -350px; --s: 1.1; animation-delay: 4s;" />
-        <use href="#flower-petal" class="test-petal" style="--start-x: 700px; --start-y: -280px; --s: 1.4; animation-delay: 1s;" />
+        
+            <g id="test-flower-rain" style="pointer-events: none;">
+        <g transform="translate(300, -100) scale(1.5)"><use href="#flower-petal" class="test-petal" style="animation-delay: 0s;" /></g>
+        <g transform="translate(450, -200) scale(1.2)"><use href="#flower-petal" class="test-petal" style="animation-delay: 1.5s;" /></g>
+        <g transform="translate(600, -120) scale(1.8)"><use href="#flower-petal" class="test-petal" style="animation-delay: 3s;" /></g>
+        <g transform="translate(750, -180) scale(1.3)"><use href="#flower-petal" class="test-petal" style="animation-delay: 0.5s;" /></g>
+        <g transform="translate(350, -250) scale(1.6)"><use href="#flower-petal" class="test-petal" style="animation-delay: 2.5s;" /></g>
+        <g transform="translate(550, -300) scale(1.1)"><use href="#flower-petal" class="test-petal" style="animation-delay: 4s;" /></g>
+        <g transform="translate(700, -220) scale(1.4)"><use href="#flower-petal" class="test-petal" style="animation-delay: 1s;" /></g>
     </g>
 
-    <g id="test-stupa">
-        <use href="#pure-stupa" />
+    <g transform="translate(680, 1020) scale(0.6)" style="pointer-events: none;">
+        <g id="test-stupa-anim">
+            <path d="M -100 0 L 100 0 C 110 0, 120 10, 120 20 L -120 20 C -120 10, -110 0, -100 0 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
+            <path d="M -90 -20 L 90 -20 C 100 -20, 105 -10, 105 0 L -105 0 C -105 -10, -100 -20, -90 -20 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
+            <path d="M 0 -130 Q -60 -40 -50 -40 L 50 -40 Q 60 -40 0 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
+            <path d="M 0 -150 L 40 -130 C 42 -128, 38 -125, 30 -125 L -30 -125 C -38 -125, -42 -128, -40 -130 Z" fill="url(#goldBody)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2"/>
+            <path d="M 0 -220 L 15 -150 L -15 -150 Z" fill="#FFFFFF" stroke="#FFD700" stroke-width="1.2" style="filter: drop-shadow(0 0 3px #FFD700);"/>
+        </g>
     </g>
+
 
 
                                 <g id="censer-group">
