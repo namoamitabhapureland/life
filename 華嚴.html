@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>彌陀淨土系統 - 華嚴位階圖騰預覽</title>
+    <title>彌陀淨土系統 - 流線法界圖騰預覽</title>
     <style>
-        /* 低熵、曜石黑金的極簡美學 */
         body {
-            background-color: #020203; /* 曜石黑 */
+            background-color: #020203;
             color: #f5eabf;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
@@ -30,7 +29,7 @@
             height: 160px;
             background: radial-gradient(circle, #111111 0%, #050505 70%, #000000 100%);
             border-radius: 50%;
-            box-shadow: 0 0 20px rgba(191, 158, 72, 0.1);
+            box-shadow: 0 0 20px rgba(191, 158, 72, 0.05);
             position: relative;
         }
         .totem-title {
@@ -51,12 +50,19 @@
                 <stop offset="65%" stop-color="#906010"/>
                 <stop offset="100%" stop-color="#4c3008"/>
             </radialGradient>
-            <radialGradient id="rg-void" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#111111" stop-opacity="0.95"/>
-                <stop offset="70%" stop-color="#0a0500" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
-            </radialGradient>
-            <g id="lotus-outline" stroke="rgba(255,255,255,0.08)" stroke-width="0.8" fill="none">
+            
+            <linearGradient id="cloudGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FFB6C1" stop-opacity="0.6"/> 
+                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.8"/> 
+                <stop offset="100%" stop-color="#b0dfdb" stop-opacity="0.6"/>
+            </linearGradient>
+
+            <filter id="sacred-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+
+            <g id="lotus-outline" stroke="rgba(255,255,255,0.06)" stroke-width="0.8" fill="none">
                 <path d="M 50 18 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 18 Z" transform="rotate(0 50 50)"/>
                 <path d="M 50 18 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 18 Z" transform="rotate(45 50 50)"/>
                 <path d="M 50 18 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 18 Z" transform="rotate(90 50 50)"/>
@@ -66,18 +72,23 @@
                 <path d="M 50 18 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 18 Z" transform="rotate(270 50 50)"/>
                 <path d="M 50 18 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 18 Z" transform="rotate(315 50 50)"/>
             </g>
+
+            <g id="base-ring">
+                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width="0.7" opacity="0.9"/>
+            </g>
         </defs>
     </svg>
 
     <div class="totem-card">
         <div class="svg-box">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="50" r="42" fill="url(#rg-void)"/>
                 <use href="#lotus-outline" />
-                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#f0c868" stroke-width=".5" stroke-dasharray="1.8 2.2"/>
-                <path d="M50 37 L58 45 L50 53 L42 45 Z M50 47 L58 55 L50 63 L42 55 Z" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="round" opacity="0.9"/>
-                <path d="M50 35 L62 45 L50 55 L38 45 Z" stroke="url(#rg-unified-gold)" stroke-width="0.8" fill="none" opacity="0.6"/>
+                <use href="#base-ring" />
+                <g filter="url(#sacred-glow)">
+                    <circle cx="50" cy="50" r="8" fill="url(#cloudGrad)" opacity="0.4" filter="blur(2px)"/>
+                    <path d="M 50 32 C 38 32, 38 48, 50 50 C 62 52, 62 68, 50 68 C 38 68, 38 52, 50 50 C 62 48, 62 32, 50 32 Z" stroke="url(#rg-unified-gold)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="50" cy="50" r="2" fill="#fffce0"/>
+                </g>
             </svg>
         </div>
         <div class="totem-title">信 (Faith)</div>
@@ -86,12 +97,14 @@
     <div class="totem-card">
         <div class="svg-box">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="50" r="42" fill="url(#rg-void)"/>
                 <use href="#lotus-outline" />
-                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#f0c868" stroke-width=".5" stroke-dasharray="1.8 2.2"/>
-                <path d="M50 35 L59 40 L59 50 L50 55 L41 50 L41 40 Z M59 40 L68 45 L68 55 L59 60 L50 55 M41 40 L32 45 L32 55 L41 60 L50 55" stroke="#fffce0" stroke-width="1.1" fill="none" stroke-linejoin="round" opacity="0.85"/>
-                <path d="M50 33 L61 39 L61 51 L50 57 L39 51 L39 39 Z" stroke="url(#rg-unified-gold)" stroke-width="0.7" fill="none" opacity="0.5"/>
+                <use href="#base-ring" />
+                <g filter="url(#sacred-glow)">
+                    <path d="M 50 32 C 35 38, 35 60, 50 65 C 65 60, 65 38, 50 32 Z" fill="url(#cloudGrad)" opacity="0.3" filter="blur(2px)"/>
+                    <path d="M 32 60 C 32 35, 68 35, 68 60" stroke="url(#rg-unified-gold)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 40 60 C 40 45, 60 45, 60 60" stroke="url(#rg-unified-gold)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="50" cy="38" r="2.5" fill="#fffce0"/>
+                </g>
             </svg>
         </div>
         <div class="totem-title">住 (Abiding)</div>
@@ -100,13 +113,12 @@
     <div class="totem-card">
         <div class="svg-box">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="50" r="42" fill="url(#rg-void)"/>
                 <use href="#lotus-outline" />
-                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#f0c868" stroke-width=".5" stroke-dasharray="1.8 2.2"/>
-                <path d="M50 50 C38 30, 42 12, 50 12 C58 12, 62 30, 50 50 Z M50 50 C38 70, 42 88, 50 88 C58 88, 62 70, 50 50 Z" stroke="url(#rg-unified-gold)" stroke-width="0.8" fill="none" opacity="0.6"/>
-                <path d="M38 42 C45 35, 55 35, 62 42 L62 58 C55 65, 45 65, 38 58 Z" stroke="#fffce0" stroke-width="1.3" fill="none" stroke-linecap="round" opacity="0.95"/>
-                <circle cx="50" cy="50" r="4.2" fill="#ffe8a0" opacity="0.7"/>
+                <use href="#base-ring" />
+                <g filter="url(#sacred-glow)">
+                    <ellipse cx="50" cy="50" rx="15" ry="6" fill="url(#cloudGrad)" opacity="0.4" filter="blur(3px)"/>
+                    <path d="M 32 50 C 32 38, 46 38, 50 50 C 54 62, 68 62, 68 50 C 68 38, 54 38, 50 50 C 46 62, 32 62, 32 50 Z" stroke="url(#rg-unified-gold)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
             </svg>
         </div>
         <div class="totem-title">行 (Practice)</div>
@@ -115,12 +127,13 @@
     <div class="totem-card">
         <div class="svg-box">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="50" r="42" fill="url(#rg-void)"/>
                 <use href="#lotus-outline" />
-                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#f0c868" stroke-width=".5" stroke-dasharray="1.8 2.2"/>
-                <path d="M40 38 L50 48 L60 38 M40 50 L50 60 L60 50 M30 38 L40 48 L30 58 M70 38 L60 48 L70 58 M40 30 L50 40 L60 30" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="bevel" opacity="0.95"/>
-                <path d="M30 36 L40 46 L50 36 L60 46 L70 36 L70 60 L60 50 L50 60 L40 50 L30 60 Z" stroke="url(#rg-unified-gold)" stroke-width="0.7" fill="none" opacity="0.6"/>
+                <use href="#base-ring" />
+                <g filter="url(#sacred-glow)">
+                    <rect x="36" y="36" width="28" height="28" rx="8" fill="url(#cloudGrad)" opacity="0.3" filter="blur(2px)"/>
+                    <path d="M 40 38 L 60 38 A 8 8 0 0 1 68 46 L 68 54 A 8 8 0 0 1 60 62 L 40 62 A 8 8 0 0 1 32 54 L 32 46 A 8 8 0 0 1 40 38 Z" stroke="url(#rg-unified-gold)" stroke-width="1.3" fill="none"/>
+                    <path d="M 45 32 L 45 68 M 55 32 L 55 68 M 32 45 L 68 45 M 32 55 L 68 55" stroke="url(#rg-unified-gold)" stroke-width="1.3" fill="none" opacity="0.7"/>
+                </g>
             </svg>
         </div>
         <div class="totem-title">迴向 (Dedication)</div>
@@ -129,13 +142,15 @@
     <div class="totem-card">
         <div class="svg-box">
             <svg viewBox="0 0 100 100" width="100%" height="100%">
-                <circle cx="50" cy="50" r="42" fill="url(#rg-void)"/>
                 <use href="#lotus-outline" />
-                <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#f0c868" stroke-width=".5" stroke-dasharray="1.8 2.2"/>
-                <path d="M50 30 L64 36 L70 50 L64 64 L50 70 L36 64 L30 50 L36 36 Z M50 30 L50 70 M30 50 L70 50 M36 36 L64 64 M64 36 L36 64" stroke="#fffce0" stroke-width="1.0" fill="none" opacity="0.9"/>
-                <path d="M50 35 Q58 35, 65 42 Q72 50, 65 58 Q58 65, 50 65 Q42 65, 35 58 Q28 50, 35 42 Q42 35, 50 35 Z" stroke="url(#rg-unified-gold)" stroke-width="0.8" fill="none" opacity="0.6"/>
-                <circle cx="50" cy="50" r="5" fill="#ffe8a0"/>
+                <use href="#base-ring" />
+                <g filter="url(#sacred-glow)">
+                    <circle cx="50" cy="50" r="14" fill="url(#cloudGrad)" opacity="0.3" filter="blur(2px)"/>
+                    <path d="M 50 28 C 65 28, 72 40, 72 50 C 72 60, 65 72, 50 72 C 35 72, 28 60, 28 50 C 28 40, 35 28, 50 28 Z" stroke="url(#rg-unified-gold)" stroke-width="1.2" fill="none"/>
+                    <path d="M 50 35 C 58 35, 65 42, 65 50 C 65 58, 58 65, 50 65 C 42 65, 35 58, 35 50 C 35 42, 42 35, 50 35 Z" stroke="url(#rg-unified-gold)" stroke-width="1.0" fill="none" opacity="0.8"/>
+                    <path d="M 38 38 L 62 62 M 38 62 L 62 38" stroke="url(#rg-unified-gold)" stroke-width="0.8" opacity="0.6"/>
+                    <circle cx="50" cy="50" r="3" fill="#fffce0"/>
+                </g>
             </svg>
         </div>
         <div class="totem-title">地 (Bhumi)</div>
