@@ -3,181 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>彌陀淨土系統 - 蓮花包裹實機測試</title>
+    <title>彌陀淨土系統 - 華嚴圖騰 (徹底修正版)</title>
     <style>
         body {
             background-color: #020203;
             color: #f5eabf;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 40px;
+            gap: 50px;
+            padding: 50px;
         }
-        .lotus-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 30px;
-        }
-        .lotus-card {
+        .totem-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
         .svg-box {
-            width: 220px;
-            height: 220px;
-            background: radial-gradient(circle, #111111 0%, #050505 70%, #000000 100%);
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, #111111 0%, #050505 60%, #000000 100%);
             border-radius: 50%;
             box-shadow: 0 0 30px rgba(191, 158, 72, 0.08);
             position: relative;
         }
         .totem-title {
-            font-size: 1rem;
-            letter-spacing: 3px;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            font-weight: 300;
             color: #bf9e48;
         }
     </style>
 </head>
 <body>
 
-    <h2 style="font-weight: 300; letter-spacing: 5px;">主系統代碼實機渲染 (配合花瓣動態)</h2>
+    <svg width="0" height="0" style="position:absolute;">
+        <defs>
+            <linearGradient id="paleGold3DGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#bf9e48" />
+                <stop offset="25%" stop-color="#f5eabf" />
+                <stop offset="50%" stop-color="#ffffff" />
+                <stop offset="75%" stop-color="#f5eabf" />
+                <stop offset="100%" stop-color="#bf9e48" />
+            </linearGradient>
 
-    <div class="lotus-container" id="app"></div>
+            <linearGradient id="cloudGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FFB6C1" stop-opacity="0.7"/> 
+                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.9"/> 
+                <stop offset="100%" stop-color="#b0dfdb" stop-opacity="0.7"/>
+            </linearGradient>
 
-    <script>
-        // 這是您主系統的完整函數，已精準植入最終確認的圖騰代碼
-        function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
-            const safeRank = rankType || ""; 
-            
-            let nLevel = 1;
-            if (overrideLevel !== null) {
-                nLevel = Math.max(1, Math.min(overrideLevel, 10)); 
-            } else {
-                if (nianCount >= 100000000) nLevel = 10;      
-                else if (nianCount >= 10000000) nLevel = 9;   
-                else if (nianCount >= 1000000) nLevel = 8;    
-                else if (nianCount >= 500000) nLevel = 7;     
-                else if (nianCount >= 100000) nLevel = 6;     
-                else if (nianCount >= 10000) nLevel = 5;      
-                else if (nianCount >= 5000) nLevel = 4;       
-                else if (nianCount >= 500) nLevel = 3;        
-                else if (nianCount >= 10) nLevel = 2;         
-                else nLevel = 1;                              
-            }
+            <filter id="sacred-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
 
-            const cx = 50, cy = 50;
-            const id = `svg-${Math.random().toString(36).substr(2, 5)}`; 
-
-            function P(r0, r1, hw, bulge, shape) {
-                const bx = cx, by = cy - r0, tx = cx, ty = cy - r1;
-                const my = cy - (r0 + r1) / 2;
-                if (shape === 'slim') return `M${bx - hw * .7} ${by} C${bx - bulge * .75} ${my} ${tx - 1.5} ${ty + 3} ${tx} ${ty} C${tx + 1.5} ${ty + 3} ${bx + bulge * .75} ${my} ${bx + hw * .7} ${by}Z`;
-                if (shape === 'wide') return `M${bx - hw} ${by} C${bx - bulge * 1.35} ${my + 4} ${tx - bulge * .45} ${ty + 7} ${tx} ${ty} C${tx + bulge * .45} ${ty + 7} ${bx + bulge * 1.35} ${my + 4} ${bx + hw} ${by}Z`;
-                return `M${bx - hw} ${by} C${bx - bulge} ${my} ${tx - bulge * .3} ${ty + 5} ${tx} ${ty} C${tx + bulge * .3} ${ty + 5} ${bx + bulge} ${my} ${bx + hw} ${by}Z`;
-            }
-
-            function rotatedPetals(n, r0, r1, hw, bulge, shape, fill, op, offset = 0) {
-                let s = '';
-                for (let i = 0; i < n; i++) {
-                    const a = i * (360 / n) + offset;
-                    s += `<path d="${P(r0, r1, hw, bulge, shape)}" fill="${fill}" opacity="${op}" transform="rotate(${a} ${cx} ${cy})"/>`;
-                }
-                return s;
-            }
-
-            // 新增了 paleGold3DGrad 與 cloudGrad 以支援最終版的圖騰渲染
-            const sharedDefs = `
-            <defs>
-                <filter id="glo${id}" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-                <filter id="sof${id}" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-                <radialGradient id="rg-unified-gold" cx="50%" cy="50%" r="60%">
-                    <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
-                </radialGradient>
-                <radialGradient id="rg-void" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#111111" stop-opacity="0.95"/><stop offset="70%" stop-color="#0a0500" stop-opacity="0.8"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/>
-                </radialGradient>
-                <linearGradient id="paleGold3DGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#bf9e48" />
-                    <stop offset="25%" stop-color="#f5eabf" />
-                    <stop offset="50%" stop-color="#ffffff" />
-                    <stop offset="75%" stop-color="#f5eabf" />
-                    <stop offset="100%" stop-color="#bf9e48" />
-                </linearGradient>
-                <linearGradient id="cloudGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#FFB6C1" stop-opacity="0.7"/> 
-                    <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.9"/> 
-                    <stop offset="100%" stop-color="#b0dfdb" stop-opacity="0.7"/>
-                </linearGradient>
-            </defs>`;
-
-            const voidBg = `<circle cx="50" cy="50" r="42" fill="url(#rg-void)"><animate attributeName="r" values="41;43;41" dur="6s" repeatCount="indefinite"/></circle>`;
-
-            // ── 植入最終圖騰代碼 ──
-            let bgContent = '';
-            const isRank = (t) => safeRank.includes(t); 
-
-         if (isRank('信') || isRank('Faith')) {
-        bgContent = `
-        <circle cx="${cx}" cy="${cy}" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-        <circle cx="${cx}" cy="${cy}" r="15.5" fill="none" stroke="#f0c868" stroke-width="1.2"/>
-        
-        <g transform="translate(50, 50) scale(0.35) translate(-50, -50)">
-            <g transform="rotate(90 50 50)">
-                <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
-                <path d="M48,28 L50,4 L52,28 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M38,32 C25,20 40,8 49,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-                <path d="M62,32 C75,20 60,8 51,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-                <path d="M48,72 L50,96 L52,72 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M38,68 C25,80 40,92 49,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-                <path d="M62,68 C75,80 60,92 51,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+            <g id="lotus-outline" stroke="rgba(255,255,255,0.04)" stroke-width="0.8" fill="none">
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(0 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(45 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(90 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(135 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(180 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(225 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(270 50 50)"/>
+                <path d="M 50 12 C 38 35, 45 48, 50 50 C 55 48, 62 35, 50 12 Z" transform="rotate(315 50 50)"/>
             </g>
+        </defs>
+    </svg>
 
-            <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
-            <path d="M48,28 L50,4 L52,28 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M38,32 C25,20 40,8 49,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-            <path d="M62,32 C75,20 60,8 51,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-            <path d="M48,72 L50,96 L52,72 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M38,68 C25,80 40,92 49,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
-            <path d="M62,68 C75,80 60,92 51,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+    <div class="totem-card">
+        <div class="svg-box">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <use href="#lotus-outline" />
+                <circle cx="50" cy="50" r="21" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="0.5" stroke-dasharray="1 3" opacity="0.6"/>
+                <g filter="url(#sacred-glow)">
+                    <circle cx="50" cy="50" r="9" fill="url(#cloudGrad)" opacity="0.4" filter="blur(3px)"/>
+                    
+                    <path d="M42,42 L58,42 L55,32 L45,32 Z M42,58 L58,58 L55,68 L45,68 Z" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2" stroke-linejoin="round"/>
+                    
+                    <path d="M48,32 L48,42 M52,32 L52,42 M48,58 L48,68 M52,58 L52,68" stroke="url(#paleGold3DGrad)" stroke-width="0.8" opacity="0.7"/>
+                    
+                    <circle cx="50" cy="50" r="8" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2"/>
+                    <circle cx="50" cy="50" r="3" fill="url(#paleGold3DGrad)"/>
 
-            <circle cx="50" cy="50" r="8" fill="none" stroke="#fffce0" stroke-width="2.5"/>
-            <circle cx="50" cy="50" r="4" fill="#fffce0"/>
-        </g>`;
-    
+                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.5" stroke-linecap="round">
+                        <line x1="50" y1="28" x2="50" y2="4"/>
+                        <line x1="40" y1="30" x2="50" y2="4"/>
+                        <line x1="60" y1="30" x2="50" y2="4"/>
+                    </g>
 
-         } 
-        else if (isRank('住') || isRank('Abiding')) {
-        bgContent = `
-        <circle cx="${cx}" cy="${cy}" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-        
-        <g transform="translate(50, 50) scale(0.6) translate(-50, -50)" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="round">
-            <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
-            <line x1="33" y1="65" x2="67" y2="65"/>
-            <line x1="36" y1="62" x2="64" y2="62"/>
-            <line x1="39" y1="59" x2="61" y2="59"/>
-            <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#rg-unified-gold)"/>
-            <polygon points="46,41 54,41 52,47 48,47" fill="url(#rg-unified-gold)"/>
-            <polygon points="48,47 52,47 50,25" fill="url(#rg-unified-gold)"/>
-        </g>`;
-    
+                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.5" stroke-linecap="round">
+                        <line x1="50" y1="72" x2="50" y2="96"/>
+                        <line x1="40" y1="70" x2="50" y2="96"/>
+                        <line x1="60" y1="70" x2="50" y2="96"/>
+                    </g>
+                </g>
+                <circle cx="50" cy="50" r="1.5" fill="#fff" filter="drop-shadow(0 0 2px #fff)"/>
+            </svg>
+        </div>
+        <div class="totem-title">信 (Faith)</div>
+    </div>
 
+    <div class="totem-card">
+        <div class="svg-box">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <use href="#lotus-outline" />
+                <g filter="url(#sacred-glow)">
+                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round">
+                        <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
+                        
+                        <line x1="33" y1="65" x2="67" y2="65"/>
+                        <line x1="36" y1="62" x2="64" y2="62"/>
+                        <line x1="39" y1="59" x2="61" y2="59"/>
+                        
+                        <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#cloudGrad)" opacity="0.3"/>
+                        <path d="M 39 56 C 39 39 61 39 61 56 Z"/>
+                        
+                        <polygon points="46,41 54,41 52,47 48,47"/>
+                        <polygon points="48,47 52,47 50,25"/>
+                    </g>
+                    
+                    <circle cx="50" cy="49" r="3" fill="url(#paleGold3DGrad)"/>
+                    <circle cx="50" cy="49" r="1.5" fill="#fff"/>
+                </g>
+            </svg>
+        </div>
+        <div class="totem-title">住 (Abiding)</div>
+    </div>
 
-            } else if (isRank('行') || isRank('Practice')) {
-                bgContent = `
-                <g filter="url(#glo${id})">
+    <div class="totem-card">
+        <div class="svg-box">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <use href="#lotus-outline" />
+                <g filter="url(#sacred-glow)">
                     <circle cx="50" cy="50" r="24" stroke="url(#paleGold3DGrad)" stroke-width="1.5" fill="none"/>
                     <circle cx="50" cy="50" r="28" stroke="url(#paleGold3DGrad)" stroke-width="0.6" stroke-dasharray="2 4" fill="none" opacity="0.8"/>
-                    <circle cx="50" cy="50" r="8" fill="url(#cloudGrad)" opacity="0.5" style="filter: blur(2px);"/>
+                    
+                    <circle cx="50" cy="50" r="8" fill="url(#cloudGrad)" opacity="0.5" filter="blur(2px)"/>
+                    
                     <g stroke="url(#paleGold3DGrad)" stroke-width="1.2" fill="none" stroke-linecap="round">
                         <path d="M 50 44 Q 58 35 50 26 Q 42 35 50 44" transform="rotate(0 50 50)"/>
                         <path d="M 50 44 Q 58 35 50 26 Q 42 35 50 44" transform="rotate(45 50 50)"/>
@@ -189,11 +157,19 @@
                         <path d="M 50 44 Q 58 35 50 26 Q 42 35 50 44" transform="rotate(315 50 50)"/>
                     </g>
                     <circle cx="50" cy="50" r="2.5" fill="#fffce0"/>
-                </g>`;
-            } else if (isRank('迴') || isRank('Dedication')) {
-                bgContent = `
-                <g filter="url(#glo${id})">
-                    <circle cx="50" cy="50" r="16" fill="url(#cloudGrad)" opacity="0.3" style="filter: blur(4px);"/>
+                </g>
+            </svg>
+        </div>
+        <div class="totem-title">行 (Practice)</div>
+    </div>
+
+    <div class="totem-card">
+        <div class="svg-box">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <use href="#lotus-outline" />
+                <g filter="url(#sacred-glow)">
+                    <circle cx="50" cy="50" r="16" fill="url(#cloudGrad)" opacity="0.3" filter="blur(4px)"/>
+                    
                     <g transform="translate(50, 50) scale(4.5)" stroke="url(#paleGold3DGrad)" stroke-width="0.4">
                         <circle cx="0" cy="0" r="1.5" fill="url(#paleGold3DGrad)" stroke="none"/>
                         <circle cx="0" cy="0" r="3" fill="none"/>
@@ -206,6 +182,7 @@
                         <path d="M 0,-4 C 1.5,-6 3.5,-6 5,-4 C 3.5,-2 1.5,-2 0,-4 Z" fill="url(#paleGold3DGrad)" transform="rotate(270)"/>
                         <path d="M 0,-4 C 1.5,-6 3.5,-6 5,-4 C 3.5,-2 1.5,-2 0,-4 Z" fill="url(#paleGold3DGrad)" transform="rotate(315)"/>
                     </g>
+                    
                     <g stroke="url(#paleGold3DGrad)" stroke-width="0.8" stroke-linecap="round">
                         <line x1="50" y1="28" x2="50" y2="15" transform="rotate(0 50 50)"/>
                         <line x1="50" y1="28" x2="50" y2="15" transform="rotate(45 50 50)"/>
@@ -216,81 +193,38 @@
                         <line x1="50" y1="28" x2="50" y2="15" transform="rotate(270 50 50)"/>
                         <line x1="50" y1="28" x2="50" y2="15" transform="rotate(315 50 50)"/>
                     </g>
-                </g>`;
-            } else if (isRank('地') || isRank('Bhumi')) {
-                bgContent = `
-                <g filter="url(#glo${id})">
+                </g>
+            </svg>
+        </div>
+        <div class="totem-title">迴向 (Dedication)</div>
+    </div>
+
+    <div class="totem-card">
+        <div class="svg-box">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <use href="#lotus-outline" />
+                <g filter="url(#sacred-glow)">
                     <rect x="25" y="25" width="50" height="50" fill="url(#cloudGrad)" opacity="0.2" transform="rotate(45 50 50)"/>
                     <circle cx="50" cy="50" r="22" stroke="url(#paleGold3DGrad)" stroke-width="0.8" fill="none" opacity="0.7"/>
                     <rect x="28" y="28" width="44" height="44" stroke="url(#paleGold3DGrad)" stroke-width="0.6" fill="none" transform="rotate(45 50 50)" opacity="0.5"/>
-                    <g id="vajra-blade-${id}">
+                    
+                    <g id="vajra-blade">
                         <path d="M48,32 L50,8 L52,32 Z" fill="url(#paleGold3DGrad)" stroke="url(#paleGold3DGrad)" stroke-width="1.0" stroke-linejoin="round"/>
                         <path d="M40,35 C25,20 45,10 50,8" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2" stroke-linecap="round"/>
                         <path d="M60,35 C75,20 55,10 50,8" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2" stroke-linecap="round"/>
                     </g>
-                    <use href="#vajra-blade-${id}" transform="rotate(180 50 50)"/>
-                    <use href="#vajra-blade-${id}" transform="rotate(90 50 50)"/>
-                    <use href="#vajra-blade-${id}" transform="rotate(270 50 50)"/>
+                    <use href="#vajra-blade" transform="rotate(180 50 50)"/>
+                    <use href="#vajra-blade" transform="rotate(90 50 50)"/>
+                    <use href="#vajra-blade" transform="rotate(270 50 50)"/>
+                    
                     <circle cx="50" cy="50" r="10" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.5"/>
                     <circle cx="50" cy="50" r="6" fill="#020203"/>
                     <circle cx="50" cy="50" r="3" fill="#fff"/>
-                </g>`;
-            }
-
-            // ── 蓮花顏料與十階演化生成 ──
-            let lotusContent = '';
-
-            if (nLevel === 1) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff" stop-opacity="0.9"/><stop offset="100%" stop-color="#ccc" stop-opacity="0.3"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#fff" stop-opacity="0.8"/><stop offset="100%" stop-color="#eee" stop-opacity="0.4"/></radialGradient></defs>
-                ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.85)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.65,22.5)}`;
-            } else if (nLevel === 3) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff0f5"/><stop offset="100%" stop-color="#b04470" stop-opacity=".85"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#ffe8f2"/><stop offset="100%" stop-color="#d87898" stop-opacity=".55"/></radialGradient></defs>
-                ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.92)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.7,22.5)}`;
-            } else if (nLevel === 5) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="78%" r="100%"><stop offset="0%" stop-color="#e0fff8"/><stop offset="100%" stop-color="#065c48" stop-opacity=".9"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="62%" r="100%"><stop offset="0%" stop-color="#c0fff0"/><stop offset="100%" stop-color="#38c0a8" stop-opacity=".5"/></radialGradient></defs>
-                ${rotatedPetals(10,22,46,6,9,'point',`url(#lA${id})`,.9)}${rotatedPetals(10,22,36,4,6,'slim',`url(#lB${id})`,.6,18)}`;
-            } else if (nLevel === 7) { 
-                const cols=['#ff8888','#ffb060','#ffe860','#a0e868','#40d898','#40c8e8','#6888ff','#9870e8','#d870c8','#ff70b0'];
-                lotusContent = Array.from({length:10},(_,i)=>`<path d="${P(22,46,7.5,11,'round')}" fill="${cols[i]}" opacity=".87" transform="rotate(${i*36} ${cx} ${cy})"/>`).join('');
-            } else if (nLevel === 9) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="73%" r="100%"><stop offset="0%" stop-color="#fffce0"/><stop offset="100%" stop-color="#8c5c10" stop-opacity=".92"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="63%" r="100%"><stop offset="0%" stop-color="#fff8c0"/><stop offset="100%" stop-color="#7a4c08" stop-opacity=".72"/></radialGradient></defs>
-                ${rotatedPetals(8,22,47,8.5,12,'round',`url(#lA${id})`,.95)}${rotatedPetals(8,22,44,8,11,'round',`url(#lB${id})`,.88,22.5)}`;
-            } else { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#4a148c" stop-opacity=".95"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#e1bee7"/><stop offset="100%" stop-color="#6a1b9a" stop-opacity=".7"/></radialGradient></defs>
-                ${rotatedPetals(10,22,47,7,12,'wide',`url(#lA${id})`,.95)}${rotatedPetals(10,22,38,5,8,'round',`url(#lB${id})`,.75,18)}`;
-            }
-
-            return `
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                ${sharedDefs}${voidBg}
-                <g filter="url(#sof${id})">
-                    ${lotusContent}
-                    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="40s" repeatCount="indefinite" additive="sum"/>
                 </g>
-                ${bgContent}
-            </svg>`;
-        }
+            </svg>
+        </div>
+        <div class="totem-title">地 (Bhumi)</div>
+    </div>
 
-        // 渲染 5 個位階的卡片
-        const ranks = [
-            { name: '信 (Faith)', rankType: 'Faith', count: 100 },      // 對應 Level 1 白蓮
-            { name: '住 (Abiding)', rankType: 'Abiding', count: 5000 }, // 對應 Level 4 淡藍蓮
-            { name: '行 (Practice)', rankType: 'Practice', count: 100000 }, // 對應 Level 6 深藍蓮
-            { name: '迴向 (Dedication)', rankType: 'Dedication', count: 500000 }, // 對應 Level 7 彩虹蓮
-            { name: '地 (Bhumi)', rankType: 'Bhumi', count: 10000000 } // 對應 Level 9 大圓滿金蓮
-        ];
-
-        const container = document.getElementById('app');
-        ranks.forEach(r => {
-            container.innerHTML += `
-                <div class="lotus-card">
-                    <div class="svg-box">
-                        ${getLotusSVG(r.rankType, r.count)}
-                    </div>
-                    <div class="totem-title">${r.name}</div>
-                </div>
-            `;
-        });
-    </script>
 </body>
 </html>
