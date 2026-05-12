@@ -126,43 +126,41 @@
             let bgContent = '';
             const isRank = (t) => safeRank.includes(t); 
 
-            if (isRank('信') || isRank('Faith')) {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2" opacity="0.8"/>
-                <g filter="url(#glo${id})">
-                    <circle cx="50" cy="50" r="9" fill="url(#cloudGrad)" opacity="0.4" style="filter: blur(3px);"/>
-                    <path d="M42,42 L58,42 L55,32 L45,32 Z M42,58 L58,58 L55,68 L45,68 Z" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2" stroke-linejoin="round"/>
-                    <path d="M48,32 L48,42 M52,32 L52,42 M48,58 L48,68 M52,58 L52,68" stroke="url(#paleGold3DGrad)" stroke-width="0.8" opacity="0.7"/>
-                    <circle cx="50" cy="50" r="8" fill="none" stroke="url(#paleGold3DGrad)" stroke-width="1.2"/>
-                    <circle cx="50" cy="50" r="3" fill="url(#paleGold3DGrad)"/>
-                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.5" stroke-linecap="round">
-                        <line x1="50" y1="29" x2="50" y2="4"/>
-                        <line x1="40" y1="30" x2="50" y2="4"/>
-                        <line x1="60" y1="30" x2="50" y2="4"/>
-                    </g>
-                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.5" stroke-linecap="round">
-                        <line x1="50" y1="71" x2="50" y2="96"/>
-                        <line x1="40" y1="70" x2="50" y2="96"/>
-                        <line x1="60" y1="70" x2="50" y2="96"/>
-                    </g>
-                </g>
-                <circle cx="50" cy="50" r="1.5" fill="#fff" style="filter: drop-shadow(0 0 2px #fff);"/>`;
-            } else if (isRank('住') || isRank('Abiding')) {
-                bgContent = `
-                <g filter="url(#glo${id})">
-                    <g stroke="url(#paleGold3DGrad)" stroke-width="1.2" fill="none" stroke-linejoin="round">
-                        <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
-                        <line x1="33" y1="65" x2="67" y2="65"/>
-                        <line x1="36" y1="62" x2="64" y2="62"/>
-                        <line x1="39" y1="59" x2="61" y2="59"/>
-                        <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#cloudGrad)" opacity="0.3"/>
-                        <path d="M 39 56 C 39 39 61 39 61 56 Z"/>
-                        <polygon points="46,41 54,41 52,47 48,47"/>
-                        <polygon points="48,47 52,47 50,25"/>
-                    </g>
-                    <circle cx="50" cy="49" r="3" fill="url(#paleGold3DGrad)"/>
-                    <circle cx="50" cy="49" r="1.5" fill="#fff"/>
-                </g>`;
+     if (isRank('信') || isRank('Faith')) {
+        bgContent = `
+        <circle cx="${cx}" cy="${cy}" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
+        <circle cx="${cx}" cy="${cy}" r="15.5" fill="none" stroke="#f0c868" stroke-width="1.2"/>
+        
+        <g transform="translate(50, 50) scale(0.35) translate(-50, -50)">
+            <circle cx="50" cy="50" r="8" fill="none" stroke="#fffce0" stroke-width="2.5"/>
+            <circle cx="50" cy="50" r="4" fill="#fffce0"/>
+            
+            <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
+            
+            <path d="M48,28 L50,4 L52,28 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M38,32 C25,20 40,8 49,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M62,32 C75,20 60,8 51,5" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+            
+            <path d="M48,72 L50,96 L52,72 Z" fill="#fffce0" stroke="#fffce0" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M38,68 C25,80 40,92 49,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+            <path d="M62,68 C75,80 60,92 51,95" fill="none" stroke="#fffce0" stroke-width="2" stroke-linecap="round"/>
+        </g>`;
+        else if (isRank('住') || isRank('Abiding')) {
+        bgContent = `
+        <circle cx="${cx}" cy="${cy}" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
+        
+        <g transform="translate(50, 50) scale(0.6) translate(-50, -50)" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="round">
+            <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
+            <line x1="33" y1="65" x2="67" y2="65"/>
+            <line x1="36" y1="62" x2="64" y2="62"/>
+            <line x1="39" y1="59" x2="61" y2="59"/>
+            <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#rg-unified-gold)"/>
+            <polygon points="46,41 54,41 52,47 48,47" fill="url(#rg-unified-gold)"/>
+            <polygon points="48,47 52,47 50,25" fill="url(#rg-unified-gold)"/>
+        </g>`;
+    
+
+
             } else if (isRank('行') || isRank('Practice')) {
                 bgContent = `
                 <g filter="url(#glo${id})">
