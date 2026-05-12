@@ -1,84 +1,156 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>十階琉璃蓮花 ． 視覺展示</title>
+    <title>蓮花十階演化大觀 ‧ 彌陀淨土系統示範</title>
     <style>
+        :root {
+            --gold: #f3e5ab;
+            --dark-bg: #05070a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-gold: rgba(212, 175, 55, 0.3);
+        }
+
         body {
-            background: radial-gradient(circle at 50% 50%, #0a0e14 0%, #020203 100%);
-            color: #f3e5ab;
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background: radial-gradient(circle at 50% 50%, #0a0e14 0%, var(--dark-bg) 100%);
+            color: #fff;
+            font-family: "PingFang TC", "Microsoft JhengHei", serif;
             margin: 0;
             padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        h1 {
-            letter-spacing: 8px;
-            text-shadow: 0 0 15px rgba(212,175,55,0.6);
-            margin-bottom: 40px;
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 800px;
         }
-        .grid-container {
+
+        h1 {
+            color: var(--gold);
+            font-size: 2.2rem;
+            letter-spacing: 10px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(212,175,55,0.6);
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            line-height: 1.8;
+        }
+
+        .evolution-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
             width: 100%;
             max-width: 1200px;
         }
+
         .lotus-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 20px;
-            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-gold);
+            border-radius: 24px;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.8);
-            transition: 0.3s;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 15px 40px rgba(0,0,0,0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
         }
+
         .lotus-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-10px) scale(1.02);
             border-color: #d4af37;
-            box-shadow: inset 0 0 30px rgba(212,175,55,0.1), 0 15px 40px rgba(0,0,0,0.9);
+            box-shadow: inset 0 0 30px rgba(212,175,55,0.15), 0 20px 50px rgba(0,0,0,0.9);
         }
-        .svg-wrapper {
-            width: 150px;
-            height: 150px;
+
+        .svg-container {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
+        }
+
+        .lv-badge {
+            background: rgba(212,175,55,0.2);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+
+        .lotus-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .requirement {
+            color: #aaa;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
             margin-bottom: 15px;
         }
-        .level-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-        .level-desc {
-            font-size: 0.8rem;
-            color: #888;
-            letter-spacing: 1px;
+
+        .design-note {
+            font-size: 0.75rem;
+            color: #666;
+            line-height: 1.6;
             text-align: center;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            width: 100%;
+        }
+
+        footer {
+            margin-top: 80px;
+            color: #444;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        .highlight-text {
+            color: var(--gold);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>✦ 十階琉璃仙氣蓮花 ． 演化大觀 ✦</h1>
-    <div class="grid-container" id="grid"></div>
+    <header>
+        <h1>蓮花演化大觀</h1>
+        <p class="subtitle">
+            「隨其心淨，則佛土淨。」<br>
+            展示行者從<span class="highlight-text">初發心</span>至<span class="highlight-text">一億圓滿</span>的蓮花蛻變歷程。<br>
+            採用全琉璃仙氣色調，每一片花瓣皆為資糧所化。
+        </p>
+    </header>
+
+    <div class="evolution-grid" id="main-grid"></div>
+
+    <footer>
+        南無阿彌陀佛 ‧ 數位修行道場 ‧ 美學示範檔
+    </footer>
 
 <script>
-    // 這裡直接貼上你主系統裡的 getLotusSVG 函數
-    function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
-        const safeRank = rankType || ""; 
-        let nLevel = 1;
-        if (overrideLevel !== null) {
-            nLevel = Math.max(1, Math.min(overrideLevel, 10)); 
-        } 
-
+    function getLotusSVG(nianCount, overrideLevel) {
+        const id = `lotus-${overrideLevel}`;
         const cx = 50, cy = 50;
-        const id = `svg-${Math.random().toString(36).substr(2, 5)}`; 
+        const nLevel = overrideLevel;
 
         function P(r0, r1, hw, bulge, shape) {
             const bx = cx, by = cy - r0, tx = cx, ty = cy - r1;
@@ -99,115 +171,92 @@
 
         const sharedDefs = `
         <defs>
-            <filter id="glo${id}" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
             <filter id="sof${id}" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
-            <radialGradient id="rg-unified-gold" cx="50%" cy="50%" r="60%">
-                <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
+            <radialGradient id="rg-unified-gold-${id}" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#fef0b5"/><stop offset="75%" stop-color="#d4af37"/><stop offset="100%" stop-color="#8c6d12"/>
             </radialGradient>
-            <radialGradient id="rg-void" cx="50%" cy="50%" r="50%">
+            <radialGradient id="rg-void-${id}" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#111111" stop-opacity="0.95"/><stop offset="70%" stop-color="#0a0500" stop-opacity="0.8"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/>
             </radialGradient>
         </defs>`;
 
-        const voidBg = `<circle cx="50" cy="50" r="42" fill="url(#rg-void)"><animate attributeName="r" values="41;43;41" dur="6s" repeatCount="indefinite"/></circle>`;
-
-        // 為了展示方便，底座統一用信位的金剛座
-        let bgContent = `
-        <circle cx="${cx}" cy="${cy}" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
-        <g transform="translate(${cx}, ${cy}) scale(0.35) translate(-50, -50)">
-            <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
-            <g transform="translate(50, 50) scale(0.65) translate(-50, -50)">
-                <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" fill="url(#rg-unified-gold)" opacity="0.95"/>
-            </g>
-        </g>`;
+        const voidBg = `<circle cx="50" cy="50" r="42" fill="url(#rg-void-${id})"/>`;
+        const bgContent = `<circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold-${id})" stroke="#f0d060" stroke-width=".7"/>`;
 
         let lotusContent = '';
 
-        if (nLevel === 1) { // [0] 白瓷銀
+        if (nLevel === 1) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="100%" stop-color="#cfd8dc" stop-opacity="0.6"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/><stop offset="100%" stop-color="#eceff1" stop-opacity="0.7"/></radialGradient></defs>
-            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.9)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.8,22.5)}`;
-        } else if (nLevel === 2) { // [10] 玫瑰金
+            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.85)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.65,22.5)}`;
+        } else if (nLevel === 2) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff0f0" stop-opacity="0.95"/><stop offset="100%" stop-color="#e4a8a8" stop-opacity="0.65"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#fff5f5" stop-opacity="0.9"/><stop offset="100%" stop-color="#f4c8c8" stop-opacity="0.75"/></radialGradient></defs>
-            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.9)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.8,22.5)}`;
-        } else if (nLevel === 3) { // [500] 琉璃粉
+            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.85)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.65,22.5)}`;
+        } else if (nLevel === 3) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff0f5"/><stop offset="100%" stop-color="#f48fb1" stop-opacity=".75"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#ffe8f2"/><stop offset="100%" stop-color="#f8bbd0" stop-opacity=".85"/></radialGradient></defs>
-            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.92)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.8,22.5)}`;
-        } else if (nLevel === 4) { // [5000] 冰晶藍
+            ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.92)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.7,22.5)}`;
+        } else if (nLevel === 4) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="72%" r="100%"><stop offset="0%" stop-color="#e0f7fa" stop-opacity="0.95"/><stop offset="100%" stop-color="#81d4fa" stop-opacity="0.7"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="58%" r="100%"><stop offset="0%" stop-color="#e1f5fe" stop-opacity="0.9"/><stop offset="100%" stop-color="#b3e5fc" stop-opacity="0.8"/></radialGradient></defs>
-            ${rotatedPetals(8,22,46,9,14,'wide',`url(#lA${id})`,.9)}${rotatedPetals(8,22,37,6,9,'wide',`url(#lB${id})`,.8,22.5)}`;
-        } else if (nLevel === 5) { // [1萬] 翡翠玉
+            ${rotatedPetals(8,22,46,9,14,'wide',`url(#lA${id})`,.88)}${rotatedPetals(8,22,37,6,9,'wide',`url(#lB${id})`,.6,22.5)}`;
+        } else if (nLevel === 5) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="78%" r="100%"><stop offset="0%" stop-color="#e0f2f1"/><stop offset="100%" stop-color="#80cbc4" stop-opacity=".8"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="62%" r="100%"><stop offset="0%" stop-color="#e0f7fa"/><stop offset="100%" stop-color="#b2dfdb" stop-opacity=".85"/></radialGradient></defs>
-            ${rotatedPetals(10,22,46,6,9,'point',`url(#lA${id})`,.92)}${rotatedPetals(10,22,36,4,6,'slim',`url(#lB${id})`,.8,18)}`;
-        } else if (nLevel === 6) { // [10萬] 幻光銀
-            lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="78%" r="100%"><stop offset="0%" stop-color="#e8eaf6"/><stop offset="100%" stop-color="#9fa8da" stop-opacity=".85"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="62%" r="100%"><stop offset="0%" stop-color="#f8bbd0"/><stop offset="100%" stop-color="#c5cae9" stop-opacity=".85"/></radialGradient></defs>
-            ${rotatedPetals(10,22,47,6.5,10,'point',`url(#lA${id})`,.95)}${rotatedPetals(10,22,38,4.5,7,'slim',`url(#lB${id})`,.85,18)}`;
-        } else if (nLevel === 7) { // [50萬] 珍珠彩虹
-            const cols=['#ffcdd2','#ffe0b2','#fff9c4','#dcedc8','#b2dfdb','#b3e5fc','#c5cae9','#e1bee7','#f8bbd0','#f5f5f5'];
-            lotusContent = Array.from({length:10},(_,i)=>`<path d="${P(22,46,7.5,11,'round')}" fill="${cols[i]}" opacity=".9" transform="rotate(${i*36} ${cx} ${cy})"/>`).join('');
-        } else if (nLevel === 8) { // [100萬] 仙氣紫金
-            lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff8e1"/><stop offset="100%" stop-color="#ce93d8" stop-opacity=".85"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#f3e5f5"/><stop offset="100%" stop-color="#e1bee7" stop-opacity=".9"/></radialGradient></defs>
-            ${rotatedPetals(10,22,47,7,12,'wide',`url(#lA${id})`,.95)}${rotatedPetals(10,22,38,5,8,'round',`url(#lB${id})`,.85,18)}`;
-        } else if (nLevel === 9) { // [1000萬] 耀眼純金
+            ${rotatedPetals(10,22,46,6,9,'point',`url(#lA${id})`,.9)}${rotatedPetals(10,22,36,4,6,'slim',`url(#lB${id})`,.6,18)}`;
+        } else if (nLevel === 6) { 
+            lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="78%" r="100%"><stop offset="0%" stop-color="#e1f5fe"/><stop offset="100%" stop-color="#90caf9" stop-opacity=".7"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="62%" r="100%"><stop offset="0%" stop-color="#f0f4c3" stop-opacity="0.4"/><stop offset="100%" stop-color="#b2dfdb" stop-opacity=".7"/></radialGradient></defs>
+            ${rotatedPetals(10,22,47,6.5,10,'point',`url(#lA${id})`,.9)}${rotatedPetals(10,22,38,4.5,7,'slim',`url(#lB${id})`,.75,18)}`;
+        } else if (nLevel === 7) { 
+            const cols = ['#ffcdd2','#ffe0b2','#fff9c4','#dcedc8','#b2dfdb','#b3e5fc','#c5cae9','#e1bee7','#f8bbd0','#f5f5f5'];
+            let out = Array.from({length:10}, (_, i) => `<path d="${P(22,46,7.5,11,'round')}" fill="${cols[i]}" opacity=".85" transform="rotate(${i*36} ${cx} ${cy})"/>`).join('');
+            let inv = Array.from({length:10}, (_, i) => `<path d="${P(22,38,5.5,8,'round')}" fill="${cols[(i+5)%10]}" opacity=".65" transform="rotate(${i*36 + 18} ${cx} ${cy})"/>`).join('');
+            lotusContent = out + inv;
+        } else if (nLevel === 8) { 
+            lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff9c4" stop-opacity="0.9"/><stop offset="100%" stop-color="#ce93d8" stop-opacity=".8"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/><stop offset="100%" stop-color="#e1bee7" stop-opacity=".85"/></radialGradient></defs>
+            ${rotatedPetals(10,22,47,7,12,'wide',`url(#lA${id})`,.95)}${rotatedPetals(10,22,38,5,8,'round',`url(#lB${id})`,.75,18)}`;
+        } else if (nLevel === 9) { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="73%" r="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ffd54f" stop-opacity=".9"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="63%" r="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="100%" stop-color="#ffe082" stop-opacity=".85"/></radialGradient></defs>
-            ${rotatedPetals(8,22,47,8.5,12,'round',`url(#lA${id})`,.95)}${rotatedPetals(8,22,44,8,11,'round',`url(#lB${id})`,.9,22.5)}`;
-        } else { // [1億] 琉璃金光
+            ${rotatedPetals(8,22,47,8.5,12,'round',`url(#lA${id})`,.95)}${rotatedPetals(8,22,44,8,11,'round',`url(#lB${id})`,.88,22.5)}`;
+        } else { 
             lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ffca28" stop-opacity=".9"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#fffde7"/><stop offset="100%" stop-color="#ffb300" stop-opacity=".85"/></radialGradient></defs>
-            ${rotatedPetals(12,22,48,7,10,'round',`url(#lA${id})`,.98)}${rotatedPetals(12,22,42,6,8.5,'round',`url(#lB${id})`,.9,15)}${rotatedPetals(12,22,34,4.5,6.5,'round',`url(#lA${id})`,.85,7.5)}`;
+            ${rotatedPetals(12,22,48,7,10,'round',`url(#lA${id})`,.98)}${rotatedPetals(12,22,42,6,8.5,'round',`url(#lB${id})`,.9,15)}${rotatedPetals(12,22,34,4.5,6.5,'round',`url(#lA${id})`,.8,7.5)}`;
         }
 
         return `
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             ${sharedDefs}${voidBg}${bgContent}
             <g filter="url(#sof${id})">
                 ${lotusContent}
-                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="40s" repeatCount="indefinite" additive="sum"/>
+                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="60s" repeatCount="indefinite" additive="sum"/>
             </g>
-            <circle cx="50" cy="50" r="1.8" fill="#ffffff" opacity=".95" filter="url(#glo${id})"/>
         </svg>`;
     }
 
-    const levelsInfo = [
-        { lv: 1, title: "白瓷銀", desc: "0 ~ 9 念 (初發心)" },
-        { lv: 2, title: "玫瑰金", desc: "10 念圓滿" },
-        { lv: 3, title: "琉璃粉", desc: "500 念 (一念清淨)" },
-        { lv: 4, title: "冰晶藍", desc: "5,000 念 (淨念相繼)" },
-        { lv: 5, title: "翡翠玉", desc: "1萬念 (信願具足)" },
-        { lv: 6, title: "幻光銀", desc: "10萬念 (蓮池海會)" },
-        { lv: 7, title: "珍珠彩虹", desc: "50萬念 (不退轉)" },
-        { lv: 8, title: "仙氣紫金", desc: "100萬念 (無相念佛)" },
-        { lv: 9, title: "耀眼純金", desc: "1,000萬念 (念佛三昧)" },
-        { lv: 10, title: "琉璃金光", desc: "1億念 (圓滿成佛)" }
+    const data = [
+        { lv: 1, name: "白瓷銀", req: "0 - 9 聲佛號", note: "初發心位。銀白如月，洗滌身心垢染。" },
+        { lv: 2, name: "玫瑰金", req: "10 聲佛號", note: "十念圓滿。粉金交輝，象徵信願萌芽。" },
+        { lv: 3, name: "琉璃粉", req: "500 聲佛號", note: "一念清淨。淡粉通透，如晨曦初現。" },
+        { lv: 4, name: "冰晶藍", req: "5,000 聲佛號", note: "淨念相繼。水月琉璃，清涼澄澈無礙。" },
+        { lv: 5, name: "翡翠玉", req: "1 萬聲佛號", note: "信願具足。薄荷清綠，充滿寂靜生命力。" },
+        { lv: 6, name: "月光琉璃", req: "10 萬聲佛號", note: "蓮池海會。降低飽和，極致透明的星海光感。" },
+        { lv: 7, name: "珍珠彩虹", req: "50 萬聲佛號", note: "雙層交錯立體結構。解決原本單薄感，現萬德莊嚴。" },
+        { lv: 8, name: "紫霞仙金", req: "100 萬聲佛號", note: "無相念佛。薰衣草紫與淡金交織，高雅脫俗。" },
+        { lv: 9, name: "耀眼純金", req: "1,000 萬聲佛號", note: "念佛三昧。純淨透亮之黃金色，照耀十方。" },
+        { lv: 10, name: "圓滿琉璃金", req: "1 億聲佛號", note: "圓滿成佛。三層三十六瓣結構，微妙香潔之極。" }
     ];
 
-    const grid = document.getElementById('grid');
-
-    levelsInfo.forEach(info => {
+    const grid = document.getElementById('main-grid');
+    data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'lotus-card';
-        
-        const svgWrap = document.createElement('div');
-        svgWrap.className = 'svg-wrapper';
-        // 呼叫你的函數，傳入 overrideLevel 強制生成每一階的蓮花
-        svgWrap.innerHTML = getLotusSVG('信', 0, info.lv); 
-
-        const title = document.createElement('div');
-        title.className = 'level-title';
-        title.innerText = `Lv.${info.lv} ${info.title}`;
-
-        const desc = document.createElement('div');
-        desc.className = 'level-desc';
-        desc.innerText = info.desc;
-
-        card.appendChild(svgWrap);
-        card.appendChild(title);
-        card.appendChild(desc);
+        card.innerHTML = `
+            <div class="lv-badge">第 ${item.lv} 階演化</div>
+            <div class="svg-container">${getLotusSVG(0, item.lv)}</div>
+            <div class="lotus-name">${item.name}</div>
+            <div class="requirement">${item.req}</div>
+            <div class="design-note">${item.note}</div>
+        `;
         grid.appendChild(card);
     });
 </script>
-
 </body>
 </html>
