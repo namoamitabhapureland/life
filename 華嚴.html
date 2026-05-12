@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>彌陀淨土系統 - 華嚴圖騰 (無縫連接版)</title>
+    <title>華嚴位階實機檢查 - 信、住、迴向</title>
     <style>
         body {
-            background-color: #020203;
+            background-color: #020203; /* 曜石黑 */
             color: #f5eabf;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
@@ -20,7 +20,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 50px;
+            gap: 40px;
             margin-top: 50px;
         }
         .lotus-card {
@@ -28,159 +28,96 @@
             flex-direction: column;
             align-items: center;
             gap: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(191, 158, 72, 0.2);
         }
         .svg-box {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, #111111 0%, #050505 70%, #000000 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 30px rgba(191, 158, 72, 0.08);
+            width: 250px;
+            height: 250px;
         }
         .rank-label {
-            font-size: 1rem;
+            font-size: 1.2rem;
             letter-spacing: 4px;
             color: #bf9e48;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h2 style="font-weight: 300; letter-spacing: 5px;">華嚴位階：法印與蓮花整合示範</h2>
+    <h2 style="font-weight: 300; letter-spacing: 5px;">華嚴位階圖騰：實機校對單元</h2>
 
-    <div class="container" id="display"></div>
-
-    <script>
-        function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
-            const safeRank = rankType || ""; 
-            let nLevel = 1;
-            if (overrideLevel !== null) {
-                nLevel = Math.max(1, Math.min(overrideLevel, 10)); 
-            } else {
-                if (nianCount >= 1000000) nLevel = 8;
-                else if (nianCount >= 100000) nLevel = 6;
-                else if (nianCount >= 10000) nLevel = 4;
-                else if (nianCount >= 1000) nLevel = 3;
-                else nLevel = 1;
-            }
-
-            const cx = 50, cy = 50;
-            const id = `svg-${Math.random().toString(36).substr(2, 5)}`; 
-
-            function P(r0, r1, hw, bulge, shape) {
-                const bx = cx, by = cy - r0, tx = cx, ty = cy - r1;
-                const my = cy - (r0 + r1) / 2;
-                if (shape === 'slim') return `M${bx - hw * .7} ${by} C${bx - bulge * .75} ${my} ${tx - 1.5} ${ty + 3} ${tx} ${ty} C${tx + 1.5} ${ty + 3} ${bx + bulge * .75} ${my} ${bx + hw * .7} ${by}Z`;
-                if (shape === 'wide') return `M${bx - hw} ${by} C${bx - bulge * 1.35} ${my + 4} ${tx - bulge * .45} ${ty + 7} ${tx} ${ty} C${tx + bulge * .45} ${ty + 7} ${bx + bulge * 1.35} ${my + 4} ${bx + hw} ${by}Z`;
-                return `M${bx - hw} ${by} C${bx - bulge} ${my} ${tx - bulge * .3} ${ty + 5} ${tx} ${ty} C${tx + bulge * .3} ${ty + 5} ${bx + bulge} ${my} ${bx + hw} ${by}Z`;
-            }
-
-            function rotatedPetals(n, r0, r1, hw, bulge, shape, fill, op, offset = 0) {
-                let s = '';
-                for (let i = 0; i < n; i++) {
-                    const a = i * (360 / n) + offset;
-                    s += `<path d="${P(r0, r1, hw, bulge, shape)}" fill="${fill}" opacity="${op}" transform="rotate(${a} ${cx} ${cy})"/>`;
-                }
-                return s;
-            }
-
-            const sharedDefs = `
-            <defs>
-                <filter id="glo${id}"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                <radialGradient id="rg-gold" cx="50%" cy="50%" r="60%">
-                    <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
-                </radialGradient>
-                <radialGradient id="rg-void" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#111111" stop-opacity="0.95"/><stop offset="70%" stop-color="#0a0500" stop-opacity="0.8"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/>
-                </radialGradient>
-            </defs>`;
-
-            const voidBg = `<circle cx="50" cy="50" r="42" fill="url(#rg-void)"><animate attributeName="r" values="41;43;41" dur="6s" repeatCount="indefinite"/></circle>`;
-
-            let bgContent = '';
-            const isRank = (t) => safeRank.includes(t); 
-
-            if (isRank('信') || isRank('Faith')) {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="url(#rg-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="15.5" fill="none" stroke="#fffce0" stroke-width="1.2" opacity="0.8"/>
-                <g transform="translate(50, 50) scale(0.35) translate(-50, -50)">
-                    <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
-                    <g stroke="#fffce0" stroke-width="2.5" stroke-linecap="round">
-                        <line x1="40" y1="30" x2="44" y2="32" />
-                        <line x1="60" y1="30" x2="56" y2="32" />
-                        <line x1="40" y1="70" x2="44" y2="68" />
-                        <line x1="60" y1="70" x2="56" y2="68" />
+    <div class="container">
+        <div class="lotus-card">
+            <div class="svg-box">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="rg-unified-gold" cx="50%" cy="50%" r="60%">
+                            <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
+                        </radialGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold)" stroke="#f0d060" stroke-width=".7"/>
+                    <circle cx="50" cy="50" r="15.5" fill="none" stroke="#fffce0" stroke-width="1.2" opacity="0.8"/>
+                    <g transform="translate(50, 50) scale(0.35) translate(-50, -50)">
+                        <path d="M44 32 L44 68 M56 32 L56 68" stroke="#fffce0" stroke-width="2.5" fill="none"/>
+                        <g stroke="#fffce0" stroke-width="2.5" stroke-linecap="round">
+                            <line x1="40" y1="30" x2="44" y2="32" />
+                            <line x1="60" y1="30" x2="56" y2="32" />
+                            <line x1="40" y1="70" x2="44" y2="68" />
+                            <line x1="60" y1="70" x2="56" y2="68" />
+                        </g>
+                        <g stroke="#fffce0" stroke-width="2.5" stroke-linecap="round" fill="none">
+                            <path d="M50 29 L50 4 M40 30 L50 4 L60 30"/>
+                            <path d="M50 71 L50 96 M40 70 L50 96 L60 70"/>
+                        </g>
+                        <circle cx="50" cy="50" r="8" fill="none" stroke="#fffce0" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="4" fill="#fffce0"/>
                     </g>
-                    <g stroke="#fffce0" stroke-width="2.5" stroke-linecap="round" fill="none">
-                        <path d="M50 29 L50 4 M40 30 L50 4 L60 30"/>
-                        <path d="M50 71 L50 96 M40 70 L50 96 L60 70"/>
+                </svg>
+            </div>
+            <div class="rank-label">信 (Faith)</div>
+        </div>
+
+        <div class="lotus-card">
+            <div class="svg-box">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="rg-unified-gold-2" cx="50%" cy="50%" r="60%">
+                            <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
+                        </radialGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold-2)" stroke="#f0d060" stroke-width=".7"/>
+                    <g transform="translate(50, 50) scale(0.6) translate(-50, -50)" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="round">
+                        <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
+                        <line x1="33" y1="65" x2="67" y2="65"/>
+                        <line x1="36" y1="62" x2="64" y2="62"/>
+                        <line x1="39" y1="59" x2="61" y2="59"/>
+                        <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#rg-unified-gold-2)"/>
+                        <polygon points="46,41 54,41 52,47 48,47" fill="url(#rg-unified-gold-2)"/>
+                        <polygon points="48,47 52,47 50,25" fill="url(#rg-unified-gold-2)"/>
                     </g>
-                    <circle cx="50" cy="50" r="8" fill="none" stroke="#fffce0" stroke-width="2.5"/>
-                    <circle cx="50" cy="50" r="4" fill="#fffce0"/>
-                </g>`;
-            } else if (isRank('住') || isRank('Abiding')) {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="url(#rg-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <g transform="translate(50, 50) scale(0.55) translate(-50, -50)" stroke="#fffce0" stroke-width="1.2" fill="none" stroke-linejoin="round">
-                    <path d="M 30 68 L 70 68 L 70 65 L 67 65 L 67 62 L 64 62 L 64 59 L 61 59 L 61 56 L 39 56 L 39 59 L 36 59 L 36 62 L 33 62 L 33 65 L 30 65 Z"/>
-                    <line x1="33" y1="65" x2="67" y2="65"/> <line x1="36" y1="62" x2="64" y2="62"/> <line x1="39" y1="59" x2="61" y2="59"/>
-                    <path d="M 39 56 C 39 39 61 39 61 56 Z" fill="url(#rg-gold)"/>
-                    <circle cx="50" cy="49" r="2" fill="#fff"/>
-                </g>`;
-            } else if (isRank('行') || isRank('Practice')) {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="url(#rg-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <circle cx="50" cy="50" r="14" fill="none" stroke="#f0c868" stroke-width="1.1"/>
-                ${[0,45,90,135,180,225,270,315].map(a=>{const r=a*Math.PI/180;return `<circle cx="${(cx+Math.cos(r)*16).toFixed(1)}" cy="${(cy+Math.sin(r)*16).toFixed(1)}" r="1.5" fill="#f0c868"/>`;}).join('')}
-                <circle cx="50" cy="50" r="4.2" fill="#ffe8a0"/>`;
-            } else if (isRank('迴') || isRank('Dedication')) {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="url(#rg-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" fill="url(#rg-gold)" stroke="#fffce0" stroke-width="1.0" opacity="0.95"/>`;
-            } else {
-                bgContent = `
-                <circle cx="50" cy="50" r="21" fill="url(#rg-gold)" stroke="#f0d060" stroke-width=".7"/>
-                <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" fill="#fffce0" opacity="0.95"/>`;
-            }
+                </svg>
+            </div>
+            <div class="rank-label">住 (Abiding)</div>
+        </div>
 
-            let lotusContent = '';
-            if (nLevel === 1) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ccc" stop-opacity="0.3"/></radialGradient></defs>${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.85)}`;
-            } else if (nLevel <= 4) { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="72%" r="100%"><stop offset="0%" stop-color="#e0f0ff"/><stop offset="100%" stop-color="#0277bd" stop-opacity="0.5"/></radialGradient></defs>${rotatedPetals(8,22,46,9,14,'wide',`url(#lA${id})`,.88)}`;
-            } else { 
-                lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="73%" r="100%"><stop offset="0%" stop-color="#fffce0"/><stop offset="100%" stop-color="#8c5c10"/></radialGradient></defs>${rotatedPetals(8,22,47,8.5,12,'round',`url(#lA${id})`,.95)}`;
-            }
+        <div class="lotus-card">
+            <div class="svg-box">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="rg-unified-gold-3" cx="50%" cy="50%" r="60%">
+                            <stop offset="0%" stop-color="#fffce0"/><stop offset="28%" stop-color="#f0c030"/><stop offset="65%" stop-color="#906010"/><stop offset="100%" stop-color="#4c3008"/>
+                        </radialGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="21" fill="url(#rg-unified-gold-3)" stroke="#f0d060" stroke-width=".7"/>
+                    <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" fill="#fffce0" opacity="0.95"/>
+                </svg>
+            </div>
+            <div class="rank-label">迴向 (Dedication)</div>
+        </div>
+    </div>
 
-            return `
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-                ${sharedDefs}${voidBg}
-                <g>
-                    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="40s" repeatCount="indefinite" additive="sum"/>
-                    ${lotusContent}
-                </g>
-                ${bgContent}
-                <circle cx="50" cy="50" r="1.8" fill="#ffffff" filter="url(#glo${id})"/>
-            </svg>`;
-        }
-
-        const data = [
-            { t: 'Faith', c: 0 },
-            { t: 'Abiding', c: 10000 },
-            { t: 'Practice', c: 100000 },
-            { t: 'Dedication', c: 500000 },
-            { t: 'Bhumi', c: 1000000 }
-        ];
-
-        const display = document.getElementById('display');
-        data.forEach(item => {
-            display.innerHTML += `
-                <div class="lotus-card">
-                    <div class="svg-box">${getLotusSVG(item.t, item.c)}</div>
-                    <div class="rank-label">${item.t}</div>
-                </div>
-            `;
-        });
-    </script>
 </body>
 </html>
