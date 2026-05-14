@@ -6,16 +6,18 @@
     <title>華藏月相 ‧ 法界體檢</title>
     <style>
         :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         body { 
-            background: var(--bg); margin: 0; overflow: hidden;
+            background: var(--bg); overflow: hidden;
             font-family: "PingFang TC", serif; display: flex; flex-direction: column;
             justify-content: center; align-items: center; height: 100dvh;
         }
-        #canvas-wrap { width: 100vw; height: 70vh; position: relative; }
-        svg { width: 100%; height: 100%; filter: drop-shadow(0 0 12px rgba(212,175,55,0.3)); }
         
-        /* 標題美學：參考圖片中的精密排版 */
-        .ui-panel { text-align: center; z-index: 10; margin-top: -50px; }
+        #canvas-wrap { width: 100vw; height: 60vh; position: relative; }
+        svg { width: 100%; height: 100%; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
+        
+        /* 標題與掃描線美學 */
+        .ui-panel { text-align: center; z-index: 10; margin-top: -30px; }
         .main-title { 
             font-size: 1.5rem; color: var(--gold); letter-spacing: 12px; 
             margin-bottom: 20px; text-shadow: 0 0 20px rgba(212,175,55,0.6);
@@ -24,19 +26,19 @@
         @keyframes breath { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
         .scan-line {
-            width: 200px; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            width: 220px; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
             margin: 0 auto; position: relative; overflow: hidden;
         }
         .scan-line::after {
             content: ''; position: absolute; left: -100%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, #fff, transparent);
-            animation: scan 2s linear infinite;
+            animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
         @keyframes scan { 100% { left: 100%; } }
 
         /* 幾何旋轉動畫 */
         .rot-slow { transform-origin: center; animation: rot 120s linear infinite; }
-        .rot-fast { transform-origin: center; animation: rot 60s linear infinite reverse; }
+        .rot-fast { transform-origin: center; animation: rot 80s linear infinite reverse; }
         @keyframes rot { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -50,9 +52,10 @@
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
         </defs>
-        <g class="rot-slow" opacity="0.2">
-            <circle cx="0" cy="0" r="180" fill="none" stroke="var(--cyan)" stroke-width="0.5" stroke-dasharray="2 4"/>
-            <circle cx="0" cy="0" r="150" fill="none" stroke="var(--cyan)" stroke-width="0.3"/>
+        <g class="rot-slow" opacity="0.25">
+            <circle cx="0" cy="0" r="170" fill="none" stroke="var(--cyan)" stroke-width="0.5" stroke-dasharray="2 6"/>
+            <circle cx="0" cy="0" r="140" fill="none" stroke="var(--cyan)" stroke-width="0.3"/>
+            <circle cx="0" cy="0" r="110" fill="none" stroke="var(--cyan)" stroke-width="0.2"/>
         </g>
         <g id="mandala-core" class="rot-fast"></g>
     </svg>
@@ -61,48 +64,62 @@
 <div class="ui-panel">
     <div class="main-title">法界體檢中</div>
     <div class="scan-line"></div>
-    <p style="color: var(--cyan); font-size: 0.8rem; letter-spacing: 4px; margin-top: 15px; opacity: 0.7;">
+    <p style="color: var(--cyan); font-size: 0.8rem; letter-spacing: 5px; margin-top: 15px; opacity: 0.8;">
         正在凝結當月清淨資糧...
     </p>
 </div>
 
 <script>
-    // 讀取分數 (防 Bug 預設 0)
-    const db = JSON.parse(localStorage.getItem('PX_V15.0')) || { lunar: { points: 0 } };
-    const points = db.lunar.points || 0; 
+    // 1. 絕對安全的讀取機制 (防 Bug)
+    let db = {};
+    try {
+        db = JSON.parse(localStorage.getItem('PX_V15.0')) || {};
+    } catch(e) { db = {}; }
+    
+    // 如果主系統還沒寫入資料，預設為 0 分
+    let realPoints = (db && db.lunar && typeof db.lunar.points === 'number') ? db.lunar.points : 0;
 
+    // ✨ 測試開關：為了讓您現在就能看見陣法，我將分數強制鎖定在 380 分（大千莊嚴境界）
+    // 等您確認視覺滿意後，將 380 改回 realPoints 即可。
+    let points = 380; 
+
+    // 2. SVG 曼陀羅生成演算法
     function buildMandala() {
         const core = document.getElementById('mandala-core');
         let html = '';
         
-        // 根據圖片美學：生成重疊的圓（生命之花/因陀羅網變體）
-        // 分數越高，圓的交織數量與精密細節越多
-        const count = Math.min(24, Math.floor(points / 20) + 6); 
-        const radius = 80 + (points / 10);
+        // 根據分數決定重疊圓環的密度 (最低 6 個，最高可達 36 個極密交織)
+        const count = Math.min(36, Math.floor(points / 15) + 6); 
+        const radius = 70 + (points / 12);
 
+        // 畫出生命之花/因陀羅網的交織圓陣
         for (let i = 0; i < count; i++) {
             let angle = (i / count) * Math.PI * 2;
-            let x = Math.cos(angle) * (radius * 0.5);
-            let y = Math.sin(angle) * (radius * 0.5);
+            let cx = Math.cos(angle) * (radius * 0.45);
+            let cy = Math.sin(angle) * (radius * 0.45);
             
-            // 繪製交織圓環
-            html += `<circle cx="${x}" cy="${y}" r="${radius}" fill="none" stroke="${points > 200 ? 'var(--solid)' : 'var(--cyan)'}" stroke-width="0.4" opacity="0.5"/>`;
+            // 線條：高分則轉為純金，低分則是琉璃青
+            let color = points > 200 ? 'var(--solid)' : 'var(--cyan)';
+            let op = points > 200 ? 0.6 : 0.4;
             
-            // 繪製亮燈能量節點（在圓心）
-            html += `<circle cx="${x}" cy="${y}" r="1.5" fill="#fff" filter="url(#glow)">
-                <animate attributeName="opacity" values="0.3;1;0.3" dur="${2+Math.random()*2}s" repeatCount="indefinite" />
+            html += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${color}" stroke-width="0.4" opacity="${op}"/>`;
+            
+            // 亮燈能量節點（在每個圓心閃爍）
+            html += `<circle cx="${cx}" cy="${cy}" r="1.5" fill="#fff" filter="url(#glow)">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="${1.5 + Math.random() * 2}s" repeatCount="indefinite" />
             </circle>`;
         }
 
-        // 中心法界點
-        html += `<circle cx="0" cy="0" r="3" fill="var(--gold)" filter="url(#glow)"/>`;
+        // 中心法界主光點
+        html += `<circle cx="0" cy="0" r="4" fill="#fff" filter="url(#glow)"/>`;
+        html += `<circle cx="0" cy="0" r="2" fill="var(--gold)"/>`;
         
-        // 增加放射狀光芒線條
-        for (let i = 0; i < count * 2; i++) {
-            let angle = (i / (count * 2)) * Math.PI * 2;
-            let x2 = Math.cos(angle) * 180;
-            let y2 = Math.sin(angle) * 180;
-            html += `<line x1="0" y1="0" x2="${x2}" y2="${y2}" stroke="var(--gold)" stroke-width="0.2" opacity="0.1" />`;
+        // 放射狀光芒線 (與外圍連結)
+        for (let i = 0; i < count; i++) {
+            let angle = (i / count) * Math.PI * 2;
+            let x2 = Math.cos(angle) * 160;
+            let y2 = Math.sin(angle) * 160;
+            html += `<line x1="0" y1="0" x2="${x2}" y2="${y2}" stroke="var(--gold)" stroke-width="0.2" opacity="0.2" />`;
         }
 
         core.innerHTML = html;
