@@ -3,61 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>幾何曼陀羅</title>
+<title>幾何曼陀羅 - 覺性向量</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    background: #080604;
+    background: #050505;
     min-height: 100vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 48px;
-    padding: 60px 44px;
+    gap: 40px;
+    padding: 60px 20px;
   }
   .cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 20px;
   }
-  svg { width: 240px; height: 240px; }
+  svg { 
+    width: 280px; 
+    height: 280px; 
+    filter: drop-shadow(0 0 8px rgba(212,168,36,0.15));
+  }
   .lbl {
-    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', serif;
-    font-size: 11px;
-    letter-spacing: 0.28em;
+    font-family: 'Palatino', serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
     text-transform: uppercase;
-    color: rgba(212,168,36,0.55);
+    color: rgba(212,168,36,0.4);
+    border-top: 1px solid rgba(212,168,36,0.2);
+    padding-top: 8px;
   }
 </style>
 </head>
 <body>
 
-<div class="cell"><svg id="m1" viewBox="-115 -115 230 230"></svg><span class="lbl">Novenaria</span></div>
-<div class="cell"><svg id="m2" viewBox="-115 -115 230 230"></svg><span class="lbl">Hendecagram</span></div>
-<div class="cell"><svg id="m3" viewBox="-115 -115 230 230"></svg><span class="lbl">Twin Ogdoad</span></div>
-<div class="cell"><svg id="m4" viewBox="-115 -115 230 230"></svg><span class="lbl">Decalattice</span></div>
-<div class="cell"><svg id="m5" viewBox="-115 -115 230 230"></svg><span class="lbl">Dodecasacrum</span></div>
+<div class="cell"><svg id="m1" viewBox="-120 -120 240 240"></svg><span class="lbl">Novenaria</span></div>
+<div class="cell"><svg id="m2" viewBox="-120 -120 240 240"></svg><span class="lbl">Hendecagram</span></div>
+<div class="cell"><svg id="m3" viewBox="-120 -120 240 240"></svg><span class="lbl">Twin Ogdoad</span></div>
+<div class="cell"><svg id="m4" viewBox="-120 -120 240 240"></svg><span class="lbl">Decalattice</span></div>
+<div class="cell"><svg id="m5" viewBox="-120 -120 240 240"></svg><span class="lbl">Dodecasacrum</span></div>
 
 <script>
 (function(){
   const NS = 'http://www.w3.org/2000/svg';
 
-  /* ── Utilities ─────────────────────────────────────── */
+  /* ── 核心工具函數 ────────────────────────────────────── */
   function el(tag, attrs={}) {
     const e = document.createElementNS(NS, tag);
     for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
     return e;
   }
+  
   function add(parent, tag, attrs={}) {
     const e = el(tag, attrs); parent.appendChild(e); return e;
   }
-  function addDefs(svg, html) {
-    const d = el('defs'); d.innerHTML = html; svg.prepend(d);
-  }
 
-  // Regular n-gon vertices on radius r, optional rotation (deg)
   function poly(n, r, rotDeg=0) {
     const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
     for(let k=0;k<n;k++){
@@ -67,309 +70,107 @@
     return pts;
   }
 
-  function ptStr(pts){ return pts.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join(' '); }
+  function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
 
-  function addPoly(parent, pts, attrs) {
-    return add(parent,'polygon',{points:ptStr(pts),fill:'none',...attrs});
-  }
-  function addCirc(parent, r, attrs) {
-    return add(parent,'circle',{cx:0,cy:0,r,...attrs});
-  }
-  function addLine(parent,x1,y1,x2,y2,attrs={}) {
-    return add(parent,'line',{x1:x1.toFixed(2),y1:y1.toFixed(2),x2:x2.toFixed(2),y2:y2.toFixed(2),...attrs});
-  }
-
-  // n-pointed star: outer r1, inner r2, offset rotDeg
-  function addStar(parent,n,r1,r2,rotDeg,attrs) {
-    const pts=[], off=-Math.PI/2+rotDeg*Math.PI/180;
-    for(let k=0;k<2*n;k++){
-      const r=k%2===0?r1:r2;
-      pts.push([r*Math.cos(Math.PI*k/n+off), r*Math.sin(Math.PI*k/n+off)]);
+  // 繪製全連結圖（每一點連接其他所有點）
+  function addFullWeb(parent, pts, attrs) {
+    const g = add(parent, 'g', attrs);
+    for(let i=0; i<pts.length; i++) {
+      for(let j=i+1; j<pts.length; j++) {
+        add(g, 'line', {
+          x1: pts[i][0], y1: pts[i][1],
+          x2: pts[j][0], y2: pts[j][1]
+        });
+      }
     }
-    return addPoly(parent,pts,attrs);
   }
 
-  // Complete graph K_n: every pair of pts connected
-  function addCompleteGraph(parent, pts, stroke, sw, op) {
-    const g = add(parent,'g',{stroke,fill:'none','stroke-width':sw,opacity:op});
-    for(let i=0;i<pts.length;i++)
-      for(let j=i+1;j<pts.length;j++)
-        addLine(g,pts[i][0],pts[i][1],pts[j][0],pts[j][1]);
-    return g;
-  }
-
-  // Small circles at each vertex
-  function addDots(parent,pts,r,fill,op) {
-    const g = add(parent,'g',{opacity:op});
-    for(const p of pts) add(g,'circle',{cx:p[0].toFixed(2),cy:p[1].toFixed(2),r,fill});
-    return g;
-  }
-
-  // Spoke lines from center to each vertex
-  function addSpokes(parent,pts,stroke,sw,op) {
-    const g = add(parent,'g',{stroke,fill:'none','stroke-width':sw,opacity:op});
-    for(const p of pts) addLine(g,0,0,p[0],p[1]);
-    return g;
-  }
-
-  // Standard gold base circle with radial gradient
-  function goldBase(svg,id,r,rimCol,d0,d1,d2) {
-    addDefs(svg,`
-      <radialGradient id="${id}bg" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stop-color="${d0}"/>
-        <stop offset="55%"  stop-color="${d1}"/>
-        <stop offset="100%" stop-color="${d2}"/>
+  // 基礎濾鏡與漸層
+  function setupDefs(svg, id) {
+    const defs = add(svg, 'defs');
+    defs.innerHTML = `
+      <radialGradient id="${id}_grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFF4D1" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#D4A824" stop-opacity="0"/>
       </radialGradient>
-      <radialGradient id="${id}cg" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="22%"  stop-color="#fffde8" stop-opacity="0.85"/>
-        <stop offset="65%"  stop-color="#f0d040" stop-opacity="0.12"/>
-        <stop offset="100%" stop-color="#c89000" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="${id}gf" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="5.5" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <filter id="${id}_glow">
+        <feGaussianBlur stdDeviation="1.5" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
       </filter>
-    `);
-    addCirc(svg,r,{fill:`url(#${id}bg)`,stroke:rimCol,'stroke-width':'2.5'});
-    addCirc(svg,r-5,{fill:'none',stroke:rimCol,'stroke-width':'0.5',opacity:'0.35'});
+    `;
   }
 
-  function glowCenter(svg,id,r1=28,r2=13,r3=5) {
-    addCirc(svg,r1,{fill:`url(#${id}cg)`});
-    addCirc(svg,r2,{fill:'rgba(255,255,235,0.88)',filter:`url(#${id}gf)`});
-    addCirc(svg,r3,{fill:'#ffffff'});
+  /* ── 曼陀羅生成邏輯 ───────────────────────────────────── */
+
+  // 共通底座：極簡刻度環
+  function drawBase(svg) {
+    add(svg, 'circle', {cx:0, cy:0, r:118, fill:'none', stroke:'#D4A824', 'stroke-width':0.2, opacity:0.3});
+    for(let i=0; i<72; i++) {
+      const a = (i*5)*Math.PI/180;
+      const r1 = 115, r2 = 118;
+      add(svg, 'line', {
+        x1: r1*Math.cos(a), y1: r1*Math.sin(a),
+        x2: r2*Math.cos(a), y2: r2*Math.sin(a),
+        stroke: '#D4A824', 'stroke-width': 0.3, opacity: 0.5
+      });
+    }
   }
 
-  /* ═══════════════════════════════════════════════════════
-     M1 — NOVENARIA  9-gon complete graph, two rings
-     9 outer vertices (36 connecting lines)
-     9 inner vertices (36 connecting lines)
-     sharp 9-pointed stars
-  ═══════════════════════════════════════════════════════ */
+  // M1: Novenaria (九重之境) - 著重於九角星的交錯
   (function(){
-    const svg=document.getElementById('m1'), id='m1';
-    goldBase(svg,id,110,'#c89030','#3a2006','#1e1003','#0a0401');
+    const svg=document.getElementById('m1'); setupDefs(svg, 'm1'); drawBase(svg);
+    const pts = poly(9, 100);
+    addFullWeb(svg, pts, {stroke:'#D4A824', 'stroke-width':0.4, opacity:0.6});
+    const ptsInner = poly(9, 40, 20);
+    addFullWeb(svg, ptsInner, {stroke:'#FFF', 'stroke-width':0.2, opacity:0.3});
+    add(svg, 'circle', {r:6, fill:'url(#m1_grad)'});
+  })();
 
-    /* outer ring ticks */
-    const tg=add(svg,'g',{stroke:'#906818','stroke-width':'1',opacity:'0.5'});
-    for(let k=0;k<18;k++){
-      const a=2*Math.PI*k/18-Math.PI/2;
-      addLine(tg,104*Math.cos(a),104*Math.sin(a),109*Math.cos(a),109*Math.sin(a));
+  // M2: Hendecagram (十一法界) - 十一邊形的極致細線
+  (function(){
+    const svg=document.getElementById('m2'); setupDefs(svg, 'm2'); drawBase(svg);
+    const pts = poly(11, 100);
+    addFullWeb(svg, pts, {stroke:'#D4A824', 'stroke-width':0.3, opacity:0.5});
+    const pts2 = poly(11, 70, 180/11);
+    addFullWeb(svg, pts2, {stroke:'#8E6D3B', 'stroke-width':0.2, opacity:0.4});
+    add(svg, 'circle', {r:5, fill:'url(#m2_grad)'});
+  })();
+
+  // M3: Twin Ogdoad (雙重八識) - 兩個八邊形錯位形成的共振
+  (function(){
+    const svg=document.getElementById('m3'); setupDefs(svg, 'm3'); drawBase(svg);
+    const p1 = poly(8, 100, 0), p2 = poly(8, 100, 22.5);
+    addFullWeb(svg, [...p1, ...p2], {stroke:'#D4A824', 'stroke-width':0.25, opacity:0.4});
+    add(svg, 'polygon', {points:ptStr(p1), fill:'none', stroke:'#FFF', 'stroke-width':0.5, opacity:0.2});
+    add(svg, 'polygon', {points:ptStr(p2), fill:'none', stroke:'#FFF', 'stroke-width':0.5, opacity:0.2});
+    add(svg, 'circle', {r:7, fill:'url(#m3_grad)'});
+  })();
+
+  // M4: Decalattice (十方網格) - 幾何重疊的節點美學
+  (function(){
+    const svg=document.getElementById('m4'); setupDefs(svg, 'm4'); drawBase(svg);
+    const pts = poly(10, 100);
+    addFullWeb(svg, pts, {stroke:'#D4A824', 'stroke-width':0.4, opacity:0.5});
+    pts.forEach(p => add(svg, 'circle', {cx:p[0], cy:p[1], r:1.5, fill:'#D4A824'}));
+    const ptsIn = poly(5, 50, 18);
+    addFullWeb(svg, ptsIn, {stroke:'#FFF', 'stroke-width':0.3, opacity:0.3});
+    add(svg, 'circle', {r:4, fill:'url(#m4_grad)'});
+  })();
+
+  // M5: Dodecasacrum (十二圓滿) - 最複雜的結構，使用虛實線結合
+  (function(){
+    const svg=document.getElementById('m5'); setupDefs(svg, 'm5'); drawBase(svg);
+    const pts = poly(12, 100);
+    addFullWeb(svg, pts, {stroke:'#D4A824', 'stroke-width':0.2, opacity:0.4});
+    // 強化星狀結構
+    const star = [];
+    for(let i=0; i<12; i++) {
+      star.push(pts[i]);
+      const midA = (i*30 + 15 - 90) * Math.PI / 180;
+      star.push([35*Math.cos(midA), 35*Math.sin(midA)]);
     }
-
-    /* outer 9-gon */
-    const o=poly(9,97);
-    addPoly(svg,o,{stroke:'#c89030','stroke-width':'1.1',opacity:'0.7'});
-
-    /* complete graph K9 – 36 lines */
-    addCompleteGraph(svg,o,'#e8c860','0.52','0.55');
-
-    /* sharp 9-star overlay */
-    addStar(svg,9,97,12,0,{fill:'rgba(235,185,15,0.07)',stroke:'#f5dc70','stroke-width':'1.5'});
-
-    /* mid supporting ring */
-    addCirc(svg,65,{fill:'none',stroke:'#906010','stroke-width':'0.5',opacity:'0.3'});
-
-    /* inner 9-gon (rotated 20°) */
-    const i=poly(9,46,20);
-    addPoly(svg,i,{stroke:'#d4a820','stroke-width':'0.8',opacity:'0.5'});
-
-    /* complete graph K9 inner – 36 lines */
-    addCompleteGraph(svg,i,'#f0d060','0.5','0.52');
-
-    /* inner 9-star */
-    addStar(svg,9,46,9,20,{fill:'rgba(250,205,25,0.12)',stroke:'#ffe070','stroke-width':'1'});
-
-    /* radial connectors outer→inner */
-    const cg=add(svg,'g',{stroke:'#a07828','stroke-width':'0.35',opacity:'0.28',fill:'none'});
-    for(let k=0;k<9;k++) addLine(cg,o[k][0],o[k][1],i[k][0],i[k][1]);
-
-    /* vertex dots */
-    addDots(svg,o,2.2,'#f0d060','0.7');
-    addDots(svg,i,1.6,'#ffe880','0.65');
-
-    glowCenter(svg,id,27,12,5);
-  })();
-
-  /* ═══════════════════════════════════════════════════════
-     M2 — HENDECAGRAM  11-gon complete graph
-     55 connecting lines, very dense web
-     + 11-pointed star + inner pentagon lattice
-  ═══════════════════════════════════════════════════════ */
-  (function(){
-    const svg=document.getElementById('m2'), id='m2';
-    goldBase(svg,id,110,'#b87020','#2e1800','#170c00','#070300');
-
-    /* outer 11-gon */
-    const o=poly(11,97);
-    addPoly(svg,o,{stroke:'#b87820','stroke-width':'1',opacity:'0.65'});
-
-    /* K11 – 55 lines */
-    addCompleteGraph(svg,o,'#dca830','0.48','0.52');
-
-    /* sharp 11-star */
-    addStar(svg,11,97,11,0,{fill:'rgba(220,160,10,0.06)',stroke:'#f0cc50','stroke-width':'1.4'});
-
-    /* spokes from center */
-    addSpokes(svg,o,'#906010','0.4','0.22');
-
-    /* inner pentagon (every other vertex-ish) */
-    const ip=poly(5,50,0);
-    addPoly(svg,ip,{stroke:'#c89028','stroke-width':'0.9',opacity:'0.55'});
-    addCompleteGraph(svg,ip,'#f0cc40','0.55','0.5');
-    addStar(svg,5,50,14,36,{fill:'rgba(240,195,20,0.1)',stroke:'#ffd050','stroke-width':'1.1'});
-
-    /* inner 11-gon ring */
-    const ig=poly(11,44,16.36);
-    addPoly(svg,ig,{stroke:'#c09020','stroke-width':'0.6',opacity:'0.4'});
-    addCompleteGraph(svg,ig,'#ecc038','0.45','0.45'});
-
-    /* vertex dots */
-    addDots(svg,o,2,'#e8c050','0.68');
-
-    glowCenter(svg,id,26,11,5);
-  })();
-
-  /* ═══════════════════════════════════════════════════════
-     M3 — TWIN OGDOAD  2 × octagon = 16 vertices
-     K16 = 120 lines (ultra-dense)
-     silver / pearl palette
-  ═══════════════════════════════════════════════════════ */
-  (function(){
-    const svg=document.getElementById('m3'), id='m3';
-    addDefs(svg,`
-      <radialGradient id="${id}bg" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stop-color="#1c1a16"/>
-        <stop offset="55%"  stop-color="#100e0a"/>
-        <stop offset="100%" stop-color="#060504"/>
-      </radialGradient>
-      <radialGradient id="${id}cg" cx="50%" cy="50%" r="50%">
-        <stop offset="0%"   stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="25%"  stop-color="#fff8e0" stop-opacity="0.8"/>
-        <stop offset="70%"  stop-color="#e0c860" stop-opacity="0.1"/>
-        <stop offset="100%" stop-color="#b09020" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="${id}gf" x="-80%" y="-80%" width="260%" height="260%">
-        <feGaussianBlur stdDeviation="6" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    `);
-    addCirc(svg,110,{fill:`url(#${id}bg)`,stroke:'#c8a828','stroke-width':'2.5'});
-    addCirc(svg,105,{fill:'none',stroke:'#a08020','stroke-width':'0.5',opacity:'0.35'});
-
-    const oct1=poly(8,97,0);
-    const oct2=poly(8,97,22.5);
-    const all=[...oct1,...oct2];
-
-    /* two octagons */
-    addPoly(svg,oct1,{stroke:'#d4a828','stroke-width':'1.2',opacity:'0.65'});
-    addPoly(svg,oct2,{stroke:'#e8c040','stroke-width':'0.9',opacity:'0.5'});
-
-    /* K16 – 120 lines */
-    addCompleteGraph(svg,all,'#f0d060','0.38','0.42');
-
-    /* 8-star overlays */
-    addStar(svg,8,97,22,0, {fill:'rgba(240,195,20,0.07)',stroke:'#f8d870','stroke-width':'1.5'});
-    addStar(svg,8,97,22,22.5,{fill:'rgba(220,175,10,0.04)',stroke:'#d4a830','stroke-width':'1'});
-
-    /* inner octagon */
-    const io=poly(8,44,11.25);
-    addPoly(svg,io,{stroke:'#c89028','stroke-width':'0.8',opacity:'0.5'});
-    addCompleteGraph(svg,io,'#f0d050','0.5','0.5');
-    addDots(svg,io,1.6,'#ffe870','0.65');
-
-    addDots(svg,oct1,2.4,'#f8d860','0.72');
-    addDots(svg,oct2,2,'#f0c848','0.6');
-
-    glowCenter(svg,id,28,13,5);
-  })();
-
-  /* ═══════════════════════════════════════════════════════
-     M4 — DECALATTICE  10-gon complete graph
-     K10 = 45 lines + two pentagrams (5-star × 2)
-     + inner 10-gon K10
-  ═══════════════════════════════════════════════════════ */
-  (function(){
-    const svg=document.getElementById('m4'), id='m4';
-    goldBase(svg,id,110,'#a87018','#221000','#120800','#060200');
-
-    const o=poly(10,97);
-    addPoly(svg,o,{stroke:'#b07818','stroke-width':'1',opacity:'0.6'});
-
-    /* K10 – 45 lines */
-    addCompleteGraph(svg,o,'#d8a030','0.52','0.53');
-
-    /* pentagram 1 */
-    addStar(svg,5,97,18,0,  {fill:'rgba(200,140,10,0.06)',stroke:'#e8b030','stroke-width':'1.4'});
-    /* pentagram 2 (rotated 36°) */
-    addStar(svg,5,97,18,36, {fill:'rgba(200,140,10,0.04)',stroke:'#c89020','stroke-width':'1'});
-
-    /* 10-star (very sharp) */
-    addStar(svg,10,97,13,0,{fill:'rgba(215,155,15,0.07)',stroke:'#f0c048','stroke-width':'1.2',opacity:'0.9'});
-
-    /* mid ring */
-    addCirc(svg,65,{fill:'none',stroke:'#806010','stroke-width':'0.5',opacity:'0.28'});
-
-    /* inner 10-gon */
-    const i=poly(10,43,18);
-    addPoly(svg,i,{stroke:'#c89028','stroke-width':'0.7',opacity:'0.45'});
-    addCompleteGraph(svg,i,'#f0c840','0.5','0.5');
-    addStar(svg,10,43,7,18,{fill:'rgba(245,195,25,0.12)',stroke:'#ffd050','stroke-width':'0.9'});
-    addDots(svg,i,1.5,'#ffe868','0.6');
-
-    /* outer connector spokes */
-    addSpokes(svg,o,'#906018','0.35','0.2');
-    addDots(svg,o,2.2,'#e8b830','0.7');
-
-    glowCenter(svg,id,26,12,5);
-  })();
-
-  /* ═══════════════════════════════════════════════════════
-     M5 — DODECASACRUM  12-gon complete graph
-     K12 = 66 lines + 3 squares + 4 triangles + 12-star
-     richest / most complex
-  ═══════════════════════════════════════════════════════ */
-  (function(){
-    const svg=document.getElementById('m5'), id='m5';
-    goldBase(svg,id,110,'#d4a818','#3c1e08','#201006','#0c0604');
-
-    const o=poly(12,97);
-    addPoly(svg,o,{stroke:'#c8a020','stroke-width':'1.1',opacity:'0.68'});
-
-    /* K12 – 66 lines */
-    addCompleteGraph(svg,o,'#f0c840','0.46','0.5');
-
-    /* 4 equilateral triangles (rotated 0, 30, 60, 90°) */
-    for(let r=0;r<4;r++)
-      addStar(svg,3,97,9,r*30,{fill:`rgba(240,180,15,${0.03+r*0.01})`,stroke:'#e8c038','stroke-width':'1.1',opacity:'0.65'});
-
-    /* 3 squares (rotated 0, 15, 30°) */
-    for(let r=0;r<3;r++){
-      const sq=poly(4,97,r*15);
-      addPoly(svg,sq,{fill:'rgba(215,165,10,0.03)',stroke:'#d4a028','stroke-width':'1',opacity:'0.6'});
-    }
-
-    /* 12-star */
-    addStar(svg,12,97,13,0,{fill:'rgba(255,200,20,0.06)',stroke:'#f8d860','stroke-width':'1.4'});
-
-    /* mid ring */
-    addCirc(svg,66,{fill:'none',stroke:'#906010','stroke-width':'0.5',opacity:'0.28'});
-
-    /* inner 12-gon */
-    const i=poly(12,42,15);
-    addPoly(svg,i,{stroke:'#d4a820','stroke-width':'0.7',opacity:'0.45'});
-    addCompleteGraph(svg,i,'#f5d050','0.47','0.5');
-    addStar(svg,12,42,7,15,{fill:'rgba(255,205,20,0.12)',stroke:'#ffe870','stroke-width':'0.9'});
-
-    /* innermost triangle trio */
-    for(let r=0;r<3;r++)
-      addStar(svg,3,42,5,r*30+15,{fill:'none',stroke:'#ffd040','stroke-width':'0.7',opacity:'0.5'});
-
-    addDots(svg,o,2.4,'#f8d060','0.72');
-    addDots(svg,i,1.6,'#ffe878','0.6');
-
-    glowCenter(svg,id,28,13,5);
+    add(svg, 'polygon', {points:ptStr(star), fill:'none', stroke:'#D4A824', 'stroke-width':0.8, opacity:0.6});
+    add(svg, 'circle', {r:8, fill:'url(#m5_grad)'});
   })();
 
 })();
