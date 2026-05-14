@@ -3,223 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>華藏月相 ‧ 法界體檢</title>
+    <title>華藏月相 ‧ 極致立體幾何</title>
     <style>
         :root {
-            --bg-deep: #010204; 
-            --gold: #f3e5ab; 
-            --solid-gold: #d4af37; 
-            --cyan: #8ba89c;
+            --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c;
         }
-        * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; outline: none; }
         body { 
-            background: var(--bg-deep); color: #d0d0d0; 
-            font-family: "PingFang TC", "Microsoft JhengHei", serif;
-            overflow: hidden; touch-action: none; width: 100vw; height: 100dvh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: var(--bg); color: #fff; margin: 0; overflow: hidden;
+            font-family: "PingFang TC", serif; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; height: 100dvh;
         }
-
-        /* 陣法容器與發光濾鏡 */
-        #mandala-container {
-            position: relative;
-            width: 350px; height: 350px;
-            display: flex; justify-content: center; align-items: center;
-            filter: drop-shadow(0 0 15px rgba(139, 168, 156, 0.3)); /* 預設琉璃光 */
-            transition: filter 2s ease, transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
+        #stage { width: 100vw; height: 60vh; position: relative; }
+        svg { width: 100%; height: 100%; overflow: visible; }
         
-        /* 陣法緩慢自轉 */
-        #mandala-svg {
-            width: 100%; height: 100%;
-            animation: slowSpin 60s linear infinite;
-        }
-        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
-
-        /* 文字與鼓勵面板 */
-        #text-panel {
-            margin-top: 40px; text-align: center; opacity: 0;
-            transition: opacity 2s ease;
-        }
-        .tier-title { font-size: 1.4rem; color: var(--gold); letter-spacing: 4px; margin-bottom: 12px; }
-        .tier-desc { font-size: 0.9rem; color: var(--cyan); line-height: 1.8; max-width: 80%; margin: 0 auto; letter-spacing: 1px; }
+        /* 文字面板：參考您圖中的極簡排版 */
+        #ui { text-align: center; z-index: 10; pointer-events: none; }
+        .title { font-size: 1.6rem; color: var(--gold); letter-spacing: 8px; margin-bottom: 10px; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        .desc { font-size: 0.85rem; color: var(--cyan); line-height: 2; max-width: 280px; letter-spacing: 2px; opacity: 0; transition: 2s; }
         
-        /* 分數暗碼 (行者平時不需太在意，但作為體檢依據) */
-        .score-code { font-size: 0.7rem; color: #444; margin-top: 15px; letter-spacing: 2px; }
-
-        /* 大迴向按鈕 */
-        #dedicate-btn {
-            margin-top: 40px; padding: 12px 36px;
-            background: transparent; border: 1px solid var(--cyan);
-            color: var(--cyan); font-size: 1.1rem; letter-spacing: 5px;
-            border-radius: 4px; opacity: 0; cursor: pointer;
-            transition: all 0.5s ease;
+        .btn-wrap { margin-top: 30px; opacity: 0; transition: 1s; pointer-events: auto; }
+        .btn {
+            background: transparent; border: 1px solid var(--solid); color: var(--gold);
+            padding: 10px 40px; font-size: 1rem; cursor: pointer; letter-spacing: 4px;
+            transition: 0.3s;
         }
-        #dedicate-btn.show { opacity: 1; }
-        #dedicate-btn:active { background: rgba(139, 168, 156, 0.2); transform: scale(0.98); }
+        .btn:hover { background: rgba(212,175,55,0.15); box-shadow: 0 0 20px var(--solid); }
 
-        /* 大迴向解體特效 (動態加入) */
-        .particle {
-            position: absolute; border-radius: 50%;
-            transition: transform 2s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 2s ease-out;
-        }
+        /* 輝光濾鏡定義 */
+        .glow-node { filter: drop-shadow(0 0 3px var(--solid)); }
     </style>
 </head>
 <body>
 
-    <div id="mandala-container">
-        <svg id="mandala-svg" viewBox="-200 -200 400 400"></svg>
-    </div>
+<div id="stage">
+    <svg id="m-svg" viewBox="-250 -250 500 500">
+        <defs>
+            <filter id="f-glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+            <radialGradient id="grad-core" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+            </radialGradient>
+        </defs>
+        <g id="g-world"></g>
+    </svg>
+</div>
 
-    <div id="text-panel">
-        <div id="tier-title" class="tier-title">讀取中...</div>
-        <div id="tier-desc" class="tier-desc">正在凝結當月法界清淨數據</div>
-        <div id="score-code" class="score-code"></div>
+<div id="ui">
+    <div id="t-main" class="title">法界體檢中</div>
+    <div id="t-desc" class="desc"></div>
+    <div class="btn-wrap" id="b-wrap">
+        <button class="btn" onclick="dedicate()">大迴向</button>
     </div>
-
-    <button id="dedicate-btn" onclick="triggerDedication()">大迴向</button>
+</div>
 
 <script>
-    // ══════════════════════════════════════════
-    // 1. 無 Bug 分數讀取與境界判定
-    // ══════════════════════════════════════════
-    let db = JSON.parse(localStorage.getItem('PX_V15.0'));
-    // 防呆：若無紀錄則預設為 0 分，確保絕對無 Bug
-    let points = (db && db.lunar && typeof db.lunar.points === 'number') ? db.lunar.points : 0; 
-    
-    // 測試用：您可以取消註解下一行來隨意測試不同分數的畫面
-    // points = 350; 
+    const db = JSON.parse(localStorage.getItem('PX_V15.0')) || { lunar: { points: 0 } };
+    const points = db.lunar.points || 0; 
+    // points = 380; // 測試用分數
 
-    let tierConfig = {};
-    if (points <= 50) {
-        tierConfig = {
-            title: "【 微塵發心 】",
-            desc: "一稱南無佛，皆已成佛道。縱使塵勞牽絆，您本月所發的一念清淨，已在法界種下不滅的金剛種子。",
-            color: "#8ba89c", shadow: "drop-shadow(0 0 10px rgba(139,168,156,0.4))", speed: 80
-        };
-    } else if (points <= 250) {
-        tierConfig = {
-            title: "【 星軌交織 】",
-            desc: "步步生蓮，念念相續。您這個月的行持，已在虛空中交織出堅固的菩提星軌。無形之光，正照亮前方的道路。",
-            color: "#f3e5ab", shadow: "drop-shadow(0 0 20px rgba(243,229,171,0.6))", speed: 50
-        };
-    } else {
-        tierConfig = {
-            title: "【 大千光藏 】",
-            desc: "願海無涯，悲智雙運。您本月的精進已化作莊嚴法相，震動大千。此等無漏功德，盡數迴向無上菩提。",
-            color: "#d4af37", shadow: "drop-shadow(0 0 35px rgba(212,175,55,0.9))", speed: 30
-        };
-    }
+    const world = document.getElementById('g-world');
+    let angleX = 0, angleY = 0;
 
     // ══════════════════════════════════════════
-    // 2. 極致 SVG 動態數學生成 (純參數化)
+    // 3D 幾何生成演算法 (Metatron 變體)
     // ══════════════════════════════════════════
-    function generateMandala(score, config) {
-        const svg = document.getElementById('mandala-svg');
-        const container = document.getElementById('mandala-container');
-        
-        // 分數越高，頂點越多 (基礎 3 頂點，最高可達 36 頂點，營造極致繁複感)
-        let nodes = Math.min(36, Math.max(3, Math.floor(score / 12) + 3)); 
-        let layers = Math.min(4, Math.floor(score / 80) + 1); // 陣法層數
-        
-        let html = `<defs>
-            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="${config.color}" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="${config.color}" stop-opacity="0"/>
-            </radialGradient>
-        </defs>`;
+    function initGeometry() {
+        const nodes = [];
+        // 分數越高，幾何層次與密度越高
+        const layers = Math.min(6, Math.floor(points / 60) + 2); 
+        const sideCount = Math.min(12, Math.floor(points / 40) + 3);
 
-        // 中心能量球
-        html += `<circle cx="0" cy="0" r="${5 + layers*2}" fill="url(#glow)" />`;
-
-        // 數學生成幾何線條
         for (let l = 1; l <= layers; l++) {
-            let radius = l * (150 / layers); // 每層的半徑擴張
-            let pointsArr = [];
-            
-            // 計算此層所有頂點座標
-            for (let i = 0; i < nodes; i++) {
-                let angle = (i / nodes) * Math.PI * 2 + (l * 0.5); // 加上 l*0.5 讓層與層之間產生錯位旋轉
-                let x = Math.cos(angle) * radius;
-                let y = Math.sin(angle) * radius;
-                pointsArr.push({x, y});
-                
-                // 畫出頂點微光
-                html += `<circle cx="${x}" cy="${y}" r="2" fill="${config.color}" opacity="0.8"/>`;
-            }
-
-            // 頂點互相連線 (因陀羅網交織演算法)
-            for (let i = 0; i < nodes; i++) {
-                // 與相鄰點連線
-                let next = (i + 1) % nodes;
-                html += `<line x1="${pointsArr[i].x}" y1="${pointsArr[i].y}" x2="${pointsArr[next].x}" y2="${pointsArr[next].y}" stroke="${config.color}" stroke-width="0.5" opacity="0.6"/>`;
-                
-                // 若為高階陣法，增加跨點連線產生立體星芒感
-                if (layers > 1) {
-                    let starNext = (i + Math.floor(nodes / 3)) % nodes;
-                    html += `<line x1="${pointsArr[i].x}" y1="${pointsArr[i].y}" x2="${pointsArr[starNext].x}" y2="${pointsArr[starNext].y}" stroke="${config.color}" stroke-width="0.2" opacity="0.4"/>`;
-                }
-                
-                // 若有上一層，與內層連線產生 3D 透視感
-                if (l > 1) {
-                    let prevRadius = (l - 1) * (150 / layers);
-                    let prevAngle = (i / nodes) * Math.PI * 2 + ((l-1) * 0.5);
-                    let px = Math.cos(prevAngle) * prevRadius;
-                    let py = Math.sin(prevAngle) * prevRadius;
-                    html += `<line x1="${pointsArr[i].x}" y1="${pointsArr[i].y}" x2="${px}" y2="${py}" stroke="#8ba89c" stroke-width="0.3" opacity="0.3"/>`;
-                }
+            const r = l * 35;
+            for (let i = 0; i < sideCount; i++) {
+                const phi = (i / sideCount) * Math.PI * 2;
+                // 加入 Z 軸位移，營造 3D 體積感
+                const z = (l % 2 === 0 ? 1 : -1) * (l * 10);
+                nodes.push({
+                    x: Math.cos(phi) * r,
+                    y: Math.sin(phi) * r,
+                    z: z,
+                    id: `${l}-${i}`
+                });
             }
         }
+        return nodes;
+    }
+
+    const nodeList = initGeometry();
+
+    function render() {
+        angleY += 0.005; // 緩慢自轉
+        angleX += 0.002;
         
-        svg.innerHTML = html;
-        svg.style.animationDuration = config.speed + "s";
-        container.style.filter = config.shadow;
+        let html = '';
+        const projected = nodeList.map(n => {
+            // 3D 旋轉矩陣
+            let x = n.x, y = n.y, z = n.z;
+            // Y 軸旋轉
+            let x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
+            let z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
+            // X 軸旋轉
+            let y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
+            let z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+            
+            const scale = 400 / (400 + z2); // 透視縮放
+            return { x: x1 * scale, y: y2 * scale, z: z2, scale: scale };
+        });
+
+        // 1. 繪製因陀羅網連線 (立體交織)
+        projected.forEach((p, i) => {
+            projected.forEach((p2, j) => {
+                if (i >= j) return;
+                const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                // 限制連線距離，產生精密的網格感而非混亂
+                if (dist < 80 + (points/5)) { 
+                    const op = Math.max(0, 0.4 - dist/200);
+                    html += `<line x1="${p.x}" y1="${p.y}" x2="${p2.x}" y2="${p2.y}" stroke="${points > 200 ? '#f3e5ab' : '#8ba89c'}" stroke-width="${0.3 * p.scale}" opacity="${op}"/>`;
+                }
+            });
+        });
+
+        // 2. 繪製能量節點 (亮燈特效)
+        projected.forEach(p => {
+            const r = 1.5 * p.scale;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#fff" class="glow-node" opacity="${0.8 + Math.sin(Date.now()/500)*0.2}"/>`;
+            if (points > 300) { // 高分者額外獲得節點輝光
+                html += `<circle cx="${p.x}" cy="${p.y}" r="${r*3}" fill="url(#grad-core)" opacity="0.3"/>`;
+            }
+        });
+
+        world.innerHTML = html;
+        requestAnimationFrame(render);
     }
 
     // ══════════════════════════════════════════
-    // 3. 畫面初始化與動畫進場
+    // UI 進場與文案
     // ══════════════════════════════════════════
-    window.onload = () => {
-        generateMandala(points, tierConfig);
-        
-        // 延遲淡入文案，保持莊嚴感
+    function initUI() {
+        const tMain = document.getElementById('t-main');
+        const tDesc = document.getElementById('t-desc');
+        const bWrap = document.getElementById('b-wrap');
+
+        let title = "微塵清淨", desc = "一念初發，法界已種金剛種。";
+        if (points > 150) { title = "星輝交感"; desc = "相續不斷，願力如星軌交織。"; }
+        if (points > 350) { title = "大千莊嚴"; desc = "悲智雙運，化作無盡幾何法界。"; }
+
         setTimeout(() => {
-            document.getElementById('tier-title').innerText = tierConfig.title;
-            document.getElementById('tier-desc').innerText = tierConfig.desc;
-            document.getElementById('score-code').innerText = `Matrix Phase: ${points}`;
-            document.getElementById('text-panel').style.opacity = 1;
-            
-            // 文案出現後再顯示大迴向按鈕
-            setTimeout(() => {
-                document.getElementById('dedicate-btn').classList.add('show');
-            }, 1500);
+            tMain.innerText = title;
+            tDesc.innerText = desc;
+            tDesc.style.opacity = 1;
+            setTimeout(() => bWrap.style.opacity = 1, 1500);
         }, 1000);
-    };
+    }
 
-    // ══════════════════════════════════════════
-    // 4. 大迴向：解體歸零邏輯 (先留空位，確認 SVG 美感後補上特效)
-    // ══════════════════════════════════════════
-    function triggerDedication() {
-        // 隱藏 UI
-        document.getElementById('text-panel').style.opacity = 0;
-        document.getElementById('dedicate-btn').classList.remove('show');
-        
-        // TODO: 這裡將加入 SVG 陣法解體為金色微塵的震撼動畫
-        alert("大迴向特效準備中...");
+    render();
+    initUI();
 
-        // 無 Bug 歸零邏輯 (測試時可先隱藏)
-        /*
-        if (db && db.lunar) {
-            db.lunar.points = 0;
-            db.lunar.dailyFlags = {};
-            db.lunar.monthlyFlags = {};
-            // 更新為下個月
-            let today = new Date();
-            today.setMonth(today.getMonth() + 1);
-            db.lunar.month = today.toISOString().slice(0, 7);
-            localStorage.setItem('PX_V15.0', JSON.stringify(db));
-        }
-        setTimeout(() => { window.location.href = 'index.html'; }, 3000);
-        */
+    function dedicate() {
+        // 大迴向聲光特效與歸零邏輯
+        document.body.style.transition = '3s';
+        document.body.style.background = '#fff'; // 瞬間白化（大破）
+        setTimeout(() => {
+            // 執行數據歸零 (與主系統聯動)
+            if (db.lunar) {
+                db.lunar.points = 0;
+                db.lunar.dailyFlags = {};
+                db.lunar.month = new Date().toISOString().slice(0,7);
+                localStorage.setItem('PX_V15.0', JSON.stringify(db));
+            }
+            window.location.href = 'index.html';
+        }, 2000);
     }
 </script>
 </body>
