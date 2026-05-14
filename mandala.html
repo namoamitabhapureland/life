@@ -3,181 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>華藏月相 ‧ 極致立體幾何</title>
+    <title>華藏月相 ‧ 法界體檢</title>
     <style>
-        :root {
-            --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c;
-        }
+        :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
         body { 
-            background: var(--bg); color: #fff; margin: 0; overflow: hidden;
+            background: var(--bg); margin: 0; overflow: hidden;
             font-family: "PingFang TC", serif; display: flex; flex-direction: column;
             justify-content: center; align-items: center; height: 100dvh;
         }
-        #stage { width: 100vw; height: 60vh; position: relative; }
-        svg { width: 100%; height: 100%; overflow: visible; }
+        #canvas-wrap { width: 100vw; height: 70vh; position: relative; }
+        svg { width: 100%; height: 100%; filter: drop-shadow(0 0 12px rgba(212,175,55,0.3)); }
         
-        /* 文字面板：參考您圖中的極簡排版 */
-        #ui { text-align: center; z-index: 10; pointer-events: none; }
-        .title { font-size: 1.6rem; color: var(--gold); letter-spacing: 8px; margin-bottom: 10px; text-shadow: 0 0 10px rgba(212,175,55,0.5); }
-        .desc { font-size: 0.85rem; color: var(--cyan); line-height: 2; max-width: 280px; letter-spacing: 2px; opacity: 0; transition: 2s; }
-        
-        .btn-wrap { margin-top: 30px; opacity: 0; transition: 1s; pointer-events: auto; }
-        .btn {
-            background: transparent; border: 1px solid var(--solid); color: var(--gold);
-            padding: 10px 40px; font-size: 1rem; cursor: pointer; letter-spacing: 4px;
-            transition: 0.3s;
+        /* 標題美學：參考圖片中的精密排版 */
+        .ui-panel { text-align: center; z-index: 10; margin-top: -50px; }
+        .main-title { 
+            font-size: 1.5rem; color: var(--gold); letter-spacing: 12px; 
+            margin-bottom: 20px; text-shadow: 0 0 20px rgba(212,175,55,0.6);
+            animation: breath 4s ease-in-out infinite;
         }
-        .btn:hover { background: rgba(212,175,55,0.15); box-shadow: 0 0 20px var(--solid); }
+        @keyframes breath { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
-        /* 輝光濾鏡定義 */
-        .glow-node { filter: drop-shadow(0 0 3px var(--solid)); }
+        .scan-line {
+            width: 200px; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            margin: 0 auto; position: relative; overflow: hidden;
+        }
+        .scan-line::after {
+            content: ''; position: absolute; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan { 100% { left: 100%; } }
+
+        /* 幾何旋轉動畫 */
+        .rot-slow { transform-origin: center; animation: rot 120s linear infinite; }
+        .rot-fast { transform-origin: center; animation: rot 60s linear infinite reverse; }
+        @keyframes rot { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="stage">
-    <svg id="m-svg" viewBox="-250 -250 500 500">
+<div id="canvas-wrap">
+    <svg id="m-svg" viewBox="-200 -200 400 400">
         <defs>
-            <filter id="f-glow">
-                <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
-            <radialGradient id="grad-core" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#fff" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
-            </radialGradient>
         </defs>
-        <g id="g-world"></g>
+        <g class="rot-slow" opacity="0.2">
+            <circle cx="0" cy="0" r="180" fill="none" stroke="var(--cyan)" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <circle cx="0" cy="0" r="150" fill="none" stroke="var(--cyan)" stroke-width="0.3"/>
+        </g>
+        <g id="mandala-core" class="rot-fast"></g>
     </svg>
 </div>
 
-<div id="ui">
-    <div id="t-main" class="title">法界體檢中</div>
-    <div id="t-desc" class="desc"></div>
-    <div class="btn-wrap" id="b-wrap">
-        <button class="btn" onclick="dedicate()">大迴向</button>
-    </div>
+<div class="ui-panel">
+    <div class="main-title">法界體檢中</div>
+    <div class="scan-line"></div>
+    <p style="color: var(--cyan); font-size: 0.8rem; letter-spacing: 4px; margin-top: 15px; opacity: 0.7;">
+        正在凝結當月清淨資糧...
+    </p>
 </div>
 
 <script>
-    const db = JSON.parse(localStorage.getItem('PX_V15.0')) || { lunar: { points: 400 } };
+    // 讀取分數 (防 Bug 預設 0)
+    const db = JSON.parse(localStorage.getItem('PX_V15.0')) || { lunar: { points: 0 } };
     const points = db.lunar.points || 0; 
-    // points = 380; // 測試用分數
 
-    const world = document.getElementById('g-world');
-    let angleX = 0, angleY = 0;
-
-    // ══════════════════════════════════════════
-    // 3D 幾何生成演算法 (Metatron 變體)
-    // ══════════════════════════════════════════
-    function initGeometry() {
-        const nodes = [];
-        // 分數越高，幾何層次與密度越高
-        const layers = Math.min(6, Math.floor(points / 60) + 2); 
-        const sideCount = Math.min(12, Math.floor(points / 40) + 3);
-
-        for (let l = 1; l <= layers; l++) {
-            const r = l * 35;
-            for (let i = 0; i < sideCount; i++) {
-                const phi = (i / sideCount) * Math.PI * 2;
-                // 加入 Z 軸位移，營造 3D 體積感
-                const z = (l % 2 === 0 ? 1 : -1) * (l * 10);
-                nodes.push({
-                    x: Math.cos(phi) * r,
-                    y: Math.sin(phi) * r,
-                    z: z,
-                    id: `${l}-${i}`
-                });
-            }
-        }
-        return nodes;
-    }
-
-    const nodeList = initGeometry();
-
-    function render() {
-        angleY += 0.005; // 緩慢自轉
-        angleX += 0.002;
-        
+    function buildMandala() {
+        const core = document.getElementById('mandala-core');
         let html = '';
-        const projected = nodeList.map(n => {
-            // 3D 旋轉矩陣
-            let x = n.x, y = n.y, z = n.z;
-            // Y 軸旋轉
-            let x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
-            let z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
-            // X 軸旋轉
-            let y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
-            let z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
+        
+        // 根據圖片美學：生成重疊的圓（生命之花/因陀羅網變體）
+        // 分數越高，圓的交織數量與精密細節越多
+        const count = Math.min(24, Math.floor(points / 20) + 6); 
+        const radius = 80 + (points / 10);
+
+        for (let i = 0; i < count; i++) {
+            let angle = (i / count) * Math.PI * 2;
+            let x = Math.cos(angle) * (radius * 0.5);
+            let y = Math.sin(angle) * (radius * 0.5);
             
-            const scale = 400 / (400 + z2); // 透視縮放
-            return { x: x1 * scale, y: y2 * scale, z: z2, scale: scale };
-        });
+            // 繪製交織圓環
+            html += `<circle cx="${x}" cy="${y}" r="${radius}" fill="none" stroke="${points > 200 ? 'var(--solid)' : 'var(--cyan)'}" stroke-width="0.4" opacity="0.5"/>`;
+            
+            // 繪製亮燈能量節點（在圓心）
+            html += `<circle cx="${x}" cy="${y}" r="1.5" fill="#fff" filter="url(#glow)">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="${2+Math.random()*2}s" repeatCount="indefinite" />
+            </circle>`;
+        }
 
-        // 1. 繪製因陀羅網連線 (立體交織)
-        projected.forEach((p, i) => {
-            projected.forEach((p2, j) => {
-                if (i >= j) return;
-                const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                // 限制連線距離，產生精密的網格感而非混亂
-                if (dist < 80 + (points/5)) { 
-                    const op = Math.max(0, 0.4 - dist/200);
-                    html += `<line x1="${p.x}" y1="${p.y}" x2="${p2.x}" y2="${p2.y}" stroke="${points > 200 ? '#f3e5ab' : '#8ba89c'}" stroke-width="${0.3 * p.scale}" opacity="${op}"/>`;
-                }
-            });
-        });
+        // 中心法界點
+        html += `<circle cx="0" cy="0" r="3" fill="var(--gold)" filter="url(#glow)"/>`;
+        
+        // 增加放射狀光芒線條
+        for (let i = 0; i < count * 2; i++) {
+            let angle = (i / (count * 2)) * Math.PI * 2;
+            let x2 = Math.cos(angle) * 180;
+            let y2 = Math.sin(angle) * 180;
+            html += `<line x1="0" y1="0" x2="${x2}" y2="${y2}" stroke="var(--gold)" stroke-width="0.2" opacity="0.1" />`;
+        }
 
-        // 2. 繪製能量節點 (亮燈特效)
-        projected.forEach(p => {
-            const r = 1.5 * p.scale;
-            html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#fff" class="glow-node" opacity="${0.8 + Math.sin(Date.now()/500)*0.2}"/>`;
-            if (points > 300) { // 高分者額外獲得節點輝光
-                html += `<circle cx="${p.x}" cy="${p.y}" r="${r*3}" fill="url(#grad-core)" opacity="0.3"/>`;
-            }
-        });
-
-        world.innerHTML = html;
-        requestAnimationFrame(render);
+        core.innerHTML = html;
     }
 
-    // ══════════════════════════════════════════
-    // UI 進場與文案
-    // ══════════════════════════════════════════
-    function initUI() {
-        const tMain = document.getElementById('t-main');
-        const tDesc = document.getElementById('t-desc');
-        const bWrap = document.getElementById('b-wrap');
-
-        let title = "微塵清淨", desc = "一念初發，法界已種金剛種。";
-        if (points > 150) { title = "星輝交感"; desc = "相續不斷，願力如星軌交織。"; }
-        if (points > 350) { title = "大千莊嚴"; desc = "悲智雙運，化作無盡幾何法界。"; }
-
-        setTimeout(() => {
-            tMain.innerText = title;
-            tDesc.innerText = desc;
-            tDesc.style.opacity = 1;
-            setTimeout(() => bWrap.style.opacity = 1, 1500);
-        }, 1000);
-    }
-
-    render();
-    initUI();
-
-    function dedicate() {
-        // 大迴向聲光特效與歸零邏輯
-        document.body.style.transition = '3s';
-        document.body.style.background = '#fff'; // 瞬間白化（大破）
-        setTimeout(() => {
-            // 執行數據歸零 (與主系統聯動)
-            if (db.lunar) {
-                db.lunar.points = 0;
-                db.lunar.dailyFlags = {};
-                db.lunar.month = new Date().toISOString().slice(0,7);
-                localStorage.setItem('PX_V15.0', JSON.stringify(db));
-            }
-            window.location.href = 'index.html';
-        }, 2000);
-    }
+    buildMandala();
 </script>
 </body>
 </html>
