@@ -1,151 +1,220 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>華藏月相 ‧ 資糧結晶演化 (全新幾何)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>華藏月相 ‧ 互動演化測試</title>
     <style>
-        body { 
-            background: #010204; color: #fff; margin: 0; padding: 40px;
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;
-            font-family: "PingFang TC", serif;
+        :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
+        body { margin: 0; background: var(--bg); overflow: hidden; font-family: "PingFang TC", serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
+        
+        /* 階段一：互動區 */
+        #interaction-zone { position: absolute; z-index: 50; display: flex; flex-direction: column; align-items: center; transition: opacity 0.5s; }
+        .hint-text { color: var(--cyan); letter-spacing: 4px; margin-bottom: 40px; font-size: 0.9rem; text-shadow: 0 0 10px rgba(139,168,156,0.5); }
+        
+        /* 合十按鈕與十字準星 */
+        #hands-btn { 
+            position: relative; width: 120px; height: 120px; border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.15), rgba(10,8,5,0.95));
+            border: 1px solid rgba(212,175,55,0.5); display: flex; justify-content: center; align-items: center;
+            cursor: pointer; box-shadow: 0 0 20px rgba(212,175,55,0.2); transition: all 0.2s;
         }
-        .svg-container {
-            width: 280px; height: 320px; position: relative;
-            display: flex; flex-direction: column; align-items: center;
-            background: rgba(255,255,255,0.02); border-radius: 12px; 
-            border: 1px solid rgba(139,168,156,0.1); padding-top: 20px;
+        #hands-btn:active { transform: scale(0.95); box-shadow: 0 0 40px rgba(212,175,55,0.6); }
+        
+        /* 十字準星 (透過 JS 控制位置) */
+        #crosshair {
+            position: absolute; width: 40px; height: 40px; pointer-events: none;
+            display: flex; justify-content: center; align-items: center;
+            filter: drop-shadow(0 0 5px var(--cyan));
         }
-        .label { margin-top: 25px; color: #8ba89c; letter-spacing: 5px; font-size: 0.9rem; font-weight: bold; }
-        .desc { font-size: 0.75rem; color: #666; margin-top: 8px; letter-spacing: 2px; }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: var(--cyan); }
+        #crosshair::before { width: 20px; height: 1.5px; } /* 橫線 */
+        #crosshair::after { width: 1.5px; height: 20px; } /* 直線 */
+        #crosshair .bracket { position: absolute; width: 100%; height: 100%; border: 1px solid rgba(139,168,156,0.4); border-radius: 50%; }
+
+        /* 階段二/三：曼陀羅與數字區 */
+        #mandala-zone { position: absolute; z-index: 40; display: flex; flex-direction: column; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        
+        #svg-container { width: 320px; height: 320px; position: relative; transition: transform 0.1s; filter: drop-shadow(0 0 15px rgba(212,175,55,0.3)); }
+        #svg-container svg { width: 100%; height: 100%; position: absolute; inset: 0; }
+        
+        /* 數字與評語 */
+        #number-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5rem; font-weight: bold; font-family: monospace; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px var(--solid); z-index: 20; }
+        #commentary { margin-top: 20px; font-size: 0.95rem; color: var(--gold); letter-spacing: 3px; text-align: center; line-height: 2; opacity: 0; transition: opacity 2s; text-shadow: 0 0 10px rgba(212,175,55,0.4); }
     </style>
 </head>
 <body>
 
-    <svg style="width:0; height:0; position:absolute;">
-        <defs>
-            <radialGradient id="g-cyan" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#8ba89c" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#8ba89c" stop-opacity="0"/>
-            </radialGradient>
-            <radialGradient id="g-gold" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#f3e5ab" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
-            </radialGradient>
-            <radialGradient id="g-solid" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#d4af37" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
-            </radialGradient>
-            <filter id="glow-light"><feGaussianBlur stdDeviation="2.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-            <filter id="glow-heavy"><feGaussianBlur stdDeviation="4" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-        </defs>
-    </svg>
+<div id="svg-lib" style="display:none;">
+    <svg id="svg-1" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="55" fill="rgba(139,168,156,0.1)"/><g stroke="#8ba89c" stroke-width="1.2" fill="rgba(139,168,156,0.05)"><polygon points="0,-45 45,0 0,45 -45,0" stroke-width="2"/><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(139,168,156,0.2)"/><line x1="0" y1="-65" x2="0" y2="65" /><line x1="-65" y1="0" x2="65" y2="0" /><circle cx="0" cy="0" r="65" fill="none" stroke-width="0.8"/></g></svg>
+    <svg id="svg-2" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="70" fill="rgba(243,229,171,0.1)"/><g stroke="#8ba89c" stroke-width="1" fill="none"><rect x="-45" y="-45" width="90" height="90" /><rect x="-45" y="-45" width="90" height="90" transform="rotate(45)" /><line x1="-45" y1="-45" x2="45" y2="45" /><line x1="-45" y1="45" x2="45" y2="-45" /><line x1="0" y1="-63.6" x2="0" y2="63.6" /><line x1="-63.6" y1="0" x2="63.6" y2="0" /></g><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(243,229,171,0.2)" stroke="#d4af37" stroke-width="1"/></svg>
+    <svg id="svg-3" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="80" fill="rgba(243,229,171,0.1)"/><g stroke="#f3e5ab" stroke-width="1.2" fill="none"><polygon points="0,-75 65,37.5 -65,37.5" /><polygon points="0,75 65,-37.5 -65,-37.5" /><polygon points="-75,0 37.5,65 37.5,-65" /><polygon points="75,0 -37.5,65 -37.5,-65" /></g><circle cx="0" cy="0" r="75" fill="none" stroke="#f3e5ab" stroke-width="0.8"/><circle cx="0" cy="0" r="37.5" fill="none" stroke="#d4af37" stroke-width="1.5"/></svg>
+    <svg id="svg-4" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="95" fill="rgba(212,175,55,0.1)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" /><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" transform="rotate(30)" /></g><g stroke="#f3e5ab" stroke-width="0.8" fill="none"><line x1="0" y1="0" x2="0" y2="-85" /><line x1="0" y1="0" x2="0" y2="85" /><line x1="0" y1="0" x2="73.6" y2="-42.5" /><line x1="0" y1="0" x2="-73.6" y2="42.5" /><line x1="0" y1="0" x2="73.6" y2="42.5" /><line x1="0" y1="0" x2="-73.6" y2="-42.5" /><polygon points="0,-70 60.6,35 -60.6,35" stroke="#fff" stroke-width="1.5"/><polygon points="0,70 60.6,-35 -60.6,-35" stroke="#fff" stroke-width="1.5"/></g></svg>
+    <svg id="svg-5" viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 15px rgba(212,175,55,0.8));"><circle cx="0" cy="0" r="105" fill="rgba(212,175,55,0.15)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-105 74.2,-74.2 105,0 74.2,74.2 0,105 -74.2,74.2 -105,0 -74.2,-74.2" /><polygon points="0,-105 105,0 0,105 -105,0" /><polygon points="74.2,-74.2 74.2,74.2 -74.2,74.2 -74.2,-74.2" /></g><g stroke="#fff" stroke-width="1.2" fill="none"><polygon points="0,-50 35.4,-35.4 50,0 35.4,35.4 0,50 -35.4,35.4 -50,0 -35.4,-35.4" stroke-width="2"/><line x1="0" y1="-105" x2="0" y2="105" /><line x1="-105" y1="0" x2="105" y2="0" /><line x1="-74.2" y1="-74.2" x2="74.2" y2="74.2" /><line x1="-74.2" y1="74.2" x2="74.2" y2="-74.2" /></g></svg>
+</div>
 
-    <div class="svg-container">
-        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 10px rgba(139,168,156,0.3));">
-            <circle cx="0" cy="0" r="55" fill="url(#g-cyan)"/>
-            <g stroke="#8ba89c" stroke-width="1.2" fill="rgba(139,168,156,0.05)">
-                <polygon points="0,-45 45,0 0,45 -45,0" stroke-width="2"/>
-                <polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(139,168,156,0.2)"/>
-                <line x1="0" y1="-65" x2="0" y2="65" />
-                <line x1="-65" y1="0" x2="65" y2="0" />
-                <circle cx="0" cy="0" r="65" fill="none" stroke-width="0.8"/>
-            </g>
-            <text x="0" y="120" text-anchor="middle" fill="#8ba89c" font-size="22" font-family="monospace" letter-spacing="4">045</text>
-        </svg>
-        <div class="label">【 初凝 ‧ 鑽子 】</div>
-        <div class="desc" style="color: #8ba89c;">十字交會 ‧ 資糧初結</div>
+<div id="interaction-zone">
+    <div id="hint" class="hint-text">當十字歸於掌心，按下合十啟動業鏡</div>
+    <div style="position: relative; width: 250px; height: 250px; display: flex; justify-content: center; align-items: center;">
+        <div id="hands-btn" onclick="checkTiming()">
+            <svg viewBox="0 0 200 320" style="width: 50px; height: 80px; filter: drop-shadow(0 0 5px rgba(212,175,55,0.6));">
+                <path d="M 100 25 C 97 18, 93 20, 92 30 L 62 165 C 55 190, 40 230, 10 245 L 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275 L 190 245 C 160 230, 145 190, 138 165 L 108 30 C 107 20, 103 18, 100 25 Z" fill="rgba(243, 229, 171, 0.15)"/>
+                <path d="M 138 165 L 108 30 C 107 20, 103 18, 100 25 C 97 18, 93 20, 92 30 L 62 165 M 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linejoin="round"/>
+                <path d="M 62 165 C 55 190, 40 230, 10 245" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 138 165 C 145 190, 160 230, 190 245" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 0 240 Q 37.5 265, 75 240" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
+                <path d="M 5 232 Q 41.5 257, 78 232" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
+                <path d="M 200 240 Q 162.5 265, 125 240" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
+                <path d="M 195 232 Q 158.5 257, 122 232" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
+                <path d="M 96 23 C 98 25, 98 32, 94 34" stroke="var(--gold)" stroke-width="3" fill="none"/>
+                <path d="M 104 23 C 102 25, 102 32, 106 34" stroke="var(--gold)" stroke-width="3" fill="none"/>
+                <path d="M 100 25 L 100 160" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" fill="none"/>
+                <path d="M 100 195 L 100 225" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" fill="none"/>
+                <path d="M 136 175 C 125 155, 110 152, 102 155" stroke="var(--gold)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M 63 170 C 80 155, 95 152, 112 158 C 118 160, 120 170, 115 175 C 95 188, 75 198, 63 215" stroke="var(--gold)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+                <path d="M 103 162 C 109 159, 113 161, 113 166 C 109 169, 103 167, 103 162 Z" stroke="var(--gold)" stroke-width="3" fill="none"/>
+                <path d="M 105 182 Q 125 218 138 210" stroke="var(--gold)" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <path d="M 40 260 Q 70 250, 95 230" stroke="rgba(212,175,55,0.7)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M 45 250 Q 70 240, 90 225" stroke="rgba(212,175,55,0.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <path d="M 160 260 Q 130 250, 105 230" stroke="rgba(212,175,55,0.7)" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M 155 250 Q 130 240, 110 225" stroke="rgba(212,175,55,0.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div id="crosshair"><div class="bracket"></div></div>
     </div>
+</div>
 
-    <div class="svg-container">
-        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 15px rgba(243,229,171,0.2));">
-            <circle cx="0" cy="0" r="70" fill="url(#g-gold)" opacity="0.6"/>
-            <g stroke="#8ba89c" stroke-width="1" fill="rgba(139,168,156,0.05)">
-                <rect x="-45" y="-45" width="90" height="90" />
-                <rect x="-45" y="-45" width="90" height="90" transform="rotate(45)" />
-                <line x1="-45" y1="-45" x2="45" y2="45" />
-                <line x1="-45" y1="45" x2="45" y2="-45" />
-                <line x1="0" y1="-63.6" x2="0" y2="63.6" />
-                <line x1="-63.6" y1="0" x2="63.6" y2="0" />
-            </g>
-            <polygon points="0,-25 25,0 0,25 -25,0" fill="#f3e5ab" stroke="#d4af37" stroke-width="1" opacity="0.8"/>
-            <circle cx="0" cy="0" r="4" fill="#fff" />
-            <text x="0" y="120" text-anchor="middle" fill="#8ba89c" font-size="22" font-family="monospace" letter-spacing="4">120</text>
-        </svg>
-        <div class="label" style="color: #a0b8ad;">【 樞紐 ‧ 八陣 】</div>
-        <div class="desc" style="color: #8ba89c;">方正互攝 ‧ 軌跡顯化</div>
-    </div>
+<div id="mandala-zone">
+    <div id="svg-container"></div>
+    <div id="number-core"></div>
+    <div id="commentary"></div>
+</div>
 
-    <div class="svg-container" style="border-color: rgba(243,229,171,0.2);">
-        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 18px rgba(243,229,171,0.4));">
-            <circle cx="0" cy="0" r="80" fill="url(#g-gold)"/>
-            <g stroke="#f3e5ab" stroke-width="1.2" fill="rgba(243,229,171,0.08)">
-                <polygon points="0,-75 65,37.5 -65,37.5" />
-                <polygon points="0,75 65,-37.5 -65,-37.5" />
-                <polygon points="-75,0 37.5,65 37.5,-65" />
-                <polygon points="75,0 -37.5,65 -37.5,-65" />
-            </g>
-            <circle cx="0" cy="0" r="75" fill="none" stroke="#f3e5ab" stroke-width="0.8" opacity="0.6"/>
-            <circle cx="0" cy="0" r="37.5" fill="none" stroke="#d4af37" stroke-width="1.5"/>
-            <circle cx="0" cy="0" r="12" fill="#fff" filter="url(#glow-light)"/>
-            <text x="0" y="120" text-anchor="middle" fill="#f3e5ab" font-size="24" font-family="monospace" letter-spacing="4">240</text>
-        </svg>
-        <div class="label" style="color:#f3e5ab;">【 輪轉 ‧ 十二角 】</div>
-        <div class="desc" style="color: #f3e5ab;">三角嵌套 ‧ 光輪常轉</div>
-    </div>
+<script>
+    // ══════════════════════════════════════════
+    // 第一階段：十字準星游移與判定
+    // ══════════════════════════════════════════
+    const crosshair = document.getElementById('crosshair');
+    const hint = document.getElementById('hint');
+    let posX = 0, posY = 0;
+    let isGameActive = true;
+    let animationId;
 
-        <div class="svg-container" style="border-color: rgba(212,175,55,0.3);">
-        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 25px rgba(212,175,55,0.5));">
-            <circle cx="0" cy="0" r="95" fill="url(#g-solid)"/>
+    // 使用 Lissajous 曲線讓十字產生不規則的上下左右游移
+    function animateCrosshair() {
+        if (!isGameActive) return;
+        const t = Date.now() / 400; // 控制移動速度
+        // 游移範圍約半徑 80px 內
+        posX = Math.sin(t) * 90;
+        posY = Math.cos(t * 0.8) * 70;
+        crosshair.style.transform = `translate(${posX}px, ${posY}px)`;
+        animationId = requestAnimationFrame(animateCrosshair);
+    }
+    animateCrosshair();
+
+    function checkTiming() {
+        if (!isGameActive) return;
+        
+        // 判定距離：十字與掌心(0,0)的距離
+        const distance = Math.hypot(posX, posY);
+        
+        if (distance < 25) { // 容錯範圍 25px，對準了！
+            isGameActive = false;
+            cancelAnimationFrame(animationId);
+            crosshair.style.filter = "drop-shadow(0 0 10px var(--solid))";
+            crosshair.style.borderColor = "var(--solid)";
+            hint.innerText = "一念相應，業鏡啟動";
+            hint.style.color = "var(--solid)";
             
-            <g stroke="#d4af37" stroke-width="1.5" fill="rgba(212,175,55,0.05)">
-                <polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" />
-                <polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" transform="rotate(30)" />
-            </g>
+            setTimeout(startSuspensePhase, 800);
+        } else { // 沒對準
+            hint.innerText = "心念未定，請重新對焦";
+            hint.style.color = "#ff4d4d";
+            crosshair.style.filter = "drop-shadow(0 0 10px #ff4d4d)";
+            setTimeout(() => {
+                hint.innerText = "當十字歸於掌心，按下合十啟動業鏡";
+                hint.style.color = "var(--cyan)";
+                crosshair.style.filter = "drop-shadow(0 0 5px var(--cyan))";
+            }, 800);
+        }
+    }
+
+    // ══════════════════════════════════════════
+    // 第二階段：懸念瘋狂閃爍
+    // ══════════════════════════════════════════
+    const svgs = [
+        document.getElementById('svg-1').outerHTML,
+        document.getElementById('svg-2').outerHTML,
+        document.getElementById('svg-3').outerHTML,
+        document.getElementById('svg-4').outerHTML,
+        document.getElementById('svg-5').outerHTML
+    ];
+
+    function startSuspensePhase() {
+        document.getElementById('interaction-zone').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('interaction-zone').style.display = 'none';
+            document.getElementById('mandala-zone').style.opacity = '1';
+            runSuspenseRoll();
+        }, 500);
+    }
+
+    function runSuspenseRoll() {
+        const svgContainer = document.getElementById('svg-container');
+        const numberCore = document.getElementById('number-core');
+        
+        let rollTime = 3500; // 瘋狂閃爍 3.5 秒
+        let startTime = Date.now();
+        
+        let rollInterval = setInterval(() => {
+            let elapsed = Date.now() - startTime;
             
-            <g stroke="#f3e5ab" stroke-width="0.8" fill="none">
-                <line x1="0" y1="0" x2="0" y2="-85" /><line x1="0" y1="0" x2="0" y2="85" />
-                <line x1="0" y1="0" x2="73.6" y2="-42.5" /><line x1="0" y1="0" x2="-73.6" y2="42.5" />
-                <line x1="0" y1="0" x2="73.6" y2="42.5" /><line x1="0" y1="0" x2="-73.6" y2="-42.5" />
+            if (elapsed >= rollTime) {
+                clearInterval(rollInterval);
+                showFinalResult();
+            } else {
+                // 1. 數字亂跳
+                numberCore.innerText = Math.floor(Math.random() * 500).toString().padStart(3, '0');
                 
-                <polygon points="0,-70 60.6,35 -60.6,35" stroke="#fff" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
-                <polygon points="0,70 60.6,-35 -60.6,-35" stroke="#fff" stroke-width="1.5" fill="rgba(255,255,255,0.1)"/>
-            </g>
-            
-            <circle cx="0" cy="0" r="8" fill="#fff" filter="url(#glow-light)"/>
-            <text x="0" y="125" text-anchor="middle" fill="#d4af37" font-size="26" font-weight="bold" font-family="monospace" letter-spacing="4">360</text>
-        </svg>
-        <div class="label" style="color:#d4af37;">【 寶網 ‧ 六和 】</div>
-        <div class="desc" style="color: #f3e5ab;">內核擴張 ‧ 結成金剛</div>
-    </div>
-
-    <div class="svg-container" style="border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.08); box-shadow: 0 0 30px rgba(212,175,55,0.15);">
-        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 35px rgba(212,175,55,0.8));">
-            <circle cx="0" cy="0" r="105" fill="url(#g-solid)"/>
-            
-            <g stroke="#d4af37" stroke-width="1.5" fill="rgba(212,175,55,0.08)" filter="url(#glow-light)">
-                <polygon points="0,-105 74.2,-74.2 105,0 74.2,74.2 0,105 -74.2,74.2 -105,0 -74.2,-74.2" />
-                <polygon points="0,-105 105,0 0,105 -105,0" />
-                <polygon points="74.2,-74.2 74.2,74.2 -74.2,74.2 -74.2,-74.2" />
-            </g>
-
-            <g stroke="#fff" stroke-width="1.2" fill="none">
-                <polygon points="0,-50 35.4,-35.4 50,0 35.4,35.4 0,50 -35.4,35.4 -50,0 -35.4,-35.4" stroke-width="2" fill="rgba(255,255,255,0.08)"/>
+                // 2. 數字放大縮小、偏移
+                let rScale = 0.8 + Math.random() * 0.7;
+                let rX = (Math.random() - 0.5) * 40;
+                let rY = (Math.random() - 0.5) * 40;
+                numberCore.style.transform = `translate(calc(-50% + ${rX}px), calc(-50% + ${rY}px)) scale(${rScale})`;
                 
-                <line x1="0" y1="-105" x2="0" y2="105" />
-                <line x1="-105" y1="0" x2="105" y2="0" />
-                <line x1="-74.2" y1="-74.2" x2="74.2" y2="74.2" />
-                <line x1="-74.2" y1="74.2" x2="74.2" y2="-74.2" />
-            </g>
-            
-            <circle cx="0" cy="0" r="18" fill="#fff" filter="url(#glow-heavy)"/>
-            <circle cx="0" cy="0" r="6" fill="#d4af37" />
+                // 3. 5張 SVG 圖陣隨機狂閃
+                svgContainer.innerHTML = svgs[Math.floor(Math.random() * 5)];
+                // 讓 SVG 陣法也跟著微縮放與旋轉
+                svgContainer.style.transform = `scale(${0.9 + Math.random() * 0.3}) rotate(${(Math.random()-0.5)*90}deg)`;
+            }
+        }, 100); // 每 0.1 秒閃一次
+    }
 
-            <text x="0" y="130" text-anchor="middle" fill="#fff" font-size="30" font-weight="bold" font-family="monospace" letter-spacing="5" filter="url(#glow-heavy)">450</text>
-        </svg>
-        <div class="label" style="color: #fffce0; font-size: 1rem; text-shadow: 0 0 10px #d4af37;">【 華藏 ‧ 圓滿相 】</div>
-        <div class="desc" style="color: #f3e5ab;">八方貫穿 ‧ 功德無漏</div>
-    </div>
+    // ══════════════════════════════════════════
+    // 第三階段：定相揭曉真相
+    // ══════════════════════════════════════════
+    function showFinalResult() {
+        const svgContainer = document.getElementById('svg-container');
+        const numberCore = document.getElementById('number-core');
+        const commentary = document.getElementById('commentary');
+        
+        // 這裡預設為滿分 450，陣法為第 5 階 (索引 4)
+        const finalScore = 450;
+        const finalTier = 4; 
 
+        // 數字歸位正中央並鎖定
+        numberCore.innerText = finalScore;
+        numberCore.style.transform = `translate(-50%, -50%) scale(1.1)`;
+        numberCore.style.color = "var(--solid)";
+        
+        // 陣法歸位並鎖定
+        svgContainer.innerHTML = svgs[finalTier];
+        svgContainer.style.transform = `scale(1) rotate(0deg)`;
+        
+        // 顯示評語
+        commentary.innerHTML = "【 華藏 ‧ 圓滿相 】<br>八方貫穿，功德無漏。已化現極致金剛法界。";
+        commentary.style.opacity = '1';
+    }
+</script>
 </body>
 </html>
