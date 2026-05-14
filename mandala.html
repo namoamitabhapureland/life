@@ -3,61 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>華藏月相 ‧ 互動演化測試</title>
+    <title>華藏月相 ‧ 第一步：定力樞紐</title>
     <style>
         :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
         body { margin: 0; background: var(--bg); overflow: hidden; font-family: "PingFang TC", serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
         
-        /* 階段一：互動區 */
-        #interaction-zone { position: absolute; z-index: 50; display: flex; flex-direction: column; align-items: center; transition: opacity 0.5s; }
-        .hint-text { color: var(--cyan); letter-spacing: 4px; margin-bottom: 40px; font-size: 0.9rem; text-shadow: 0 0 10px rgba(139,168,156,0.5); }
-        
-        /* 合十按鈕與十字準星 */
-        #hands-btn { 
-            position: relative; width: 120px; height: 120px; border-radius: 50%;
-            background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.15), rgba(10,8,5,0.95));
-            border: 1px solid rgba(212,175,55,0.5); display: flex; justify-content: center; align-items: center;
-            cursor: pointer; box-shadow: 0 0 20px rgba(212,175,55,0.2); transition: all 0.2s;
-        }
-        #hands-btn:active { transform: scale(0.95); box-shadow: 0 0 40px rgba(212,175,55,0.6); }
-        
-        /* 十字準星 (透過 JS 控制位置) */
-        #crosshair {
-            position: absolute; width: 40px; height: 40px; pointer-events: none;
-            display: flex; justify-content: center; align-items: center;
-            filter: drop-shadow(0 0 5px var(--cyan));
-        }
-        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: var(--cyan); }
-        #crosshair::before { width: 20px; height: 1.5px; } /* 橫線 */
-        #crosshair::after { width: 1.5px; height: 20px; } /* 直線 */
-        #crosshair .bracket { position: absolute; width: 100%; height: 100%; border: 1px solid rgba(139,168,156,0.4); border-radius: 50%; }
+        /* 3D 星空畫布 */
+        canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* 階段二/三：曼陀羅與數字區 */
-        #mandala-zone { position: absolute; z-index: 40; display: flex; flex-direction: column; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        /* 互動 UI 區塊 */
+        #ui-layer { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; }
         
-        #svg-container { width: 320px; height: 320px; position: relative; transition: transform 0.1s; filter: drop-shadow(0 0 15px rgba(212,175,55,0.3)); }
-        #svg-container svg { width: 100%; height: 100%; position: absolute; inset: 0; }
+        #hint-text { font-size: 1rem; color: var(--cyan); letter-spacing: 5px; margin-bottom: 50px; text-shadow: 0 0 10px rgba(139,168,156,0.5); transition: color 0.3s; }
+
+        /* 能量圓框與按鈕容器 */
+        .btn-wrapper { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; }
+
+        /* 能量圓框 (彩色與金色切換) */
+        #energy-ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            /* 預設：彩色能量流動 */
+            background: conic-gradient(from 0deg, #ff4d4d, #ffb703, #80ed99, #00e5ff, #d8b4fe, #ff4d4d);
+            animation: spin 3s linear infinite;
+            /* 掏空中心，只留邊框 */
+            -webkit-mask: radial-gradient(transparent 62%, black 63%);
+            mask: radial-gradient(transparent 62%, black 63%);
+            opacity: 0.7; transition: all 0.3s ease;
+        }
         
-        /* 數字與評語 */
-        #number-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5rem; font-weight: bold; font-family: monospace; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px var(--solid); z-index: 20; }
-        #commentary { margin-top: 20px; font-size: 0.95rem; color: var(--gold); letter-spacing: 3px; text-align: center; line-height: 2; opacity: 0; transition: opacity 2s; text-shadow: 0 0 10px rgba(212,175,55,0.4); }
+        /* 金色狀態 */
+        #energy-ring.is-gold {
+            background: conic-gradient(from 0deg, #d4af37, #fff, #f3e5ab, #d4af37, #fff, #d4af37);
+            animation: spin 1s linear infinite; /* 轉更快 */
+            opacity: 1; filter: drop-shadow(0 0 15px var(--solid));
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 透明毛玻璃 浮雕按鈕 */
+        #glass-btn {
+            position: relative; z-index: 5;
+            width: 170px; height: 170px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            
+            /* 毛玻璃與背景 */
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            
+            /* 浮雕邊框與陰影 */
+            border: 1px solid rgba(243, 229, 171, 0.2);
+            box-shadow: 
+                inset 0 4px 20px rgba(255, 255, 255, 0.08),  /* 頂部內發光 */
+                inset 0 -4px 20px rgba(0, 0, 0, 0.8),        /* 底部內陰影 */
+                0 15px 35px rgba(0, 0, 0, 0.9),              /* 底部外陰影 */
+                0 0 20px rgba(139,168,156,0.1);              /* 外圍微光 */
+            
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #glass-btn:active {
+            transform: scale(0.95);
+            box-shadow: 
+                inset 0 8px 25px rgba(0, 0, 0, 0.8),
+                inset 0 -2px 10px rgba(255, 255, 255, 0.05),
+                0 5px 15px rgba(0, 0, 0, 0.9);
+        }
+
+        /* 爆炸白光轉場 */
+        #warp-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 100; pointer-events: none; transition: opacity 2s ease-out; }
     </style>
 </head>
 <body>
 
-<div id="svg-lib" style="display:none;">
-    <svg id="svg-1" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="55" fill="rgba(139,168,156,0.1)"/><g stroke="#8ba89c" stroke-width="1.2" fill="rgba(139,168,156,0.05)"><polygon points="0,-45 45,0 0,45 -45,0" stroke-width="2"/><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(139,168,156,0.2)"/><line x1="0" y1="-65" x2="0" y2="65" /><line x1="-65" y1="0" x2="65" y2="0" /><circle cx="0" cy="0" r="65" fill="none" stroke-width="0.8"/></g></svg>
-    <svg id="svg-2" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="70" fill="rgba(243,229,171,0.1)"/><g stroke="#8ba89c" stroke-width="1" fill="none"><rect x="-45" y="-45" width="90" height="90" /><rect x="-45" y="-45" width="90" height="90" transform="rotate(45)" /><line x1="-45" y1="-45" x2="45" y2="45" /><line x1="-45" y1="45" x2="45" y2="-45" /><line x1="0" y1="-63.6" x2="0" y2="63.6" /><line x1="-63.6" y1="0" x2="63.6" y2="0" /></g><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(243,229,171,0.2)" stroke="#d4af37" stroke-width="1"/></svg>
-    <svg id="svg-3" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="80" fill="rgba(243,229,171,0.1)"/><g stroke="#f3e5ab" stroke-width="1.2" fill="none"><polygon points="0,-75 65,37.5 -65,37.5" /><polygon points="0,75 65,-37.5 -65,-37.5" /><polygon points="-75,0 37.5,65 37.5,-65" /><polygon points="75,0 -37.5,65 -37.5,-65" /></g><circle cx="0" cy="0" r="75" fill="none" stroke="#f3e5ab" stroke-width="0.8"/><circle cx="0" cy="0" r="37.5" fill="none" stroke="#d4af37" stroke-width="1.5"/></svg>
-    <svg id="svg-4" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="95" fill="rgba(212,175,55,0.1)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" /><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" transform="rotate(30)" /></g><g stroke="#f3e5ab" stroke-width="0.8" fill="none"><line x1="0" y1="0" x2="0" y2="-85" /><line x1="0" y1="0" x2="0" y2="85" /><line x1="0" y1="0" x2="73.6" y2="-42.5" /><line x1="0" y1="0" x2="-73.6" y2="42.5" /><line x1="0" y1="0" x2="73.6" y2="42.5" /><line x1="0" y1="0" x2="-73.6" y2="-42.5" /><polygon points="0,-70 60.6,35 -60.6,35" stroke="#fff" stroke-width="1.5"/><polygon points="0,70 60.6,-35 -60.6,-35" stroke="#fff" stroke-width="1.5"/></g></svg>
-    <svg id="svg-5" viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 15px rgba(212,175,55,0.8));"><circle cx="0" cy="0" r="105" fill="rgba(212,175,55,0.15)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-105 74.2,-74.2 105,0 74.2,74.2 0,105 -74.2,74.2 -105,0 -74.2,-74.2" /><polygon points="0,-105 105,0 0,105 -105,0" /><polygon points="74.2,-74.2 74.2,74.2 -74.2,74.2 -74.2,-74.2" /></g><g stroke="#fff" stroke-width="1.2" fill="none"><polygon points="0,-50 35.4,-35.4 50,0 35.4,35.4 0,50 -35.4,35.4 -50,0 -35.4,-35.4" stroke-width="2"/><line x1="0" y1="-105" x2="0" y2="105" /><line x1="-105" y1="0" x2="105" y2="0" /><line x1="-74.2" y1="-74.2" x2="74.2" y2="74.2" /><line x1="-74.2" y1="74.2" x2="74.2" y2="-74.2" /></g></svg>
-</div>
+<canvas id="starCanvas"></canvas>
+<div id="warp-flash"></div>
 
-<div id="interaction-zone">
-    <div id="hint" class="hint-text">當十字歸於掌心，按下合十啟動業鏡</div>
-    <div style="position: relative; width: 250px; height: 250px; display: flex; justify-content: center; align-items: center;">
-        <div id="hands-btn" onclick="checkTiming()">
-            <svg viewBox="0 0 200 320" style="width: 50px; height: 80px; filter: drop-shadow(0 0 5px rgba(212,175,55,0.6));">
+<div id="ui-layer">
+    <div id="hint-text">心念收攝 ‧ 待金光化現</div>
+    
+    <div class="btn-wrapper">
+        <div id="energy-ring"></div>
+        
+        <div id="glass-btn" onclick="checkTiming()">
+            <svg viewBox="0 0 200 320" style="width: 70px; height: 112px; filter: drop-shadow(0 0 8px rgba(212,175,55,0.8));">
                 <path d="M 100 25 C 97 18, 93 20, 92 30 L 62 165 C 55 190, 40 230, 10 245 L 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275 L 190 245 C 160 230, 145 190, 138 165 L 108 30 C 107 20, 103 18, 100 25 Z" fill="rgba(243, 229, 171, 0.15)"/>
                 <path d="M 138 165 L 108 30 C 107 20, 103 18, 100 25 C 97 18, 93 20, 92 30 L 62 165 M 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linejoin="round"/>
                 <path d="M 62 165 C 55 190, 40 230, 10 245" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -80,140 +108,156 @@
                 <path d="M 155 250 Q 130 240, 110 225" stroke="rgba(212,175,55,0.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
             </svg>
         </div>
-        <div id="crosshair"><div class="bracket"></div></div>
     </div>
-</div>
-
-<div id="mandala-zone">
-    <div id="svg-container"></div>
-    <div id="number-core"></div>
-    <div id="commentary"></div>
 </div>
 
 <script>
     // ══════════════════════════════════════════
-    // 第一階段：十字準星游移與判定
+    // 星空穿梭引擎 (往前跑的感覺)
     // ══════════════════════════════════════════
-    const crosshair = document.getElementById('crosshair');
-    const hint = document.getElementById('hint');
-    let posX = 0, posY = 0;
-    let isGameActive = true;
-    let animationId;
+    const cvs = document.getElementById('starCanvas');
+    const ctx = cvs.getContext('2d');
+    let cw, ch, stars = [];
+    let warpSpeed = 1.5; // 預設速度
+    let targetWarpSpeed = 1.5;
 
-    // 使用 Lissajous 曲線讓十字產生不規則的上下左右游移
-    function animateCrosshair() {
-        if (!isGameActive) return;
-        const t = Date.now() / 400; // 控制移動速度
-        // 游移範圍約半徑 80px 內
-        posX = Math.sin(t) * 90;
-        posY = Math.cos(t * 0.8) * 70;
-        crosshair.style.transform = `translate(${posX}px, ${posY}px)`;
-        animationId = requestAnimationFrame(animateCrosshair);
+    function initStars() {
+        cw = cvs.width = window.innerWidth; 
+        ch = cvs.height = window.innerHeight;
+        stars = Array.from({length: 300}, () => ({
+            x: (Math.random() - 0.5) * 2000, 
+            y: (Math.random() - 0.5) * 2000, 
+            z: Math.random() * 2000, 
+            c: Math.random() > 0.3 ? '#8ba89c' : '#f3e5ab' // 彩色星空
+        }));
     }
-    animateCrosshair();
+    
+    function drawStars() {
+        ctx.fillStyle = 'rgba(1, 2, 4, 0.4)'; // 尾跡效果
+        ctx.fillRect(0, 0, cw, ch); 
+        ctx.globalCompositeOperation = 'screen';
+        
+        // 平滑加速
+        warpSpeed += (targetWarpSpeed - warpSpeed) * 0.05;
 
+        stars.forEach(s => {
+            s.z -= warpSpeed; 
+            if(s.z <= 0) { 
+                s.z = 2000; 
+                s.x = (Math.random() - 0.5) * 2000; 
+                s.y = (Math.random() - 0.5) * 2000; 
+            }
+            let sc = 600 / (600 + s.z);
+            let px = cw/2 + s.x * sc; 
+            let py = ch/2 + s.y * sc;
+            
+            if(px > 0 && px < cw && py > 0 && py < ch) {
+                ctx.fillStyle = s.c; 
+                ctx.globalAlpha = Math.min(1, sc * 2);
+                ctx.beginPath(); 
+                // 當速度變快時，星星會拉長變成線條
+                if (warpSpeed > 5) {
+                    let prevSc = 600 / (600 + s.z + warpSpeed * 2);
+                    let prevPx = cw/2 + s.x * prevSc;
+                    let prevPy = ch/2 + s.y * prevSc;
+                    ctx.moveTo(px, py);
+                    ctx.lineTo(prevPx, prevPy);
+                    ctx.lineWidth = 1.5 * sc;
+                    ctx.strokeStyle = s.c;
+                    ctx.stroke();
+                } else {
+                    ctx.arc(px, py, 1.5 * sc, 0, Math.PI*2); 
+                    ctx.fill();
+                }
+            }
+        });
+        ctx.globalAlpha = 1; 
+        ctx.globalCompositeOperation = 'source-over';
+        requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize', initStars); 
+    initStars(); 
+    drawStars();
+
+    // ══════════════════════════════════════════
+    // 能量光環邏輯 (彩色轉金色)
+    // ══════════════════════════════════════════
+    const ring = document.getElementById('energy-ring');
+    const hint = document.getElementById('hint-text');
+    let isGold = false;
+    let isGameActive = true;
+    let cycleTimer;
+
+    function runRingCycle() {
+        if (!isGameActive) return;
+        
+        // 狀態：彩色流轉
+        isGold = false;
+        ring.classList.remove('is-gold');
+        hint.innerText = "心念收攝 ‧ 待金光化現";
+        hint.style.color = "var(--cyan)";
+
+        // 等待 2~4 秒後轉為金色
+        let waitTime = 2000 + Math.random() * 2000;
+        cycleTimer = setTimeout(() => {
+            if (!isGameActive) return;
+            
+            // 狀態：純金瞬間
+            isGold = true;
+            ring.classList.add('is-gold');
+            hint.innerText = "一念相應！按！";
+            hint.style.color = "var(--gold)";
+
+            // 金色只維持 0.8 ~ 1.2 秒
+            let goldTime = 800 + Math.random() * 400;
+            cycleTimer = setTimeout(() => {
+                if (isGold && isGameActive) runRingCycle(); // 沒按到，重來
+            }, goldTime);
+
+        }, waitTime);
+    }
+
+    // 啟動循環
+    setTimeout(runRingCycle, 1000);
+
+    // ══════════════════════════════════════════
+    // 按鈕判定與爆炸轉場
+    // ══════════════════════════════════════════
     function checkTiming() {
         if (!isGameActive) return;
-        
-        // 判定距離：十字與掌心(0,0)的距離
-        const distance = Math.hypot(posX, posY);
-        
-        if (distance < 25) { // 容錯範圍 25px，對準了！
+
+        if (isGold) {
+            // 成功！
             isGameActive = false;
-            cancelAnimationFrame(animationId);
-            crosshair.style.filter = "drop-shadow(0 0 10px var(--solid))";
-            crosshair.style.borderColor = "var(--solid)";
-            hint.innerText = "一念相應，業鏡啟動";
+            clearTimeout(cycleTimer);
+            hint.innerText = "業鏡啟動 ‧ 穿梭法界";
             hint.style.color = "var(--solid)";
             
-            setTimeout(startSuspensePhase, 800);
-        } else { // 沒對準
-            hint.innerText = "心念未定，請重新對焦";
-            hint.style.color = "#ff4d4d";
-            crosshair.style.filter = "drop-shadow(0 0 10px #ff4d4d)";
+            // 1. 星空極速加速 (衝進去的感覺)
+            targetWarpSpeed = 80; 
+
+            // 2. 按鈕 UI 淡出
+            document.querySelector('.btn-wrapper').style.opacity = '0';
+            document.querySelector('.btn-wrapper').style.transition = 'opacity 1s';
+
+            // 3. 白光爆炸轉場 (2.5秒後全白)
             setTimeout(() => {
-                hint.innerText = "當十字歸於掌心，按下合十啟動業鏡";
-                hint.style.color = "var(--cyan)";
-                crosshair.style.filter = "drop-shadow(0 0 5px var(--cyan))";
-            }, 800);
+                document.getElementById('warp-flash').style.opacity = '1';
+                
+                // 【下一步：這裡將會銜接數字狂飆與五圖變換】
+                setTimeout(() => {
+                    alert("第一步完成！接下來畫面全白後，會進入數字亂飛與五圖切換的階段。");
+                }, 2000);
+
+            }, 1000);
+
+        } else {
+            // 失敗！
+            hint.innerText = "心念散亂，請再定心";
+            hint.style.color = "#ff4d4d";
+            ring.style.opacity = '0';
+            setTimeout(() => { ring.style.opacity = '0.7'; }, 300); // 閃爍懲罰
         }
-    }
-
-    // ══════════════════════════════════════════
-    // 第二階段：懸念瘋狂閃爍
-    // ══════════════════════════════════════════
-    const svgs = [
-        document.getElementById('svg-1').outerHTML,
-        document.getElementById('svg-2').outerHTML,
-        document.getElementById('svg-3').outerHTML,
-        document.getElementById('svg-4').outerHTML,
-        document.getElementById('svg-5').outerHTML
-    ];
-
-    function startSuspensePhase() {
-        document.getElementById('interaction-zone').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('interaction-zone').style.display = 'none';
-            document.getElementById('mandala-zone').style.opacity = '1';
-            runSuspenseRoll();
-        }, 500);
-    }
-
-    function runSuspenseRoll() {
-        const svgContainer = document.getElementById('svg-container');
-        const numberCore = document.getElementById('number-core');
-        
-        let rollTime = 3500; // 瘋狂閃爍 3.5 秒
-        let startTime = Date.now();
-        
-        let rollInterval = setInterval(() => {
-            let elapsed = Date.now() - startTime;
-            
-            if (elapsed >= rollTime) {
-                clearInterval(rollInterval);
-                showFinalResult();
-            } else {
-                // 1. 數字亂跳
-                numberCore.innerText = Math.floor(Math.random() * 500).toString().padStart(3, '0');
-                
-                // 2. 數字放大縮小、偏移
-                let rScale = 0.8 + Math.random() * 0.7;
-                let rX = (Math.random() - 0.5) * 40;
-                let rY = (Math.random() - 0.5) * 40;
-                numberCore.style.transform = `translate(calc(-50% + ${rX}px), calc(-50% + ${rY}px)) scale(${rScale})`;
-                
-                // 3. 5張 SVG 圖陣隨機狂閃
-                svgContainer.innerHTML = svgs[Math.floor(Math.random() * 5)];
-                // 讓 SVG 陣法也跟著微縮放與旋轉
-                svgContainer.style.transform = `scale(${0.9 + Math.random() * 0.3}) rotate(${(Math.random()-0.5)*90}deg)`;
-            }
-        }, 100); // 每 0.1 秒閃一次
-    }
-
-    // ══════════════════════════════════════════
-    // 第三階段：定相揭曉真相
-    // ══════════════════════════════════════════
-    function showFinalResult() {
-        const svgContainer = document.getElementById('svg-container');
-        const numberCore = document.getElementById('number-core');
-        const commentary = document.getElementById('commentary');
-        
-        // 這裡預設為滿分 450，陣法為第 5 階 (索引 4)
-        const finalScore = 450;
-        const finalTier = 4; 
-
-        // 數字歸位正中央並鎖定
-        numberCore.innerText = finalScore;
-        numberCore.style.transform = `translate(-50%, -50%) scale(1.1)`;
-        numberCore.style.color = "var(--solid)";
-        
-        // 陣法歸位並鎖定
-        svgContainer.innerHTML = svgs[finalTier];
-        svgContainer.style.transform = `scale(1) rotate(0deg)`;
-        
-        // 顯示評語
-        commentary.innerHTML = "【 華藏 ‧ 圓滿相 】<br>八方貫穿，功德無漏。已化現極致金剛法界。";
-        commentary.style.opacity = '1';
     }
 </script>
 </body>
