@@ -1,289 +1,378 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>華藏月相 ‧ 集氣與業鏡流轉</title>
-    <style>
-        :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
-        body { margin: 0; background: var(--bg); overflow: hidden; font-family: "PingFang TC", serif; color: #fff; height: 100dvh; user-select: none; -webkit-touch-callout: none; }
-        
-        /* 3D 星空畫布 */
-        canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-
-        /* 異光閃爍層 (紅綠紫銀) */
-        #color-flash { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; transition: background 0.1s, opacity 0.1s; }
-
-        /* ══════ 第一階段：互動 UI ══════ */
-        #ui-layer { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s; }
-        #hint-text { font-size: 1rem; color: var(--cyan); letter-spacing: 5px; margin-bottom: 50px; text-shadow: 0 0 10px rgba(139,168,156,0.5); transition: color 0.3s; }
-
-        .btn-wrapper { position: relative; width: 220px; height: 220px; display: flex; justify-content: center; align-items: center; }
-
-        /* 能量圓框 */
-        #energy-ring {
-            position: absolute; inset: 0; border-radius: 50%;
-            background: conic-gradient(from 0deg, #ff4d4d, #ffb703, #80ed99, #00e5ff, #d8b4fe, #ff4d4d);
-            animation: spin 3s linear infinite;
-            -webkit-mask: radial-gradient(transparent 62%, black 63%);
-            mask: radial-gradient(transparent 62%, black 63%);
-            opacity: 0.7; transition: all 0.3s ease;
-        }
-        #energy-ring.is-gold {
-            background: conic-gradient(from 0deg, #d4af37, #fff, #f3e5ab, #d4af37, #fff, #d4af37);
-            animation: spin 1s linear infinite; opacity: 1; filter: drop-shadow(0 0 15px var(--solid));
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* 毛玻璃浮雕按鈕 */
-        #glass-btn {
-            position: relative; z-index: 5; overflow: hidden;
-            width: 170px; height: 170px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; cursor: pointer;
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(243, 229, 171, 0.2);
-            box-shadow: inset 0 4px 20px rgba(255, 255, 255, 0.08), inset 0 -4px 20px rgba(0, 0, 0, 0.8), 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 20px rgba(139,168,156,0.1);
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #glass-btn:active { transform: scale(0.95); box-shadow: inset 0 8px 25px rgba(0, 0, 0, 0.8), inset 0 -2px 10px rgba(255, 255, 255, 0.05), 0 5px 15px rgba(0, 0, 0, 0.9); }
-
-        /* 集氣漸層填滿 (由下而上) */
-        #charge-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(0deg, rgba(212,175,55,0.8) 0%, rgba(243,229,171,0.9) 100%); transition: height 0.05s linear; z-index: 1; opacity: 0.9; }
-        
-        #hands-svg { position: relative; z-index: 10; width: 70px; height: 112px; filter: drop-shadow(0 0 8px rgba(212,175,55,0.8)); pointer-events: none; }
-
-        /* ══════ 第二階段：懸念與混亂 ══════ */
-        #chaos-layer { position: absolute; inset: 0; z-index: 20; display: none; overflow: hidden; pointer-events: none; }
-        
-        #chaos-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: bold; font-family: monospace; letter-spacing: 8px; color: #fff; text-shadow: 0 0 30px var(--solid); z-index: 30; }
-        
-        #chaos-svg-container { position: absolute; width: 250px; height: 250px; transition: all 0.4s cubic-bezier(0.1, 0.8, 0.3, 1); display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 20px rgba(212,175,55,0.6)); }
-        #chaos-svg-container svg { width: 100%; height: 100%; }
-        
-        /* 隱藏庫 */
-        #svg-lib { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>幾何曼陀羅</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #080604;
+    min-height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    padding: 60px 44px;
+  }
+  .cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  svg { width: 240px; height: 240px; }
+  .lbl {
+    font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', serif;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(212,168,36,0.55);
+  }
+</style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<canvas id="starCanvas"></canvas>
-<div id="color-flash"></div>
-
-<div id="svg-lib">
-    <svg id="svg-1" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="55" fill="rgba(139,168,156,0.1)"/><g stroke="#8ba89c" stroke-width="1.2" fill="rgba(139,168,156,0.05)"><polygon points="0,-45 45,0 0,45 -45,0" stroke-width="2"/><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(139,168,156,0.2)"/><line x1="0" y1="-65" x2="0" y2="65" /><line x1="-65" y1="0" x2="65" y2="0" /><circle cx="0" cy="0" r="65" fill="none" stroke-width="0.8"/></g></svg>
-    <svg id="svg-2" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="70" fill="rgba(243,229,171,0.1)"/><g stroke="#8ba89c" stroke-width="1" fill="none"><rect x="-45" y="-45" width="90" height="90" /><rect x="-45" y="-45" width="90" height="90" transform="rotate(45)" /><line x1="-45" y1="-45" x2="45" y2="45" /><line x1="-45" y1="45" x2="45" y2="-45" /><line x1="0" y1="-63.6" x2="0" y2="63.6" /><line x1="-63.6" y1="0" x2="63.6" y2="0" /></g><polygon points="0,-25 25,0 0,25 -25,0" fill="rgba(243,229,171,0.2)" stroke="#d4af37" stroke-width="1"/></svg>
-    <svg id="svg-3" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="80" fill="rgba(243,229,171,0.1)"/><g stroke="#f3e5ab" stroke-width="1.2" fill="none"><polygon points="0,-75 65,37.5 -65,37.5" /><polygon points="0,75 65,-37.5 -65,-37.5" /><polygon points="-75,0 37.5,65 37.5,-65" /><polygon points="75,0 -37.5,65 -37.5,-65" /></g><circle cx="0" cy="0" r="75" fill="none" stroke="#f3e5ab" stroke-width="0.8"/><circle cx="0" cy="0" r="37.5" fill="none" stroke="#d4af37" stroke-width="1.5"/></svg>
-    <svg id="svg-4" viewBox="-150 -150 300 300"><circle cx="0" cy="0" r="95" fill="rgba(212,175,55,0.1)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" /><polygon points="0,-85 73.6,-42.5 73.6,42.5 0,85 -73.6,42.5 -73.6,-42.5" transform="rotate(30)" /></g><g stroke="#f3e5ab" stroke-width="0.8" fill="none"><line x1="0" y1="0" x2="0" y2="-85" /><line x1="0" y1="0" x2="0" y2="85" /><line x1="0" y1="0" x2="73.6" y2="-42.5" /><line x1="0" y1="0" x2="-73.6" y2="42.5" /><line x1="0" y1="0" x2="73.6" y2="42.5" /><line x1="0" y1="0" x2="-73.6" y2="-42.5" /><polygon points="0,-70 60.6,35 -60.6,35" stroke="#fff" stroke-width="1.5"/><polygon points="0,70 60.6,-35 -60.6,-35" stroke="#fff" stroke-width="1.5"/></g></svg>
-    <svg id="svg-5" viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 15px rgba(212,175,55,0.8));"><circle cx="0" cy="0" r="105" fill="rgba(212,175,55,0.15)"/><g stroke="#d4af37" stroke-width="1.5" fill="none"><polygon points="0,-105 74.2,-74.2 105,0 74.2,74.2 0,105 -74.2,74.2 -105,0 -74.2,-74.2" /><polygon points="0,-105 105,0 0,105 -105,0" /><polygon points="74.2,-74.2 74.2,74.2 -74.2,74.2 -74.2,-74.2" /></g><g stroke="#fff" stroke-width="1.2" fill="none"><polygon points="0,-50 35.4,-35.4 50,0 35.4,35.4 0,50 -35.4,35.4 -50,0 -35.4,-35.4" stroke-width="2"/><line x1="0" y1="-105" x2="0" y2="105" /><line x1="-105" y1="0" x2="105" y2="0" /><line x1="-74.2" y1="-74.2" x2="74.2" y2="74.2" /><line x1="-74.2" y1="74.2" x2="74.2" y2="-74.2" /></g></svg>
-</div>
-
-<div id="ui-layer">
-    <div id="hint-text">待金光化現 ‧ 默念佛號集氣</div>
-    
-    <div class="btn-wrapper">
-        <div id="energy-ring"></div>
-        <div id="glass-btn" onmousedown="startCharge()" onmouseup="stopCharge()" onmouseleave="stopCharge()" ontouchstart="startCharge()" ontouchend="stopCharge()">
-            <div id="charge-fill"></div> <svg id="hands-svg" viewBox="0 0 200 320">
-                <path d="M 100 25 C 97 18, 93 20, 92 30 L 62 165 C 55 190, 40 230, 10 245 L 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275 L 190 245 C 160 230, 145 190, 138 165 L 108 30 C 107 20, 103 18, 100 25 Z" fill="rgba(243, 229, 171, 0.15)"/>
-                <path d="M 138 165 L 108 30 C 107 20, 103 18, 100 25 C 97 18, 93 20, 92 30 L 62 165 M 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linejoin="round"/>
-                <path d="M 62 165 C 55 190, 40 230, 10 245" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 138 165 C 145 190, 160 230, 190 245" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 0 240 Q 37.5 265, 75 240" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
-                <path d="M 5 232 Q 41.5 257, 78 232" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
-                <path d="M 200 240 Q 162.5 265, 125 240" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
-                <path d="M 195 232 Q 158.5 257, 122 232" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
-                <path d="M 96 23 C 98 25, 98 32, 94 34" stroke="var(--gold)" stroke-width="3" fill="none"/>
-                <path d="M 104 23 C 102 25, 102 32, 106 34" stroke="var(--gold)" stroke-width="3" fill="none"/>
-                <path d="M 100 25 L 100 160" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" fill="none"/>
-                <path d="M 100 195 L 100 225" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" fill="none"/>
-                <path d="M 136 175 C 125 155, 110 152, 102 155" stroke="var(--gold)" stroke-width="6" fill="none" stroke-linecap="round"/>
-                <path d="M 63 170 C 80 155, 95 152, 112 158 C 118 160, 120 170, 115 175 C 95 188, 75 198, 63 215" stroke="var(--gold)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
-                <path d="M 103 162 C 109 159, 113 161, 113 166 C 109 169, 103 167, 103 162 Z" stroke="var(--gold)" stroke-width="3" fill="none"/>
-                <path d="M 105 182 Q 125 218 138 210" stroke="var(--gold)" stroke-width="5" stroke-linecap="round" fill="none"/>
-            </svg>
-        </div>
-    </div>
-</div>
-
-<div id="chaos-layer">
-    <div id="chaos-svg-container"></div>
-    <div id="chaos-number">000</div>
-</div>
+<div class="cell"><svg id="m1" viewBox="-115 -115 230 230"></svg><span class="lbl">Novenaria</span></div>
+<div class="cell"><svg id="m2" viewBox="-115 -115 230 230"></svg><span class="lbl">Hendecagram</span></div>
+<div class="cell"><svg id="m3" viewBox="-115 -115 230 230"></svg><span class="lbl">Twin Ogdoad</span></div>
+<div class="cell"><svg id="m4" viewBox="-115 -115 230 230"></svg><span class="lbl">Decalattice</span></div>
+<div class="cell"><svg id="m5" viewBox="-115 -115 230 230"></svg><span class="lbl">Dodecasacrum</span></div>
 
 <script>
-    // --- 星空引擎 ---
-    const cvs = document.getElementById('starCanvas');
-    const ctx = cvs.getContext('2d');
-    let cw, ch, stars = [];
-    let warpSpeed = 1.5;
+(function(){
+  const NS = 'http://www.w3.org/2000/svg';
 
-    function initStars() {
-        cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        stars = Array.from({length: 250}, () => ({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*2000, c: '#8ba89c' }));
+  /* ── Utilities ─────────────────────────────────────── */
+  function el(tag, attrs={}) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  }
+  function add(parent, tag, attrs={}) {
+    const e = el(tag, attrs); parent.appendChild(e); return e;
+  }
+  function addDefs(svg, html) {
+    const d = el('defs'); d.innerHTML = html; svg.prepend(d);
+  }
+
+  // Regular n-gon vertices on radius r, optional rotation (deg)
+  function poly(n, r, rotDeg=0) {
+    const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
+    for(let k=0;k<n;k++){
+      const a = 2*Math.PI*k/n + off;
+      pts.push([r*Math.cos(a), r*Math.sin(a)]);
     }
-    function drawStars() {
-        ctx.fillStyle = 'rgba(1, 2, 4, 0.4)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
-        stars.forEach(s => {
-            s.z -= warpSpeed; if(s.z<=0) { s.z=2000; s.x=(Math.random()-0.5)*2000; s.y=(Math.random()-0.5)*2000; }
-            let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
-            if(px>0 && px<cw && py>0 && py<ch) {
-                ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*2); ctx.beginPath(); ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); ctx.fill();
-            }
-        });
-        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; requestAnimationFrame(drawStars);
+    return pts;
+  }
+
+  function ptStr(pts){ return pts.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join(' '); }
+
+  function addPoly(parent, pts, attrs) {
+    return add(parent,'polygon',{points:ptStr(pts),fill:'none',...attrs});
+  }
+  function addCirc(parent, r, attrs) {
+    return add(parent,'circle',{cx:0,cy:0,r,...attrs});
+  }
+  function addLine(parent,x1,y1,x2,y2,attrs={}) {
+    return add(parent,'line',{x1:x1.toFixed(2),y1:y1.toFixed(2),x2:x2.toFixed(2),y2:y2.toFixed(2),...attrs});
+  }
+
+  // n-pointed star: outer r1, inner r2, offset rotDeg
+  function addStar(parent,n,r1,r2,rotDeg,attrs) {
+    const pts=[], off=-Math.PI/2+rotDeg*Math.PI/180;
+    for(let k=0;k<2*n;k++){
+      const r=k%2===0?r1:r2;
+      pts.push([r*Math.cos(Math.PI*k/n+off), r*Math.sin(Math.PI*k/n+off)]);
     }
-    window.addEventListener('resize', initStars); initStars(); drawStars();
+    return addPoly(parent,pts,attrs);
+  }
 
-    // --- 第一階段：能量圈與集氣邏輯 ---
-    const ring = document.getElementById('energy-ring');
-    const hint = document.getElementById('hint-text');
-    const chargeFill = document.getElementById('charge-fill');
-    
-    let isGold = false;
-    let isPhaseOne = true;
-    let cycleTimer;
-    let chargeTimer;
-    let chargeProgress = 0; // 0 to 100
+  // Complete graph K_n: every pair of pts connected
+  function addCompleteGraph(parent, pts, stroke, sw, op) {
+    const g = add(parent,'g',{stroke,fill:'none','stroke-width':sw,opacity:op});
+    for(let i=0;i<pts.length;i++)
+      for(let j=i+1;j<pts.length;j++)
+        addLine(g,pts[i][0],pts[i][1],pts[j][0],pts[j][1]);
+    return g;
+  }
 
-    function runRingCycle() {
-        if (!isPhaseOne) return;
-        
-        isGold = false;
-        ring.classList.remove('is-gold');
-        hint.innerText = "待金光化現 ‧ 默念佛號集氣";
-        hint.style.color = "var(--cyan)";
+  // Small circles at each vertex
+  function addDots(parent,pts,r,fill,op) {
+    const g = add(parent,'g',{opacity:op});
+    for(const p of pts) add(g,'circle',{cx:p[0].toFixed(2),cy:p[1].toFixed(2),r,fill});
+    return g;
+  }
 
-        // 彩色維持 2~4 秒
-        let waitTime = 2000 + Math.random() * 2000;
-        cycleTimer = setTimeout(() => {
-            if (!isPhaseOne) return;
-            
-            isGold = true;
-            ring.classList.add('is-gold');
-            hint.innerText = "金光現！長按默念集氣";
-            hint.style.color = "var(--gold)";
+  // Spoke lines from center to each vertex
+  function addSpokes(parent,pts,stroke,sw,op) {
+    const g = add(parent,'g',{stroke,fill:'none','stroke-width':sw,opacity:op});
+    for(const p of pts) addLine(g,0,0,p[0],p[1]);
+    return g;
+  }
 
-            // 金色只維持短短的 1.2 ~ 1.8 秒，錯過就沒了
-            let goldTime = 1200 + Math.random() * 600;
-            cycleTimer = setTimeout(() => {
-                if (isGold && isPhaseOne && chargeProgress === 0) runRingCycle(); 
-            }, goldTime);
+  // Standard gold base circle with radial gradient
+  function goldBase(svg,id,r,rimCol,d0,d1,d2) {
+    addDefs(svg,`
+      <radialGradient id="${id}bg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="${d0}"/>
+        <stop offset="55%"  stop-color="${d1}"/>
+        <stop offset="100%" stop-color="${d2}"/>
+      </radialGradient>
+      <radialGradient id="${id}cg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="22%"  stop-color="#fffde8" stop-opacity="0.85"/>
+        <stop offset="65%"  stop-color="#f0d040" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#c89000" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="${id}gf" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="5.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    `);
+    addCirc(svg,r,{fill:`url(#${id}bg)`,stroke:rimCol,'stroke-width':'2.5'});
+    addCirc(svg,r-5,{fill:'none',stroke:rimCol,'stroke-width':'0.5',opacity:'0.35'});
+  }
 
-        }, waitTime);
-    }
-    setTimeout(runRingCycle, 1000);
+  function glowCenter(svg,id,r1=28,r2=13,r3=5) {
+    addCirc(svg,r1,{fill:`url(#${id}cg)`});
+    addCirc(svg,r2,{fill:'rgba(255,255,235,0.88)',filter:`url(#${id}gf)`});
+    addCirc(svg,r3,{fill:'#ffffff'});
+  }
 
-    function startCharge() {
-        if (!isPhaseOne) return;
-        if (!isGold) {
-            hint.innerText = "時機未到，心念勿亂";
-            hint.style.color = "#ff4d4d";
-            ring.style.opacity = '0'; setTimeout(() => ring.style.opacity='0.7', 200);
-            return;
-        }
-        
-        // 開始集氣，暫停變色循環
-        clearTimeout(cycleTimer);
-        hint.innerText = "南無阿彌陀佛... 保持安住";
-        hint.style.color = "var(--solid)";
+  /* ═══════════════════════════════════════════════════════
+     M1 — NOVENARIA  9-gon complete graph, two rings
+     9 outer vertices (36 connecting lines)
+     9 inner vertices (36 connecting lines)
+     sharp 9-pointed stars
+  ═══════════════════════════════════════════════════════ */
+  (function(){
+    const svg=document.getElementById('m1'), id='m1';
+    goldBase(svg,id,110,'#c89030','#3a2006','#1e1003','#0a0401');
 
-        chargeTimer = setInterval(() => {
-            chargeProgress += 2; // 每 30ms 增加 2%，約需 1.5 秒充滿
-            chargeFill.style.height = chargeProgress + "%";
-            
-            if (chargeProgress >= 100) {
-                clearInterval(chargeTimer);
-                triggerPhaseTwo();
-            }
-        }, 30);
-    }
-
-    function stopCharge() {
-        if (!isPhaseOne || chargeProgress >= 100) return;
-        // 放開太早，集氣失敗
-        clearInterval(chargeTimer);
-        if (chargeProgress > 0) {
-            chargeProgress = 0;
-            chargeFill.style.height = "0%";
-            hint.innerText = "心念中斷，集氣散失";
-            hint.style.color = "#ff4d4d";
-            runRingCycle(); // 重新進入循環
-        }
-    }
-
-    // --- 第二階段：業鏡混亂流轉 ---
-    const svgs = [
-        document.getElementById('svg-1').outerHTML,
-        document.getElementById('svg-2').outerHTML,
-        document.getElementById('svg-3').outerHTML,
-        document.getElementById('svg-4').outerHTML,
-        document.getElementById('svg-5').outerHTML
-    ];
-
-    function triggerPhaseTwo() {
-        isPhaseOne = false;
-        
-        // 1. UI 消失
-        document.getElementById('ui-layer').style.opacity = '0';
-        
-        // 2. 星空不再移動，保留背景
-        warpSpeed = 0; 
-        
-        setTimeout(() => {
-            document.getElementById('ui-layer').style.display = 'none';
-            document.getElementById('chaos-layer').style.display = 'block';
-            runChaos();
-        }, 1000);
+    /* outer ring ticks */
+    const tg=add(svg,'g',{stroke:'#906818','stroke-width':'1',opacity:'0.5'});
+    for(let k=0;k<18;k++){
+      const a=2*Math.PI*k/18-Math.PI/2;
+      addLine(tg,104*Math.cos(a),104*Math.sin(a),109*Math.cos(a),109*Math.sin(a));
     }
 
-    function runChaos() {
-        const numEl = document.getElementById('chaos-number');
-        const svgContainer = document.getElementById('chaos-svg-container');
-        const flashLayer = document.getElementById('color-flash');
-        
-        const flashColors = [
-            'rgba(255, 77, 77, 0.25)',  // 紅
-            'rgba(128, 237, 153, 0.25)',// 綠
-            'rgba(216, 180, 254, 0.25)',// 紫
-            'rgba(255, 255, 255, 0.3)'  // 銀白
-        ];
+    /* outer 9-gon */
+    const o=poly(9,97);
+    addPoly(svg,o,{stroke:'#c89030','stroke-width':'1.1',opacity:'0.7'});
 
-        // 時間拉長：狂跳 8 秒
-        let rollTime = 8000; 
-        let startTime = Date.now();
-        
-        let chaosTimer = setInterval(() => {
-            let elapsed = Date.now() - startTime;
-            if (elapsed >= rollTime) {
-                clearInterval(chaosTimer);
-                alert("測試：階段二結束！\n(接下來這裡會進入鎖定分數與陣法的階段，我們下一次再做。)");
-                return;
-            }
+    /* complete graph K9 – 36 lines */
+    addCompleteGraph(svg,o,'#e8c860','0.52','0.55');
 
-            // 1. 三位數字亂跳
-            numEl.innerText = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    /* sharp 9-star overlay */
+    addStar(svg,9,97,12,0,{fill:'rgba(235,185,15,0.07)',stroke:'#f5dc70','stroke-width':'1.5'});
 
-            // 2. 5張圖切換，並且到處飛 (左上、右上、變大變小、轉動)
-            svgContainer.innerHTML = svgs[Math.floor(Math.random() * 5)];
-            
-            // 隨機位置 (限制在畫布內)
-            let randomTop = 10 + Math.random() * 60; // 10% to 70%
-            let randomLeft = 10 + Math.random() * 60; 
-            // 隨機大小與旋轉
-            let randomScale = 0.5 + Math.random() * 1.2;
-            let randomRotate = Math.floor(Math.random() * 360);
+    /* mid supporting ring */
+    addCirc(svg,65,{fill:'none',stroke:'#906010','stroke-width':'0.5',opacity:'0.3'});
 
-            svgContainer.style.top = randomTop + '%';
-            svgContainer.style.left = randomLeft + '%';
-            svgContainer.style.transform = `scale(${randomScale}) rotate(${randomRotate}deg)`;
+    /* inner 9-gon (rotated 20°) */
+    const i=poly(9,46,20);
+    addPoly(svg,i,{stroke:'#d4a820','stroke-width':'0.8',opacity:'0.5'});
 
-            // 3. 異光閃爍 (紅綠紫銀)
-            flashLayer.style.background = flashColors[Math.floor(Math.random() * flashColors.length)];
-            flashLayer.style.opacity = '1';
-            setTimeout(() => { flashLayer.style.opacity = '0'; }, 100);
+    /* complete graph K9 inner – 36 lines */
+    addCompleteGraph(svg,i,'#f0d060','0.5','0.52');
 
-        }, 250); // 每 0.25 秒變換一次，製造強烈的混沌感
+    /* inner 9-star */
+    addStar(svg,9,46,9,20,{fill:'rgba(250,205,25,0.12)',stroke:'#ffe070','stroke-width':'1'});
+
+    /* radial connectors outer→inner */
+    const cg=add(svg,'g',{stroke:'#a07828','stroke-width':'0.35',opacity:'0.28',fill:'none'});
+    for(let k=0;k<9;k++) addLine(cg,o[k][0],o[k][1],i[k][0],i[k][1]);
+
+    /* vertex dots */
+    addDots(svg,o,2.2,'#f0d060','0.7');
+    addDots(svg,i,1.6,'#ffe880','0.65');
+
+    glowCenter(svg,id,27,12,5);
+  })();
+
+  /* ═══════════════════════════════════════════════════════
+     M2 — HENDECAGRAM  11-gon complete graph
+     55 connecting lines, very dense web
+     + 11-pointed star + inner pentagon lattice
+  ═══════════════════════════════════════════════════════ */
+  (function(){
+    const svg=document.getElementById('m2'), id='m2';
+    goldBase(svg,id,110,'#b87020','#2e1800','#170c00','#070300');
+
+    /* outer 11-gon */
+    const o=poly(11,97);
+    addPoly(svg,o,{stroke:'#b87820','stroke-width':'1',opacity:'0.65'});
+
+    /* K11 – 55 lines */
+    addCompleteGraph(svg,o,'#dca830','0.48','0.52');
+
+    /* sharp 11-star */
+    addStar(svg,11,97,11,0,{fill:'rgba(220,160,10,0.06)',stroke:'#f0cc50','stroke-width':'1.4'});
+
+    /* spokes from center */
+    addSpokes(svg,o,'#906010','0.4','0.22');
+
+    /* inner pentagon (every other vertex-ish) */
+    const ip=poly(5,50,0);
+    addPoly(svg,ip,{stroke:'#c89028','stroke-width':'0.9',opacity:'0.55'});
+    addCompleteGraph(svg,ip,'#f0cc40','0.55','0.5');
+    addStar(svg,5,50,14,36,{fill:'rgba(240,195,20,0.1)',stroke:'#ffd050','stroke-width':'1.1'});
+
+    /* inner 11-gon ring */
+    const ig=poly(11,44,16.36);
+    addPoly(svg,ig,{stroke:'#c09020','stroke-width':'0.6',opacity:'0.4'});
+    addCompleteGraph(svg,ig,'#ecc038','0.45','0.45'});
+
+    /* vertex dots */
+    addDots(svg,o,2,'#e8c050','0.68');
+
+    glowCenter(svg,id,26,11,5);
+  })();
+
+  /* ═══════════════════════════════════════════════════════
+     M3 — TWIN OGDOAD  2 × octagon = 16 vertices
+     K16 = 120 lines (ultra-dense)
+     silver / pearl palette
+  ═══════════════════════════════════════════════════════ */
+  (function(){
+    const svg=document.getElementById('m3'), id='m3';
+    addDefs(svg,`
+      <radialGradient id="${id}bg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#1c1a16"/>
+        <stop offset="55%"  stop-color="#100e0a"/>
+        <stop offset="100%" stop-color="#060504"/>
+      </radialGradient>
+      <radialGradient id="${id}cg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="25%"  stop-color="#fff8e0" stop-opacity="0.8"/>
+        <stop offset="70%"  stop-color="#e0c860" stop-opacity="0.1"/>
+        <stop offset="100%" stop-color="#b09020" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="${id}gf" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="6" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    `);
+    addCirc(svg,110,{fill:`url(#${id}bg)`,stroke:'#c8a828','stroke-width':'2.5'});
+    addCirc(svg,105,{fill:'none',stroke:'#a08020','stroke-width':'0.5',opacity:'0.35'});
+
+    const oct1=poly(8,97,0);
+    const oct2=poly(8,97,22.5);
+    const all=[...oct1,...oct2];
+
+    /* two octagons */
+    addPoly(svg,oct1,{stroke:'#d4a828','stroke-width':'1.2',opacity:'0.65'});
+    addPoly(svg,oct2,{stroke:'#e8c040','stroke-width':'0.9',opacity:'0.5'});
+
+    /* K16 – 120 lines */
+    addCompleteGraph(svg,all,'#f0d060','0.38','0.42');
+
+    /* 8-star overlays */
+    addStar(svg,8,97,22,0, {fill:'rgba(240,195,20,0.07)',stroke:'#f8d870','stroke-width':'1.5'});
+    addStar(svg,8,97,22,22.5,{fill:'rgba(220,175,10,0.04)',stroke:'#d4a830','stroke-width':'1'});
+
+    /* inner octagon */
+    const io=poly(8,44,11.25);
+    addPoly(svg,io,{stroke:'#c89028','stroke-width':'0.8',opacity:'0.5'});
+    addCompleteGraph(svg,io,'#f0d050','0.5','0.5');
+    addDots(svg,io,1.6,'#ffe870','0.65');
+
+    addDots(svg,oct1,2.4,'#f8d860','0.72');
+    addDots(svg,oct2,2,'#f0c848','0.6');
+
+    glowCenter(svg,id,28,13,5);
+  })();
+
+  /* ═══════════════════════════════════════════════════════
+     M4 — DECALATTICE  10-gon complete graph
+     K10 = 45 lines + two pentagrams (5-star × 2)
+     + inner 10-gon K10
+  ═══════════════════════════════════════════════════════ */
+  (function(){
+    const svg=document.getElementById('m4'), id='m4';
+    goldBase(svg,id,110,'#a87018','#221000','#120800','#060200');
+
+    const o=poly(10,97);
+    addPoly(svg,o,{stroke:'#b07818','stroke-width':'1',opacity:'0.6'});
+
+    /* K10 – 45 lines */
+    addCompleteGraph(svg,o,'#d8a030','0.52','0.53');
+
+    /* pentagram 1 */
+    addStar(svg,5,97,18,0,  {fill:'rgba(200,140,10,0.06)',stroke:'#e8b030','stroke-width':'1.4'});
+    /* pentagram 2 (rotated 36°) */
+    addStar(svg,5,97,18,36, {fill:'rgba(200,140,10,0.04)',stroke:'#c89020','stroke-width':'1'});
+
+    /* 10-star (very sharp) */
+    addStar(svg,10,97,13,0,{fill:'rgba(215,155,15,0.07)',stroke:'#f0c048','stroke-width':'1.2',opacity:'0.9'});
+
+    /* mid ring */
+    addCirc(svg,65,{fill:'none',stroke:'#806010','stroke-width':'0.5',opacity:'0.28'});
+
+    /* inner 10-gon */
+    const i=poly(10,43,18);
+    addPoly(svg,i,{stroke:'#c89028','stroke-width':'0.7',opacity:'0.45'});
+    addCompleteGraph(svg,i,'#f0c840','0.5','0.5');
+    addStar(svg,10,43,7,18,{fill:'rgba(245,195,25,0.12)',stroke:'#ffd050','stroke-width':'0.9'});
+    addDots(svg,i,1.5,'#ffe868','0.6');
+
+    /* outer connector spokes */
+    addSpokes(svg,o,'#906018','0.35','0.2');
+    addDots(svg,o,2.2,'#e8b830','0.7');
+
+    glowCenter(svg,id,26,12,5);
+  })();
+
+  /* ═══════════════════════════════════════════════════════
+     M5 — DODECASACRUM  12-gon complete graph
+     K12 = 66 lines + 3 squares + 4 triangles + 12-star
+     richest / most complex
+  ═══════════════════════════════════════════════════════ */
+  (function(){
+    const svg=document.getElementById('m5'), id='m5';
+    goldBase(svg,id,110,'#d4a818','#3c1e08','#201006','#0c0604');
+
+    const o=poly(12,97);
+    addPoly(svg,o,{stroke:'#c8a020','stroke-width':'1.1',opacity:'0.68'});
+
+    /* K12 – 66 lines */
+    addCompleteGraph(svg,o,'#f0c840','0.46','0.5');
+
+    /* 4 equilateral triangles (rotated 0, 30, 60, 90°) */
+    for(let r=0;r<4;r++)
+      addStar(svg,3,97,9,r*30,{fill:`rgba(240,180,15,${0.03+r*0.01})`,stroke:'#e8c038','stroke-width':'1.1',opacity:'0.65'});
+
+    /* 3 squares (rotated 0, 15, 30°) */
+    for(let r=0;r<3;r++){
+      const sq=poly(4,97,r*15);
+      addPoly(svg,sq,{fill:'rgba(215,165,10,0.03)',stroke:'#d4a028','stroke-width':'1',opacity:'0.6'});
     }
+
+    /* 12-star */
+    addStar(svg,12,97,13,0,{fill:'rgba(255,200,20,0.06)',stroke:'#f8d860','stroke-width':'1.4'});
+
+    /* mid ring */
+    addCirc(svg,66,{fill:'none',stroke:'#906010','stroke-width':'0.5',opacity:'0.28'});
+
+    /* inner 12-gon */
+    const i=poly(12,42,15);
+    addPoly(svg,i,{stroke:'#d4a820','stroke-width':'0.7',opacity:'0.45'});
+    addCompleteGraph(svg,i,'#f5d050','0.47','0.5');
+    addStar(svg,12,42,7,15,{fill:'rgba(255,205,20,0.12)',stroke:'#ffe870','stroke-width':'0.9'});
+
+    /* innermost triangle trio */
+    for(let r=0;r<3;r++)
+      addStar(svg,3,42,5,r*30+15,{fill:'none',stroke:'#ffd040','stroke-width':'0.7',opacity:'0.5'});
+
+    addDots(svg,o,2.4,'#f8d060','0.72');
+    addDots(svg,i,1.6,'#ffe878','0.6');
+
+    glowCenter(svg,id,28,13,5);
+  })();
+
+})();
 </script>
 </body>
 </html>
