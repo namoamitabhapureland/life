@@ -2,249 +2,124 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>華藏月相 ‧ 業鏡結算</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG 陣法靜態預覽 ‧ 五階演化</title>
     <style>
-        :root { --bg: #010204; --gold: #f3e5ab; --solid: #d4af37; --cyan: #8ba89c; }
-        body { margin: 0; background: var(--bg); overflow: hidden; font-family: "PingFang TC", serif; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100dvh; user-select: none; }
-        
-        /* 深邃星空背景 (強化版) */
-        #bg-wrap { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, rgba(30,20,40,0.4) 0%, var(--bg) 80%); z-index: 0; }
-        canvas { position: absolute; inset: 0; opacity: 0.8; }
-
-        /* 主舞台 */
-        #stage { position: relative; z-index: 10; width: 100vw; height: 50vh; display: flex; justify-content: center; align-items: center; }
-        
-        #svg-container { width: 400px; height: 400px; position: absolute; transition: transform 4s cubic-bezier(0.1, 1, 0.2, 1), filter 2s; filter: drop-shadow(0 0 10px rgba(139,168,156,0.3)); }
-        svg { width: 100%; height: 100%; overflow: visible; }
-        
-        /* 滾動能量光軌特效 */
-        .energy-path { stroke-dasharray: 100; animation: flow 3s linear infinite; }
-        @keyframes flow { to { stroke-dashoffset: 200; } }
-        
-        /* 陣法緩慢自轉 */
-        .spin { animation: spin 40s linear infinite; transform-origin: center; }
-        .spin-reverse { animation: spin 30s linear infinite reverse; transform-origin: center; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* 核心數字 */
-        #number-core { position: absolute; font-size: 3.5rem; font-weight: bold; font-family: monospace; letter-spacing: 5px; color: var(--gold); text-shadow: 0 0 20px var(--solid); z-index: 20; transition: transform 0.3s; }
-
-        /* UI 與文字 */
-        #ui { position: relative; z-index: 20; text-align: center; margin-top: 20px; }
-        .commentary { font-size: 0.95rem; color: var(--cyan); line-height: 2; max-width: 300px; letter-spacing: 3px; opacity: 0; transition: opacity 2s; min-height: 80px; }
-        
-        .action-btn { background: transparent; border: 1px solid var(--solid); color: var(--gold); padding: 12px 30px; border-radius: 25px; font-size: 1rem; letter-spacing: 4px; cursor: pointer; transition: all 0.3s; margin-top: 20px; }
-        .action-btn:active { transform: scale(0.95); background: rgba(212,175,55,0.2); }
+        body { 
+            background: #010204; color: #fff; margin: 0; padding: 40px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;
+            font-family: "PingFang TC", serif;
+        }
+        .svg-container {
+            width: 280px; height: 320px; position: relative;
+            display: flex; flex-direction: column; align-items: center;
+            background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid rgba(139,168,156,0.1);
+            padding-top: 20px;
+        }
+        .label {
+            margin-top: 25px; color: #8ba89c; letter-spacing: 4px; font-size: 0.85rem; font-weight: bold;
+        }
+        .desc {
+            font-size: 0.7rem; color: #555; margin-top: 8px; letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
-<div id="bg-wrap"><canvas id="starCanvas"></canvas></div>
-
-<div id="stage">
-    <div id="svg-container">
-        <svg viewBox="-200 -200 400 400" id="mandala-svg">
-            <defs>
-                <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
-                <radialGradient id="core-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d4af37" stop-opacity="0.5"/><stop offset="100%" stop-color="#d4af37" stop-opacity="0"/></radialGradient>
-            </defs>
-            <g class="spin" opacity="0.5" stroke="var(--cyan)" stroke-width="1" fill="none">
-                <circle cx="0" cy="0" r="80" stroke-dasharray="2 4"/>
-                <polygon points="0,-60 52,30 -52,30" />
-                <polygon points="0,60 52,-30 -52,-30" />
+    <div class="svg-container">
+        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 8px rgba(139,168,156,0.3));">
+            <g stroke="#8ba89c" stroke-width="1.2" fill="rgba(139,168,156,0.05)">
+                <polygon points="0,-80 69.3,40 -69.3,40" />
+                <line x1="0" y1="0" x2="0" y2="-80" />
+                <line x1="0" y1="0" x2="69.3" y2="40" />
+                <line x1="0" y1="0" x2="-69.3" y2="40" />
+                <circle cx="0" cy="0" r="3" fill="#fff" stroke="none"/>
             </g>
+            <text x="0" y="100" text-anchor="middle" fill="#8ba89c" font-size="24" font-weight="bold" font-family="monospace" letter-spacing="4">045</text>
         </svg>
+        <div class="label">【 一 ‧ 微塵 】</div>
+        <div class="desc">單純四面體 ‧ 基礎發心</div>
     </div>
-    <div id="number-core">000</div>
-</div>
 
-<div id="ui">
-    <div id="commentary" class="commentary"></div>
-    <button id="main-btn" class="action-btn" onclick="startMirror()">啟動業鏡凝結</button>
-</div>
+    <div class="svg-container">
+        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 10px rgba(139,168,156,0.4));">
+            <g stroke="#8ba89c" stroke-width="1" fill="rgba(139,168,156,0.08)">
+                <rect x="-60" y="-60" width="120" height="120" />
+                <rect x="-60" y="-60" width="120" height="120" transform="rotate(45)" fill="rgba(139,168,156,0.1)"/>
+                <line x1="-85" y1="0" x2="85" y2="0" stroke-dasharray="2 3"/>
+                <line x1="0" y1="-85" x2="0" y2="85" stroke-dasharray="2 3"/>
+                <circle cx="0" cy="0" r="40" fill="none" stroke-width="0.5"/>
+            </g>
+            <text x="0" y="100" text-anchor="middle" fill="#8ba89c" font-size="24" font-weight="bold" font-family="monospace" letter-spacing="4">120</text>
+        </svg>
+        <div class="label">【 二 ‧ 方圓 】</div>
+        <div class="desc">八角方陣 ‧ 戒律初成</div>
+    </div>
 
-<script>
-    // --- 1. 星空引擎 (承襲系統風格並加密) ---
-    const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
-    let cw, ch, stars = [];
-    function initS() {
-        cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        stars = Array.from({length: 250}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*1500, c: Math.random()>0.5?'#f3e5ab':'#8ba89c' }));
-    }
-    function drawS() {
-        ctx.clearRect(0,0,cw,ch); ctx.globalCompositeOperation = 'screen';
-        stars.forEach(s => {
-            s.z -= 1.5; if(s.z <= 0) { s.z = 1500; s.x = (Math.random()-0.5)*cw*2; s.y = (Math.random()-0.5)*ch*2; }
-            let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
-            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc * 1.5);
-            ctx.beginPath(); ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); ctx.fill();
-        });
-        requestAnimationFrame(drawS);
-    }
-    window.addEventListener('resize', initS); initS(); drawS();
+    <div class="svg-container">
+        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 15px rgba(243,229,171,0.3));">
+            <defs>
+                <radialGradient id="grad-3" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#f3e5ab" stop-opacity="0.15"/>
+                    <stop offset="100%" stop-color="#8ba89c" stop-opacity="0"/>
+                </radialGradient>
+            </defs>
+            <circle cx="0" cy="0" r="70" fill="url(#grad-3)"/>
+            <g stroke="#8ba89c" stroke-width="1.5" fill="rgba(243,229,171,0.05)">
+                <polygon points="0,-90 77.9,45 -77.9,45" />
+                <polygon points="0,90 77.9,-45 -77.9,-45" />
+                <polygon points="0,-45 39,-22.5 39,22.5 0,45 -39,22.5 -39,-22.5" fill="rgba(139,168,156,0.15)" stroke="#f3e5ab" stroke-width="0.8"/>
+            </g>
+            <text x="0" y="100" text-anchor="middle" fill="#f3e5ab" font-size="26" font-weight="bold" font-family="monospace" letter-spacing="4">240</text>
+        </svg>
+        <div class="label" style="color:#f3e5ab;">【 三 ‧ 星軌 】</div>
+        <div class="desc">六芒交織 ‧ 願力相續</div>
+    </div>
 
-    // --- 2. 純代碼音效引擎 (Web Audio API) ---
-    let audioCtx;
-    function initAudio() {
-        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-    }
-    
-    // 嗡聲 (低頻法界音)
-    function playDrone() {
-        let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.value = 55; // 55Hz 低頻
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 2);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start();
-        return { osc, gain };
-    }
-    
-    // 引磬聲 (定格清脆音)
-    function playChime() {
-        let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.value = 1200;
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(1, audioCtx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 3);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 3);
-    }
+    <div class="svg-container">
+        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 18px rgba(212,175,55,0.4));">
+            <g stroke="#f3e5ab" stroke-width="1" fill="none">
+                <rect x="-65" y="-65" width="130" height="130" transform="rotate(15)" fill="rgba(212,175,55,0.05)"/>
+                <rect x="-65" y="-65" width="130" height="130" transform="rotate(45)" fill="rgba(212,175,55,0.05)"/>
+                <rect x="-65" y="-65" width="130" height="130" transform="rotate(75)" fill="rgba(212,175,55,0.05)"/>
+                
+                <circle cx="0" cy="0" r="50" stroke="#d4af37" stroke-width="1.5" fill="rgba(212,175,55,0.1)"/>
+                <circle cx="0" cy="0" r="40" stroke-dasharray="2 6" stroke-width="2"/>
+            </g>
+            <text x="0" y="100" text-anchor="middle" fill="#d4af37" font-size="28" font-weight="bold" font-family="monospace" letter-spacing="4">360</text>
+        </svg>
+        <div class="label" style="color:#d4af37;">【 四 ‧ 九宮 】</div>
+        <div class="desc">多維角點 ‧ 般若漸明</div>
+    </div>
 
-    // --- 3. 陣法動態生成 (光暈滾動能量) ---
-    function buildFinalMandala(score) {
-        let svg = `<defs><filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter></defs>`;
-        svg += `<circle cx="0" cy="0" r="100" fill="url(#core-glow)"/>`;
-        
-        // 依照分數決定圈數與角數
-        let layers = Math.min(5, Math.floor(score / 150) + 2);
-        let points = Math.min(24, Math.floor(score / 50) + 6);
+    <div class="svg-container" style="border-color: rgba(212,175,55,0.3); background: rgba(212,175,55,0.03);">
+        <svg viewBox="-150 -150 300 300" style="filter: drop-shadow(0 0 25px rgba(212,175,55,0.7));">
+            <defs>
+                <filter id="blur-core"><feGaussianBlur stdDeviation="2" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter>
+            </defs>
 
-        // 外層因陀羅網 (靜態底座)
-        svg += `<g class="spin" opacity="0.3" stroke="var(--cyan)" stroke-width="0.5" fill="none">`;
-        for(let i=0; i<points; i++) {
-            let a = (i/points)*Math.PI*2, x = Math.cos(a)*180, y = Math.sin(a)*180;
-            svg += `<line x1="0" y1="0" x2="${x}" y2="${y}"/>`;
-            svg += `<circle cx="${x}" cy="${y}" r="2" fill="var(--cyan)"/>`;
-        }
-        svg += `</g>`;
+            <g stroke="#f3e5ab" stroke-width="0.5" fill="none" opacity="0.4">
+                <circle cx="0" cy="0" r="110" stroke-dasharray="1 4"/>
+                <circle cx="0" cy="0" r="125" />
+            </g>
 
-        // 中層至內層 幾何嵌套與能量滾動
-        svg += `<g class="spin-reverse" filter="url(#glow)">`;
-        for(let l=1; l<=layers; l++) {
-            let r = l * 35;
-            let pathD = `M 0 -${r} `;
-            for(let i=1; i<=points; i++) {
-                // 星芒交錯算法
-                let a = (i/points)*Math.PI*2;
-                let rOffset = (i%2===0) ? r : r*0.6;
-                pathD += `L ${Math.cos(a-Math.PI/2)*rOffset} ${Math.sin(a-Math.PI/2)*rOffset} `;
-            }
-            pathD += "Z";
-            
-            // 能量光軌：利用 dasharray 製造空隙，動畫讓空隙流動
-            let color = l > layers-2 ? 'var(--solid)' : 'var(--gold)';
-            svg += `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="${1 + l*0.5}" class="energy-path" opacity="${0.4 + l*0.1}"/>`;
-        }
-        svg += `</g>`;
+            <g stroke="#d4af37" stroke-width="1" fill="rgba(212,175,55,0.08)" filter="url(#blur-core)">
+                <polygon points="0,-95 82,-47 82,47 0,95 -82,47 -82,-47" />
+                <polygon points="0,-95 82,-47 82,47 0,95 -82,47 -82,-47" transform="rotate(30)" />
+                <polygon points="0,-95 82,-47 82,47 0,95 -82,47 -82,-47" transform="rotate(60)" />
+                <polygon points="0,-95 82,-47 82,47 0,95 -82,47 -82,-47" transform="rotate(90)" />
+            </g>
 
-        document.getElementById('mandala-svg').innerHTML = svg;
-        document.getElementById('svg-container').style.filter = "drop-shadow(0 0 30px rgba(212,175,55,0.6))";
-        document.getElementById('svg-container').style.transform = "scale(1.1)";
-    }
+            <g stroke="#fff" stroke-width="1.5" fill="rgba(255,255,255,0.1)">
+                <polygon points="0,-50 43,25 -43,25" />
+                <polygon points="0,50 43,-25 -43,-25" />
+                <circle cx="0" cy="0" r="15" fill="#fff" filter="url(#blur-core)"/>
+            </g>
+            <text x="0" y="100" text-anchor="middle" fill="#fff" font-size="32" font-weight="bold" font-family="monospace" letter-spacing="4" filter="url(#blur-core)">450</text>
+        </svg>
+        <div class="label" style="color:#d4af37; font-size: 1rem;">【 五 ‧ 大千 】</div>
+        <div class="desc" style="color: #f3e5ab;">無盡嵌套 ‧ 圓滿無漏</div>
+    </div>
 
-    // --- 4. 互動邏輯 (業鏡結算) ---
-    // 模擬行者本月分數，這裡直接設為 850 分展示超高階複雜度，您可以隨意更改
-    const finalScore = 850; 
-    
-    let isRolling = false;
-
-    function startMirror() {
-        if(isRolling) return;
-        isRolling = true;
-        initAudio();
-        
-        const btn = document.getElementById('main-btn');
-        btn.style.opacity = '0'; btn.style.pointerEvents = 'none';
-        
-        // 啟動音效
-        let drone = playDrone();
-        
-        // 數字狂飆
-        const numCore = document.getElementById('number-core');
-        numCore.style.transform = "scale(1.2)";
-        
-        let start = 0;
-        let rollTime = 3500; // 滾動 3.5 秒
-        let startTime = Date.now();
-        
-        // SVG 陣法開始劇烈收縮膨脹 (呼吸感)
-        document.getElementById('svg-container').style.transform = "scale(0.8)";
-        
-        let timer = setInterval(() => {
-            let elapsed = Date.now() - startTime;
-            if(elapsed >= rollTime) {
-                clearInterval(timer);
-                finishMirror(drone);
-            } else {
-                // 隨機跳動數字
-                numCore.innerText = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-            }
-        }, 50);
-    }
-
-    function finishMirror(drone) {
-        // 定格數字
-        const numCore = document.getElementById('number-core');
-        numCore.innerText = finalScore;
-        numCore.style.transform = "scale(1)";
-        numCore.style.color = "#fff";
-        
-        // 音效切換：停止低頻，敲擊引磬
-        drone.gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
-        setTimeout(() => drone.osc.stop(), 1000);
-        playChime();
-        
-        // 生成最終幾何與光暈能量
-        buildFinalMandala(finalScore);
-
-        // 浮現玄妙評語
-        let text = "";
-        if(finalScore < 150) text = "一念不生，萬法無咎。<br>然塵勞牽絆，定水微瀾。微塵雖小，已在法界流轉，莫生退轉。";
-        else if(finalScore <= 450) text = "因陀羅網，互攝互入。<br>本月資糧已凝結為星軌，照見諸法空相。猶需安住不動，方契圓滿。";
-        else text = "法輪常轉，光照大千。<br>無量行願交織，已於虛空化現莊嚴結界。然凡所有相皆是虛妄，當盡數迴向。";
-        
-        const comm = document.getElementById('commentary');
-        comm.innerHTML = text;
-        comm.style.opacity = '1';
-        
-        // 迴向按鈕
-        setTimeout(() => {
-            const btn = document.getElementById('main-btn');
-            btn.innerText = "大迴向入極樂";
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
-            btn.onclick = triggerDedication;
-        }, 2000);
-    }
-
-    // --- 5. 大迴向歸零與歷史累積 ---
-    function triggerDedication() {
-        document.getElementById('svg-container').style.transform = "scale(0) rotate(180deg)";
-        document.getElementById('svg-container').style.opacity = "0";
-        document.getElementById('number-core').style.opacity = "0";
-        document.getElementById('commentary').innerHTML = "清淨功德，盡數迴向十方法界。<br><span style='font-size:0.8rem; color:#8ba89c;'>(已寫入歷史法界總量)</span>";
-        
-        // 此處對接您的 localStorage 邏輯
-        /*
-        let db = JSON.parse(localStorage.getItem('PX_V15.0')) || {};
-        db.historyLunarPoints = (db.historyLunarPoints || 0) + db.lunar.points;
-        db.lunar.points = 0;
-        localStorage.setItem('PX_V15.0', JSON.stringify(db));
-        */
-       
-        setTimeout(() => { alert("退回主系統"); }, 3000);
-    }
-</script>
 </body>
 </html>
