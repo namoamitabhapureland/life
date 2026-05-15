@@ -7,9 +7,12 @@
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
   * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  
+  /* ✨ 字體改為柔和的宋體/明體，拔除剛硬感 */
   body {
     background: radial-gradient(circle at 50% 50%, #15111a 0%, var(--bg) 100%);
-    color: #fff; font-family: "PingFang TC", serif; height: 100vh; overflow: hidden;
+    color: #fff; font-family: "Songti TC", "PMingLiU", "Noto Serif TC", serif; 
+    height: 100vh; overflow: hidden;
     display: flex; justify-content: center; align-items: center;
   }
 
@@ -17,28 +20,29 @@
   canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
   #indra-bg { 
     position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1.5s;
-    background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(156, 39, 176, 0.05) 2px, transparent 6px), radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(156, 39, 176, 0.08) 2px, transparent 6px), radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
   }
 
-  /* ════ 第一階段：發菩提心 (光點呼吸 + 誓願) ════ */
+  /* ════ 第一階段：發菩提心 (金黃光點呼吸 + 誓願) ════ */
   #vow-layer {
     position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    background: rgba(1, 2, 4, 0.5); backdrop-filter: blur(3px); transition: opacity 1s ease; cursor: pointer;
+    background: rgba(1, 2, 4, 0.4); backdrop-filter: blur(3px); transition: opacity 1s ease; cursor: pointer;
   }
   
-  /* 菩提光點 (呼吸放大縮小) */
+  /* ✨ 菩提光點改為純粹的金黃色，加強光暈 */
   #bodhi-light {
-    width: 25px; height: 25px; border-radius: 50%; background: #fff;
-    box-shadow: 0 0 20px #fff, 0 0 40px var(--gold), 0 0 80px var(--gold);
+    width: 25px; height: 25px; border-radius: 50%; background: #ffd700;
+    box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37, 0 0 80px #d4af37;
     animation: bodhiBreathe 3s ease-in-out infinite; margin-bottom: 40px; transition: transform 0.5s;
   }
   @keyframes bodhiBreathe {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 20px #fff, 0 0 40px var(--gold); opacity: 0.8; }
-    50% { transform: scale(1.8); box-shadow: 0 0 30px #fff, 0 0 60px var(--gold), 0 0 100px var(--gold); opacity: 1; }
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37; opacity: 0.8; }
+    50% { transform: scale(1.8); box-shadow: 0 0 30px #fffce0, 0 0 60px #ffd700, 0 0 120px #d4af37; opacity: 1; }
   }
 
-  #vow-text { font-size: 1.8rem; color: #f3e5ab; letter-spacing: 8px; font-weight: bold; text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px; opacity: 1; transition: opacity 0.3s; text-align: center; }
-  #vow-hint { font-size: 0.9rem; color: var(--cyan); letter-spacing: 4px; animation: pulse 2s infinite; }
+  /* ✨ 誓願文字取消粗體，回歸柔和的明體美學 */
+  #vow-text { font-size: 2rem; color: #f3e5ab; letter-spacing: 8px; font-weight: normal; text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px; opacity: 1; transition: opacity 0.3s; text-align: center; }
+  #vow-hint { font-size: 0.95rem; color: var(--cyan); letter-spacing: 5px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
   /* ════ 第二階段：直立能量樞紐 ════ */
@@ -52,34 +56,34 @@
   .node-label { position: absolute; left: 90px; white-space: nowrap; font-size: 0.8rem; color: var(--cyan); letter-spacing: 4px; opacity: 0; transition: opacity 0.5s; text-shadow: 0 0 10px rgba(139,168,156,0.6); }
   .node.active .node-label { opacity: 1; color: var(--gold); }
   .node.ultimate .node-label { font-size: 1rem; text-shadow: 0 0 15px var(--gold); left: 110px; }
-  #score-tracker { position: absolute; left: 50%; bottom: 0%; transform: translate(-50%, 50%); font-size: 2rem; color: #fff; font-family: monospace; font-weight: bold; text-shadow: 0 0 15px var(--gold); z-index: 30; transition: bottom 4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #score-tracker { position: absolute; left: 50%; bottom: 0%; transform: translate(-50%, 50%); font-size: 2rem; color: #fff; font-family: monospace; text-shadow: 0 0 15px var(--gold); z-index: 30; transition: bottom 4s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
-  /* ════ 第三/四階段：彈窗與專屬法寶庫 ════ */
-  .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(1,2,4,0.85); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.8s; }
+  /* ════ 第三階段：法寶彈窗 ════ */
+  .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(1,2,4,0.85); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.8s; }
   .t-box { background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.1) 0%, rgba(1,2,4,0.9) 100%); border: 1px solid rgba(212,175,55,0.5); border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 50px rgba(212,175,55,0.3); transform: scale(0.8); transition: transform 0.8s cubic-bezier(0.1, 1.5, 0.5, 1); }
   .modal-overlay.show .t-box { transform: scale(1); }
   
   .t-title { font-size: 1.2rem; color: var(--cyan); letter-spacing: 6px; margin-bottom: 20px; }
   .t-svg-wrap { width: 180px; height: 180px; filter: drop-shadow(0 0 20px var(--gold)); margin-bottom: 20px; }
-  .t-name { font-size: 1.8rem; color: var(--gold); font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 10px; }
-  .t-btn { margin-top: 25px; padding: 10px 30px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 1rem; border-radius: 25px; letter-spacing: 4px; cursor: pointer; transition: 0.3s; }
+  .t-name { font-size: 1.8rem; color: var(--gold); letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 10px; }
+  .t-btn { margin-top: 25px; padding: 10px 30px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 1rem; border-radius: 25px; letter-spacing: 4px; cursor: pointer; transition: 0.3s; font-family: inherit; }
   .t-btn:active { background: rgba(212,175,55,0.2); }
 
-  /* 專屬迴向庫 UI */
-  #vault-layer { position: absolute; inset: 0; z-index: 60; background: transparent; display: flex; flex-direction: column; align-items: center; padding-top: 60px; opacity: 0; pointer-events: none; transition: opacity 0.8s; }
-  .vault-title { font-size: 1.5rem; color: var(--gold); letter-spacing: 8px; margin-bottom: 40px; text-shadow: 0 0 20px var(--gold); }
-  .vault-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 800px; }
+  /* ════ 第四階段：專屬迴向庫 UI ════ */
+  #vault-layer { position: absolute; inset: 0; z-index: 60; background: transparent; display: none; flex-direction: column; align-items: center; padding-top: 60px; opacity: 0; transition: opacity 0.8s; overflow-y: auto; }
+  .vault-title { font-size: 1.6rem; color: var(--gold); letter-spacing: 8px; margin-bottom: 40px; text-shadow: 0 0 20px var(--gold); margin-top: 20px; }
+  .vault-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 800px; padding-bottom: 50px; }
   .vault-item { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(139,168,156,0.2); border-radius: 15px; padding: 20px; width: 150px; cursor: pointer; transition: 0.3s; }
   .vault-item:active { transform: scale(0.95); background: rgba(212,175,55,0.1); }
   .vault-item svg { width: 80px; height: 80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); margin-bottom: 15px; }
   .v-count { color: #fff; font-family: monospace; font-size: 1.2rem; margin-top: 5px; }
-  .v-name { color: var(--cyan); font-size: 0.8rem; letter-spacing: 2px; }
+  .v-name { color: var(--cyan); font-size: 0.85rem; letter-spacing: 2px; }
 
-  /* 微塵化現動畫 (抄襲多寶閣) */
+  /* 微塵化現動畫 */
   #anim-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(1,1,3,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s; }
   #anim-svg-container { position: relative; width: 250px; height: 250px; transition: transform 2s ease-in, filter 2s; display: flex; justify-content: center; align-items: center; }
   #anim-svg-container svg { width: 100%; height: 100%; }
-  #anim-text { font-size: 1.5rem; color: var(--gold); letter-spacing: 5px; margin-top: 40px; opacity: 0; transition: opacity 1.5s; text-align: center; line-height: 2; }
+  #anim-text { font-size: 1.3rem; color: var(--gold); letter-spacing: 5px; margin-top: 40px; opacity: 0; transition: opacity 1.5s; text-align: center; line-height: 2; }
   .dust-particle { position: absolute; border-radius: 50%; animation: floatDust ease-out forwards; }
   @keyframes floatDust { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
@@ -102,14 +106,14 @@
     <div class="node" id="n2" style="bottom: 30%;"><div id="svg-n2"></div><div class="node-label">21-40 ‧ 安立境</div></div>
     <div class="node" id="n3" style="bottom: 50%;"><div id="svg-n3"></div><div class="node-label">41-60 ‧ 萬行起</div></div>
     <div class="node" id="n4" style="bottom: 70%;"><div id="svg-n4"></div><div class="node-label">61-80 ‧ 普迴向</div></div>
-    <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿</div></div>
+    <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿相</div></div>
 </div>
 
 <div id="treasure-modal" class="modal-overlay">
     <div class="t-box">
         <div class="t-title">業鏡定相 ‧ 獲贈印記</div>
         <div class="t-svg-wrap" id="t-svg-display"></div>
-        <div class="t-name" id="t-name-display">大千金剛陣</div>
+        <div class="t-name" id="t-name-display">大千金剛相</div>
         <div class="t-desc">已存入法界專屬迴向庫</div>
         <button class="t-btn" onclick="openVault()">進入印記庫</button>
     </div>
@@ -118,7 +122,7 @@
 <div id="vault-layer">
     <div class="vault-title">法界印記 ‧ 專屬迴向庫</div>
     <div class="vault-grid" id="vault-grid"></div>
-    <button class="t-btn" style="margin-top: 50px;" onclick="location.reload()">重新體檢測試</button>
+    <button class="t-btn" style="margin-top: 30px; margin-bottom: 50px;" onclick="location.reload()">重新體檢測試</button>
 </div>
 
 <div id="anim-overlay">
@@ -146,37 +150,37 @@
         window.speechSynthesis.speak(m);
     }
 
-    // ✨ 獨立的法印資料庫 (隔離多寶閣)
     let db;
     try { db = JSON.parse(localStorage.getItem('PX_V15.0')); } catch(e) {}
     if (!db) db = {};
-    if (!db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0]; // 存 5 階圖騰的數量
+    if (!db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0]; // 獨立儲存這 5 階圖騰
     function saveDB() { localStorage.setItem('PX_V15.0', JSON.stringify(db)); }
 
-    // ════ 星空極速穿梭引擎 ════
+    // ════ 星空引擎 (亮度加強與穿梭優化) ════
     const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
     let cw, ch, stars = [];
-    let warpSpeed = 1.5; 
-    let targetWarpSpeed = 1.5; // 控制星空速度的變數
+    let warpSpeed = 1.0; 
+    let targetWarpSpeed = 1.0; 
 
     function initStars() {
         cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        stars = Array.from({length: 250}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, c: Math.random()>0.3?'#8ba89c':'#f3e5ab' }));
+        // ✨ 加亮星光顏色，讓背景更乾淨明亮
+        stars = Array.from({length: 300}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, c: Math.random()>0.4?'#ffffff':'#f3e5ab' }));
     }
     function drawStars() {
-        ctx.fillStyle = 'rgba(1, 2, 4, 0.4)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
+        // ✨ 降低殘影的透明度 (0.2)，讓光速線條更亮、更長
+        ctx.fillStyle = 'rgba(1, 2, 4, 0.2)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
         
-        // 平滑加速/減速
         warpSpeed += (targetWarpSpeed - warpSpeed) * 0.05;
 
         stars.forEach(s => {
             s.z -= warpSpeed; if(s.z<=0) { s.z=2000; s.x=(Math.random()-0.5)*cw*2; s.y=(Math.random()-0.5)*ch*2; }
             let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
             
-            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*1.5);
+            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*2); // 提高星星透明度上限
             ctx.beginPath();
-            if (warpSpeed > 10) { // 極速時畫線
-                let prevSc = 600 / (600 + s.z + warpSpeed * 2);
+            if (warpSpeed > 5) { // 速度拉高時變成長線條
+                let prevSc = 600 / (600 + s.z + warpSpeed * 3);
                 ctx.moveTo(px, py); ctx.lineTo(cw/2 + s.x*prevSc, ch/2 + s.y*prevSc);
                 ctx.lineWidth = 1.5 * sc; ctx.strokeStyle = s.c; ctx.stroke();
             } else {
@@ -187,7 +191,7 @@
     }
     window.addEventListener('resize', initStars); initStars(); drawStars();
 
-    // ════ 陣法生成引擎 ════
+    // ════ 陣法生成引擎 (保持不變) ════
     function poly(n, r, rotDeg=0) { const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180; for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); } return pts; }
     function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
     function getFullWeb(pts, stroke, width, opacity) { let html = ''; for(let i=0; i<pts.length; i++) { for(let j=i+1; j<pts.length; j++) { html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}"/>`; } } return html; }
@@ -243,13 +247,13 @@
 
     function nextVow() {
         if (vowStep === -1) {
-            targetWarpSpeed = 40; // ✨ 星空開始極速衝刺
+            targetWarpSpeed = 45; // ✨ 極速衝刺加強
             document.getElementById('vow-hint').style.display = 'none';
         }
         vowStep++;
         
         if (vowStep < 4) {
-            bodhiLight.style.transform = `scale(${1 + vowStep*0.3})`; // 光點越來越大
+            bodhiLight.style.transform = `scale(${1 + vowStep*0.4})`; // 菩提心膨脹
             vowText.style.opacity = 0;
             setTimeout(() => {
                 vowText.innerText = vows[vowStep];
@@ -259,13 +263,14 @@
         } else if (vowStep === 4) {
             vowLayer.style.opacity = 0;
             vowLayer.style.pointerEvents = 'none';
-            targetWarpSpeed = 1.5; // 星空恢復平靜
+            targetWarpSpeed = 1.0; // 恢復緩慢星空
             speak("功德結集，業鏡顯化");
             
             setTimeout(() => {
+                vowLayer.style.display = 'none'; // 徹底隱藏
                 document.getElementById('core-layer').style.opacity = 1;
                 startScoreAnimation();
-            }, 1500);
+            }, 1000);
         }
     }
 
@@ -304,23 +309,28 @@
     // ════ 第三階段：法寶賜予 ════
     function showTreasureModal() {
         const modal = document.getElementById('treasure-modal');
+        modal.style.display = 'flex'; // 先給予佈局
+        
         document.getElementById('t-svg-display').innerHTML = generatedSVGs[finalTier - 1];
         document.getElementById('t-name-display').innerText = totemNames[finalTier - 1];
         
-        // 存入專屬防呆資料庫
         db.mandalaVault[finalTier - 1]++;
         saveDB();
 
         speak(`獲贈印記，${totemNames[finalTier - 1]}`);
-        modal.style.pointerEvents = 'auto'; modal.style.opacity = 1;
-        setTimeout(() => modal.classList.add('show'), 100);
+        
+        setTimeout(() => {
+            modal.style.pointerEvents = 'auto'; 
+            modal.style.opacity = 1;
+            modal.classList.add('show');
+        }, 50);
     }
 
-    // ════ 第四階段：專屬迴向庫與微塵特效 ════
+    // ════ 第四階段：專屬迴向庫與微塵特效 (修復畫面不見的問題) ════
     function openVault() {
-        document.getElementById('treasure-modal').classList.remove('show');
-        document.getElementById('treasure-modal').style.opacity = 0;
-        document.getElementById('core-layer').style.opacity = 0;
+        // ✨ 徹底隱藏前面的彈窗與跑分儀表板，防止 Z-index 互相遮擋
+        document.getElementById('treasure-modal').style.display = 'none';
+        document.getElementById('core-layer').style.display = 'none';
         
         // 喚醒紫金光幕
         document.getElementById('indra-bg').style.opacity = 1;
@@ -335,7 +345,6 @@
             item.className = 'vault-item';
             item.innerHTML = `${generatedSVGs[i]} <div class="v-name">${totemNames[i]}</div> <div class="v-count">× ${count}</div>`;
             
-            // 點擊迴向功能
             item.onclick = () => {
                 if(db.mandalaVault[i] > 0) dedicateTotem(i, item);
                 else speak("此印記資糧不足");
@@ -343,17 +352,21 @@
             grid.appendChild(item);
         }
 
-        vaultLayer.style.opacity = 1; vaultLayer.style.pointerEvents = 'auto';
+        // ✨ 設定為 Flex 佈局並淡入
+        vaultLayer.style.display = 'flex';
+        setTimeout(() => {
+            vaultLayer.style.opacity = 1; 
+            vaultLayer.style.pointerEvents = 'auto';
+        }, 50);
+        
         speak("進入法界印記專屬庫，點擊即可迴向");
     }
 
     function dedicateTotem(index, el) {
-        // 扣除數量
         db.mandalaVault[index]--;
         saveDB();
         el.querySelector('.v-count').innerText = `× ${db.mandalaVault[index]}`;
 
-        // 啟動迴向微塵動畫 (抄襲多寶閣)
         const animOverlay = document.getElementById('anim-overlay');
         const animSvg = document.getElementById('anim-svg-container');
         const animText = document.getElementById('anim-text');
@@ -372,9 +385,9 @@
             
             setTimeout(() => {
                 animSvg.innerHTML = '';
-                createDustParticles(animSvg, '#d4af37'); // 化作金塵
+                createDustParticles(animSvg, '#d4af37'); 
                 speak("化作微塵，無相大佈施");
-                animText.innerHTML = "【 因緣圓滿 ． 悉皆迴向 】<br><span style='font-size:0.8rem; color:#8ba89c;'>您的印記已化作無量光芒，迴向虛空法界。</span>";
+                animText.innerHTML = "【 因緣圓滿 ． 悉皆迴向 】<br><span style='font-size:0.9rem; color:#8ba89c;'><br>您的印記已化作無量光芒，迴向虛空法界。</span>";
                 animText.style.opacity = 1;
                 
                 setTimeout(() => {
