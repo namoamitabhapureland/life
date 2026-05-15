@@ -3,259 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>法界業鏡 ‧ 直立結算樞紐</title>
+<title>法界業鏡 ‧ 發菩提心與結算樞紐</title>
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
-  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   body {
     background: radial-gradient(circle at 50% 50%, #15111a 0%, var(--bg) 100%);
     color: #fff; font-family: "PingFang TC", serif; height: 100vh; overflow: hidden;
     display: flex; justify-content: center; align-items: center;
   }
 
-  /* ════ 直立能量樞紐 ════ */
-  .vertical-core {
-    position: relative; width: 300px; height: 85vh; 
+  /* 星空畫布 */
+  canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* ════ 第一階段：四宏誓願 ════ */
+  #vow-layer {
+    position: absolute; inset: 0; z-index: 50; 
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: rgba(1, 2, 4, 0.6); backdrop-filter: blur(5px);
+    transition: opacity 1s ease; cursor: pointer;
+  }
+  #vow-text {
+    font-size: 2rem; color: #f3e5ab; letter-spacing: 8px; font-weight: bold;
+    text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px;
+    opacity: 1; transition: opacity 0.3s; text-align: center;
+  }
+  #vow-hint { font-size: 0.9rem; color: var(--cyan); letter-spacing: 4px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* ════ 第二階段：直立能量樞紐 ════ */
+  #core-layer {
+    position: relative; width: 300px; height: 85vh; z-index: 10;
     display: flex; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 1.5s ease;
   }
 
-  /* 背景能量軌道 */
-  .track {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 4px; height: 100%; background: rgba(255,255,255,0.05);
-    border-radius: 2px; box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
-  }
+  .track { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: rgba(255,255,255,0.05); border-radius: 2px; }
+  .fill { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 6px; height: 0%; border-radius: 3px; background: linear-gradient(0deg, transparent, #f3e5ab, #fff); box-shadow: 0 0 20px #d4af37, 0 0 40px rgba(212,175,55,0.6); transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5; }
 
-  /* 向上衝刺的光束 */
-  .fill {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 6px; height: 0%; border-radius: 3px;
-    background: linear-gradient(0deg, transparent, #f3e5ab, #fff);
-    box-shadow: 0 0 20px #d4af37, 0 0 40px rgba(212,175,55,0.6);
-    transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    z-index: 5;
-  }
-
-  /* ════ 陣法節點 ════ */
   .node {
-    position: absolute; left: 50%; 
-    transform: translate(-50%, 50%) scale(0.4); 
+    position: absolute; left: 50%; transform: translate(-50%, 50%) scale(0.4); 
     display: flex; justify-content: center; align-items: center;
-    filter: grayscale(100%) brightness(0.3); opacity: 0.5;
-    transition: all 1s cubic-bezier(0.3, 1, 0.3, 1);
+    filter: grayscale(100%) brightness(0.3); opacity: 0.5; transition: all 1s cubic-bezier(0.3, 1, 0.3, 1);
   }
-
-  /* 點亮狀態 */
-  .node.active {
-    filter: grayscale(0%) brightness(1); opacity: 1;
-    transform: translate(-50%, 50%) scale(0.9); z-index: 10;
-  }
-  
-  /* 最終圓滿狀態 */
-  .node.ultimate {
-    transform: translate(-50%, 50%) scale(1.4); z-index: 20;
-    filter: drop-shadow(0 0 35px rgba(212,175,55,0.8));
-  }
-
+  .node.active { filter: grayscale(0%) brightness(1); opacity: 1; transform: translate(-50%, 50%) scale(0.9); z-index: 10; }
+  .node.ultimate { transform: translate(-50%, 50%) scale(1.4); z-index: 20; filter: drop-shadow(0 0 35px rgba(212,175,55,0.8)); }
   .node svg { width: 140px; height: 140px; }
 
-  /* 標籤文字 (置於圖騰右側) */
-  .node-label {
-    position: absolute; left: 90px; white-space: nowrap;
-    font-size: 0.8rem; color: var(--cyan); letter-spacing: 4px;
-    opacity: 0; transition: opacity 0.5s, color 0.5s;
-    text-shadow: 0 0 10px rgba(139,168,156,0.6);
-  }
+  .node-label { position: absolute; left: 90px; white-space: nowrap; font-size: 0.8rem; color: var(--cyan); letter-spacing: 4px; opacity: 0; transition: opacity 0.5s, color 0.5s; text-shadow: 0 0 10px rgba(139,168,156,0.6); }
   .node.active .node-label { opacity: 1; color: var(--gold); }
   .node.ultimate .node-label { font-size: 1rem; text-shadow: 0 0 15px var(--gold); left: 110px; }
 
-  /* 分數跟隨器 */
-  #score-tracker {
-    position: absolute; left: 50%; bottom: 0%;
-    transform: translate(-50%, 50%);
-    font-size: 2rem; color: #fff; font-family: monospace; font-weight: bold;
-    text-shadow: 0 0 15px var(--gold); z-index: 30;
-    transition: bottom 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  #score-tracker { position: absolute; left: 50%; bottom: 0%; transform: translate(-50%, 50%); font-size: 2rem; color: #fff; font-family: monospace; font-weight: bold; text-shadow: 0 0 15px var(--gold); z-index: 30; transition: bottom 4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+  /* ════ 第三階段：法寶賜予彈窗 ════ */
+  #treasure-modal {
+    position: fixed; inset: 0; z-index: 100; background: rgba(1,2,4,0.85); backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 1s;
   }
+  .t-box {
+    background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.1) 0%, rgba(1,2,4,0.9) 100%);
+    border: 1px solid rgba(212,175,55,0.5); border-radius: 20px; padding: 40px;
+    display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 50px rgba(212,175,55,0.3);
+    transform: scale(0.8); transition: transform 0.8s cubic-bezier(0.1, 1.5, 0.5, 1);
+  }
+  #treasure-modal.show .t-box { transform: scale(1); }
+  
+  .t-title { font-size: 1.2rem; color: var(--cyan); letter-spacing: 6px; margin-bottom: 20px; }
+  .t-svg-wrap { width: 180px; height: 180px; filter: drop-shadow(0 0 20px var(--gold)); margin-bottom: 20px; }
+  .t-name { font-size: 1.8rem; color: var(--gold); font-weight: bold; letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 10px; }
+  .t-desc { font-size: 0.9rem; color: #ccc; letter-spacing: 2px; }
+  .t-btn { margin-top: 30px; padding: 10px 30px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 1rem; border-radius: 25px; letter-spacing: 4px; cursor: pointer; }
 
 </style>
 </head>
 <body>
 
-  <div class="vertical-core">
+<canvas id="starCanvas"></canvas>
+
+<div id="vow-layer" onclick="nextVow()">
+    <div id="vow-text">發菩提心</div>
+    <div id="vow-hint">點擊螢幕，結集本月資糧</div>
+</div>
+
+<div id="core-layer">
     <div class="track"></div>
     <div class="fill" id="energy-fill"></div>
-    
     <div id="score-tracker">0%</div>
 
     <div class="node" id="n1" style="bottom: 10%;"><div id="svg-n1"></div><div class="node-label">0-20 ‧ 初心</div></div>
     <div class="node" id="n2" style="bottom: 30%;"><div id="svg-n2"></div><div class="node-label">21-40 ‧ 安住</div></div>
     <div class="node" id="n3" style="bottom: 50%;"><div id="svg-n3"></div><div class="node-label">41-60 ‧ 萬行</div></div>
     <div class="node" id="n4" style="bottom: 70%;"><div id="svg-n4"></div><div class="node-label">61-80 ‧ 迴向</div></div>
-    <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿大千</div></div>
-  </div>
+    <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿</div></div>
+</div>
+
+<div id="treasure-modal">
+    <div class="t-box">
+        <div class="t-title">法界結算 ‧ 獲贈法寶</div>
+        <div class="t-svg-wrap" id="t-svg-display"></div>
+        <div class="t-name" id="t-name-display">大千金剛陣</div>
+        <div class="t-desc">已存入您的琉璃多寶閣中</div>
+        <button class="t-btn" onclick="closeModal()">收攝入庫</button>
+    </div>
+</div>
 
 <script>
-  /* ── 核心工具函數 ── */
-  function poly(n, r, rotDeg=0) {
-    const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
-    for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); }
-    return pts;
-  }
-  function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
-  
-  function getFullWeb(pts, stroke, width, opacity) {
-    let html = '';
-    for(let i=0; i<pts.length; i++) {
-      for(let j=i+1; j<pts.length; j++) {
-        html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}"/>`;
-      }
-    }
-    return html;
-  }
-
-  /* ── 具有動態生命力與彩色華麗的陣法生成 ── */
-  function generateDynamicSVG(tier) {
-    // 主題色定義
-    const themes = [
-      ['rgba(0, 180, 255, 0.1)', '#80dfff'],  // 1: 青
-      ['rgba(50, 255, 120, 0.1)', '#80ffc0'], // 2: 綠
-      ['rgba(200, 100, 255, 0.1)', '#e0c0ff'],// 3: 紫
-      ['rgba(255, 150, 50, 0.15)', '#ffcc80'],// 4: 橙
-      ['rgba(255, 215, 0, 0.2)', '#fffce0']   // 5: 金
-    ];
-    let fill = themes[tier-1][0], stroke = themes[tier-1][1];
-    
-    let svg = `<svg viewBox="-120 -120 240 240" style="overflow:visible;">`;
-
-    if (tier === 1) { 
-      // M1: 緩慢自轉的九重之境
-      let pOut = poly(9, 100); let pIn = poly(9, 40, 20);
-      svg += `<g>`;
-      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="40s" repeatCount="indefinite"/>`;
-      svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.6, 0.6);
-      svg += getFullWeb(pIn, '#fff', 0.5, 0.5);
-      svg += `</g>`;
-    } 
-    else if (tier === 2) { 
-      // M2: 脈動呼吸的十一法界
-      let pOut = poly(11, 100); let pIn = poly(11, 70, 180/11);
-      svg += `<g>`;
-      svg += `<animate attributeName="opacity" values="0.6; 1; 0.6" dur="3s" repeatCount="indefinite"/>`;
-      svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.5, 0.7);
-      svg += getFullWeb(pIn, '#fff', 0.4, 0.6);
-      svg += `</g>`;
-    } 
-    else if (tier === 3) { 
-      // M3: 雙向錯位旋轉的雙重八識
-      let p1 = poly(8, 100, 0); let p2 = poly(8, 100, 22.5);
-      svg += `<g>`;
-      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/>`;
-      svg += `<polygon points="${ptStr(p1)}" fill="${fill}"/>`;
-      svg += getFullWeb(p1, stroke, 0.4, 0.6);
-      svg += `</g>`;
-      svg += `<g>`;
-      svg += `<animateTransform attributeName="transform" type="rotate" from="360 0 0" to="0 0 0" dur="25s" repeatCount="indefinite"/>`;
-      svg += `<polygon points="${ptStr(p2)}" fill="${fill}"/>`;
-      svg += getFullWeb(p2, '#fff', 0.4, 0.6);
-      svg += `</g>`;
-    } 
-    else if (tier === 4) { 
-      // M4: 光芒收放的十方網格
-      let pOut = poly(10, 100); let pIn = poly(5, 50, 18);
-      svg += `<g>`;
-      svg += `<animateTransform attributeName="transform" type="scale" values="0.95; 1.05; 0.95" dur="4s" repeatCount="indefinite"/>`;
-      svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.5, 0.6);
-      svg += getFullWeb(pIn, '#fff', 0.6, 0.8);
-      svg += `</g>`;
-    } 
-    else if (tier === 5) { 
-      // M5: 極致彩色的十二圓滿大千金剛陣 (彩色華麗星空填色)
-      let pOut = poly(12, 100);
-      const star = [];
-      for(let i=0; i<12; i++) {
-        star.push(pOut[i]);
-        const midA = (i*30 + 15 - 90) * Math.PI / 180;
-        star.push([35*Math.cos(midA), 35*Math.sin(midA)]);
-      }
-
-      svg += `<g>`;
-      // 緩慢自轉，讓彩色光芒流轉
-      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="60s" repeatCount="indefinite"/>`;
-      
-      // 填入 12 色相(Hue)的彩虹切片
-      for(let i=0; i<12; i++) {
-        let next = (i+1)%12;
-        let hue = i * 30;
-        
-        // 外部三角形切片
-        let sliceOut = `0,0 ${pOut[i][0]},${pOut[i][1]} ${pOut[next][0]},${pOut[next][1]}`;
-        svg += `<polygon points="${sliceOut}" fill="hsla(${hue}, 80%, 55%, 0.2)" />`;
-        
-        // 內部星芒切片 (加強色彩飽和度)
-        let sliceIn1 = `0,0 ${star[i*2][0]},${star[i*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}`;
-        let sliceIn2 = `0,0 ${star[next*2][0]},${star[next*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}`;
-        svg += `<polygon points="${sliceIn1}" fill="hsla(${hue+40}, 90%, 65%, 0.4)" />`;
-        svg += `<polygon points="${sliceIn2}" fill="hsla(${hue+80}, 90%, 65%, 0.4)" />`;
-      }
-
-      // 最後蓋上最複雜的完全網格金剛線，確保結構銳利
-      svg += getFullWeb(pOut, stroke, 0.6, 0.7);
-      svg += `<polygon points="${ptStr(star)}" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.9"/>`;
-      svg += `</g>`;
-    }
-
-    svg += `</svg>`;
-    return svg;
-  }
-
-  // 注入圖騰
-  for(let i=1; i<=5; i++) {
-    document.getElementById(`svg-n${i}`).innerHTML = generateDynamicSVG(i);
-  }
-
-  /* ── 直立跑分與點亮邏輯 ── */
-  window.onload = () => {
-    // ✨ 系統精準算分 (請隨意修改測試：20, 55, 88, 100)
-    const finalScore = 100; 
-    
-    setTimeout(() => {
-      const fillBar = document.getElementById('energy-fill');
-      const scoreTracker = document.getElementById('score-tracker');
-      
-      // 光束向上拉升
-      fillBar.style.height = finalScore + '%';
-      scoreTracker.style.bottom = finalScore + '%';
-      
-      let currentNum = 0;
-      let timer = setInterval(() => {
-        currentNum += 1;
-        if(currentNum >= finalScore) { currentNum = finalScore; clearInterval(timer); }
-        scoreTracker.innerText = currentNum + '%';
-
-        // 沿途點亮 (10, 30, 50, 70, 90 對應節點的位置)
-        if(currentNum >= 10) document.getElementById('n1').classList.add('active');
-        if(currentNum >= 30) document.getElementById('n2').classList.add('active');
-        if(currentNum >= 50) document.getElementById('n3').classList.add('active');
-        if(currentNum >= 70) document.getElementById('n4').classList.add('active');
-        if(currentNum >= 90) document.getElementById('n5').classList.add('active'); 
-      }, 40); // 40ms 跳 1%，4秒跑完100%
-
-      // 最終定格放大特效
-      setTimeout(() => {
-        let finalTier = Math.ceil(finalScore / 20); 
-        if(finalTier < 1) finalTier = 1;
-        
-        let targetNode = document.getElementById(`n${finalTier}`);
-        if(targetNode) {
-          targetNode.classList.add('active', 'ultimate');
+    // ══════════════════════════════════════════
+    // 系統底層：語音與資料庫 (完全保留您的代碼)
+    // ══════════════════════════════════════════
+    let iosAudioUnlocked = false;
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('mousedown', unlockAudio, { once: true });
+    function unlockAudio() {
+        if (!iosAudioUnlocked && window.speechSynthesis) {
+            let silentUtterance = new SpeechSynthesisUtterance('');
+            window.speechSynthesis.speak(silentUtterance);
+            iosAudioUnlocked = true;
         }
-      }, 4000); // 配合光軌上升時間
-    }, 500); 
-  };
+    }
+
+    window.sysUtterances = [];
+    function speak(t, r = 0.85) {
+        if (!window.speechSynthesis) return; 
+        window.speechSynthesis.cancel(); 
+        let isAndroid = /Android/i.test(navigator.userAgent);
+        let textToSpeak = isAndroid ? t : t.replace(/阿/g, 'ㄚ');
+        const m = new SpeechSynthesisUtterance(textToSpeak);
+        m.lang = 'zh-TW'; m.rate = r; 
+        
+        if (isAndroid) {
+            window.sysUtterances.push(m);
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                let zhVoice = voices.find(v => v.lang === 'zh-TW' && v.name.includes('Google')) || voices.find(v => v.lang.includes('zh'));
+                if (zhVoice) m.voice = zhVoice;
+            }
+            m.onend = function() { window.sysUtterances = window.sysUtterances.filter(u => u !== m); };
+            setTimeout(() => { window.speechSynthesis.speak(m); }, 150);
+        } else {
+            window.speechSynthesis.speak(m);
+        }
+    }
+
+    let db;
+    try { db = JSON.parse(localStorage.getItem('PX_V15.0')); if (!db || typeof db !== 'object') db = null; } catch(e) {}
+    if (!db) db = { treasures: {} };
+    if (!db.treasures) db.treasures = {};
+    function saveDB() { localStorage.setItem('PX_V15.0', JSON.stringify(db)); }
+
+    // ══════════════════════════════════════════
+    // 星空背景引擎
+    // ══════════════════════════════════════════
+    const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
+    let cw, ch, stars = [];
+    function initStars() {
+        cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
+        stars = Array.from({length: 200}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, c: Math.random()>0.5?'#f3e5ab':'#8ba89c' }));
+    }
+    function drawStars() {
+        ctx.fillStyle = 'rgba(1, 2, 4, 0.3)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
+        stars.forEach(s => {
+            s.z -= 1.5; if(s.z<=0) { s.z=2000; s.x=(Math.random()-0.5)*cw*2; s.y=(Math.random()-0.5)*ch*2; }
+            let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
+            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*1.5);
+            ctx.beginPath(); ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); ctx.fill();
+        });
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; requestAnimationFrame(drawStars);
+    }
+    window.addEventListener('resize', initStars); initStars(); drawStars();
+
+    // ══════════════════════════════════════════
+    // 陣法生成引擎 (供跑分及寶物庫使用)
+    // ══════════════════════════════════════════
+    function poly(n, r, rotDeg=0) { const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180; for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); } return pts; }
+    function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
+    function getFullWeb(pts, stroke, width, opacity) { let html = ''; for(let i=0; i<pts.length; i++) { for(let j=i+1; j<pts.length; j++) { html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}"/>`; } } return html; }
+
+    const totemNames = ["青琉璃種子", "綠翡翠陣盤", "紫星晶雙輪", "橙琥珀金網", "大千金剛相"];
+    let generatedSVGs = [];
+
+    function generateDynamicSVG(tier) {
+        const themes = [ ['rgba(0,180,255,0.1)','#80dfff'], ['rgba(50,255,120,0.1)','#80ffc0'], ['rgba(200,100,255,0.1)','#e0c0ff'], ['rgba(255,150,50,0.15)','#ffcc80'], ['rgba(255,215,0,0.2)','#fffce0'] ];
+        let fill = themes[tier-1][0], stroke = themes[tier-1][1];
+        let svg = `<svg viewBox="-120 -120 240 240" style="overflow:visible;">`;
+
+        if (tier === 1) { 
+            let pOut = poly(9, 100); let pIn = poly(9, 40, 20);
+            svg += `<g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="40s" repeatCount="indefinite"/><polygon points="${ptStr(pOut)}" fill="${fill}"/>${getFullWeb(pOut, stroke, 0.6, 0.6)}${getFullWeb(pIn, '#fff', 0.5, 0.5)}</g>`;
+        } else if (tier === 2) { 
+            let pOut = poly(11, 100); let pIn = poly(11, 70, 180/11);
+            svg += `<g><animate attributeName="opacity" values="0.6; 1; 0.6" dur="3s" repeatCount="indefinite"/><polygon points="${ptStr(pOut)}" fill="${fill}"/>${getFullWeb(pOut, stroke, 0.5, 0.7)}${getFullWeb(pIn, '#fff', 0.4, 0.6)}</g>`;
+        } else if (tier === 3) { 
+            let p1 = poly(8, 100, 0); let p2 = poly(8, 100, 22.5);
+            svg += `<g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/><polygon points="${ptStr(p1)}" fill="${fill}"/>${getFullWeb(p1, stroke, 0.4, 0.6)}</g><g><animateTransform attributeName="transform" type="rotate" from="360 0 0" to="0 0 0" dur="25s" repeatCount="indefinite"/><polygon points="${ptStr(p2)}" fill="${fill}"/>${getFullWeb(p2, '#fff', 0.4, 0.6)}</g>`;
+        } else if (tier === 4) { 
+            let pOut = poly(10, 100); let pIn = poly(5, 50, 18);
+            svg += `<g><animateTransform attributeName="transform" type="scale" values="0.95; 1.05; 0.95" dur="4s" repeatCount="indefinite"/><polygon points="${ptStr(pOut)}" fill="${fill}"/>${getFullWeb(pOut, stroke, 0.5, 0.6)}${getFullWeb(pIn, '#fff', 0.6, 0.8)}</g>`;
+        } else if (tier === 5) { 
+            let pOut = poly(12, 100); const star = [];
+            for(let i=0; i<12; i++) { star.push(pOut[i]); star.push([35*Math.cos((i*30-75)*Math.PI/180), 35*Math.sin((i*30-75)*Math.PI/180)]); }
+            svg += `<g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="60s" repeatCount="indefinite"/>`;
+            for(let i=0; i<12; i++) {
+                let next = (i+1)%12; let hue = i * 30;
+                svg += `<polygon points="0,0 ${pOut[i][0]},${pOut[i][1]} ${pOut[next][0]},${pOut[next][1]}" fill="hsla(${hue}, 80%, 55%, 0.2)" />`;
+                svg += `<polygon points="0,0 ${star[i*2][0]},${star[i*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}" fill="hsla(${hue+40}, 90%, 65%, 0.4)" />`;
+                svg += `<polygon points="0,0 ${star[next*2][0]},${star[next*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}" fill="hsla(${hue+80}, 90%, 65%, 0.4)" />`;
+            }
+            svg += `${getFullWeb(pOut, stroke, 0.6, 0.7)}<polygon points="${ptStr(star)}" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.9"/></g>`;
+        }
+        svg += `</svg>`;
+        return svg;
+    }
+
+    for(let i=1; i<=5; i++) {
+        let svgCode = generateDynamicSVG(i);
+        generatedSVGs.push(svgCode);
+        document.getElementById(`svg-n${i}`).innerHTML = svgCode;
+    }
+
+    // ══════════════════════════════════════════
+    // 流程控制：四宏願 -> 跑分 -> 賜寶
+    // ══════════════════════════════════════════
+    const vows = ["眾生無邊誓願度", "煩惱無盡誓願斷", "法門無量誓願學", "佛道無上誓願成"];
+    let vowStep = -1;
+    const vowText = document.getElementById('vow-text');
+    const vowHint = document.getElementById('vow-hint');
+    const vowLayer = document.getElementById('vow-layer');
+    const coreLayer = document.getElementById('core-layer');
+
+    // 1. 發菩提心點擊
+    function nextVow() {
+        vowStep++;
+        if (vowStep < 4) {
+            vowText.style.opacity = 0;
+            setTimeout(() => {
+                vowText.innerText = vows[vowStep];
+                vowText.style.opacity = 1;
+                if(vowStep > 0) vowHint.style.opacity = 0; // 隱藏提示
+                speak(vows[vowStep]);
+            }, 300);
+        } else if (vowStep === 4) {
+            // 四宏願結束，進入結算
+            vowLayer.style.opacity = 0;
+            vowLayer.style.pointerEvents = 'none';
+            speak("功德結集，業鏡顯化");
+            setTimeout(() => {
+                coreLayer.style.opacity = 1;
+                startScoreAnimation();
+            }, 1000);
+        }
+    }
+
+    // 2. 跑分動畫
+    let finalTier = 1; // 全域記錄最終階級
+    function startScoreAnimation() {
+        // ✨ 模擬系統算出的真實分數
+        const finalScore = 100; 
+        
+        const fillBar = document.getElementById('energy-fill');
+        const scoreTracker = document.getElementById('score-tracker');
+        
+        fillBar.style.height = finalScore + '%';
+        scoreTracker.style.bottom = finalScore + '%';
+        
+        let currentNum = 0;
+        let timer = setInterval(() => {
+            currentNum += 1;
+            if(currentNum >= finalScore) { currentNum = finalScore; clearInterval(timer); }
+            scoreTracker.innerText = currentNum + '%';
+
+            if(currentNum >= 10) document.getElementById('n1').classList.add('active');
+            if(currentNum >= 30) document.getElementById('n2').classList.add('active');
+            if(currentNum >= 50) document.getElementById('n3').classList.add('active');
+            if(currentNum >= 70) document.getElementById('n4').classList.add('active');
+            if(currentNum >= 90) document.getElementById('n5').classList.add('active'); 
+        }, 40);
+
+        // 定格與賜寶
+        setTimeout(() => {
+            finalTier = Math.ceil(finalScore / 20); 
+            if(finalTier < 1) finalTier = 1;
+            if(finalTier > 5) finalTier = 5;
+            
+            let targetNode = document.getElementById(`n${finalTier}`);
+            if(targetNode) targetNode.classList.add('active', 'ultimate');
+
+            // 跑完後等待 2.5 秒，彈出寶物視窗
+            setTimeout(showTreasureModal, 2500);
+
+        }, 4000);
+    }
+
+    // 3. 法寶賜予
+    function showTreasureModal() {
+        const modal = document.getElementById('treasure-modal');
+        document.getElementById('t-svg-display').innerHTML = generatedSVGs[finalTier - 1];
+        document.getElementById('t-name-display').innerText = totemNames[finalTier - 1];
+        
+        // 將法寶存入 DB (使用動態生成的金剛陣作為多寶閣的新寶物)
+        let tKey = `totem_tier_${finalTier}`;
+        if (!db.treasures[tKey]) db.treasures[tKey] = 0;
+        db.treasures[tKey]++;
+        saveDB();
+
+        speak(`獲贈法寶，${totemNames[finalTier - 1]}`);
+        
+        modal.style.pointerEvents = 'auto';
+        modal.style.opacity = 1;
+        setTimeout(() => modal.classList.add('show'), 100);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('treasure-modal');
+        modal.classList.remove('show');
+        modal.style.opacity = 0;
+        setTimeout(() => {
+            alert("已收攝入庫！可退回主系統。");
+            // window.location.href = 'index.html'; 
+        }, 800);
+    }
 </script>
 </body>
 </html>
