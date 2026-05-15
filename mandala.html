@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>法界業鏡 ‧ 菩提結算與專屬迴向</title>
+<title>法界業鏡 ‧ 菩提迴向與震撼賜寶</title>
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
   * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   
-  /* ✨ 字體改為柔和的宋體/明體，拔除剛硬感 */
+  /* 宋體/明體美學字體 */
   body {
     background: radial-gradient(circle at 50% 50%, #15111a 0%, var(--bg) 100%);
     color: #fff; font-family: "Songti TC", "PMingLiU", "Noto Serif TC", serif; 
@@ -29,7 +29,7 @@
     background: rgba(1, 2, 4, 0.4); backdrop-filter: blur(3px); transition: opacity 1s ease; cursor: pointer;
   }
   
-  /* ✨ 菩提光點改為純粹的金黃色，加強光暈 */
+  /* ✨ 金黃菩提心 */
   #bodhi-light {
     width: 25px; height: 25px; border-radius: 50%; background: #ffd700;
     box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37, 0 0 80px #d4af37;
@@ -40,15 +40,25 @@
     50% { transform: scale(1.8); box-shadow: 0 0 30px #fffce0, 0 0 60px #ffd700, 0 0 120px #d4af37; opacity: 1; }
   }
 
-  /* ✨ 誓願文字取消粗體，回歸柔和的明體美學 */
+  /* 文字柔和宋體 */
   #vow-text { font-size: 2rem; color: #f3e5ab; letter-spacing: 8px; font-weight: normal; text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px; opacity: 1; transition: opacity 0.3s; text-align: center; }
   #vow-hint { font-size: 0.95rem; color: var(--cyan); letter-spacing: 5px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-  /* ════ 第二階段：直立能量樞紐 ════ */
+  /* ════ 第二階段：直立能量樞紐 (彩色透明能量柱) ════ */
   #core-layer { position: relative; width: 300px; height: 85vh; z-index: 10; display: flex; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 1.5s ease; }
   .track { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: rgba(255,255,255,0.05); border-radius: 2px; }
-  .fill { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 6px; height: 0%; border-radius: 3px; background: linear-gradient(0deg, transparent, #f3e5ab, #fff); box-shadow: 0 0 20px #d4af37, 0 0 40px rgba(212,175,55,0.6); transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5; }
+  
+  /* ✨ 向上衝刺的透明彩色菩提琉璃柱 */
+  .fill { 
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 8px; height: 0%; border-radius: 3px;
+    /* 核心七彩透明琉璃 Progressive Gradient */
+    background: linear-gradient(180deg, rgba(255,215,0,0.5), rgba(255,150,50,0.4), rgba(200,100,255,0.4), rgba(50,255,120,0.4), rgba(0,180,255,0.3));
+    box-shadow: 0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(255,255,255,0.3);
+    transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 5;
+  }
+
   .node { position: absolute; left: 50%; transform: translate(-50%, 50%) scale(0.4); display: flex; justify-content: center; align-items: center; filter: grayscale(100%) brightness(0.3); opacity: 0.5; transition: all 1s cubic-bezier(0.3, 1, 0.3, 1); }
   .node.active { filter: grayscale(0%) brightness(1); opacity: 1; transform: translate(-50%, 50%) scale(0.9); z-index: 10; }
   .node.ultimate { transform: translate(-50%, 50%) scale(1.4); z-index: 20; filter: drop-shadow(0 0 35px rgba(212,175,55,0.8)); }
@@ -62,7 +72,6 @@
   .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(1,2,4,0.85); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.8s; }
   .t-box { background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.1) 0%, rgba(1,2,4,0.9) 100%); border: 1px solid rgba(212,175,55,0.5); border-radius: 20px; padding: 40px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 50px rgba(212,175,55,0.3); transform: scale(0.8); transition: transform 0.8s cubic-bezier(0.1, 1.5, 0.5, 1); }
   .modal-overlay.show .t-box { transform: scale(1); }
-  
   .t-title { font-size: 1.2rem; color: var(--cyan); letter-spacing: 6px; margin-bottom: 20px; }
   .t-svg-wrap { width: 180px; height: 180px; filter: drop-shadow(0 0 20px var(--gold)); margin-bottom: 20px; }
   .t-name { font-size: 1.8rem; color: var(--gold); letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 10px; }
@@ -79,13 +88,42 @@
   .v-count { color: #fff; font-family: monospace; font-size: 1.2rem; margin-top: 5px; }
   .v-name { color: var(--cyan); font-size: 0.85rem; letter-spacing: 2px; }
 
-  /* 微塵化現動畫 */
-  #anim-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(1,1,3,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 1s; }
-  #anim-svg-container { position: relative; width: 250px; height: 250px; transition: transform 2s ease-in, filter 2s; display: flex; justify-content: center; align-items: center; }
+  /* ════ ✨ 第五階段：全螢幕震撼黃光微塵迴向動畫 ════ */
+  #anim-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none; justify-content: center; align-items: center;
+    background: rgba(1,1,3,0.9); opacity: 0; transition: opacity 0.8s;
+  }
+  
+  /* 全螢幕背景黃光炸裂 */
+  #full-screen-flash {
+    position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, #fffce0 0%, #ffd700 30%, transparent 80%);
+    opacity: 0; transform: scale(0.1); transition: transform 0.5s ease-out, opacity 1s; z-index: 10;
+  }
+  #anim-overlay.active #full-screen-flash { transform: scale(1.5); opacity: 1; }
+
+  /* 幾何圖騰化現 */
+  #anim-svg-container { position: relative; width: 280px; height: 280px; transition: transform 2s ease-in, filter 2s; display: flex; justify-content: center; align-items: center; z-index: 20; }
   #anim-svg-container svg { width: 100%; height: 100%; }
-  #anim-text { font-size: 1.3rem; color: var(--gold); letter-spacing: 5px; margin-top: 40px; opacity: 0; transition: opacity 1.5s; text-align: center; line-height: 2; }
-  .dust-particle { position: absolute; border-radius: 50%; animation: floatDust ease-out forwards; }
-  @keyframes floatDust { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+  /* 文字 */
+  #anim-text { font-size: 1.3rem; color: #fffce0; letter-spacing: 6px; margin-top: 50px; opacity: 0; transition: opacity 1.5s; text-align: center; line-height: 2.2; z-index: 30; }
+
+  /* 無量微塵顆粒 */
+  .dust-particle {
+    position: absolute; border-radius: 50%; opacity: 0; z-index: 15;
+    animation: floatDustExplosion ease-out forwards;
+  }
+  
+  /* ✨ 修改為四方高速擴散至全螢幕的動畫 */
+  @keyframes floatDustExplosion {
+    0% { transform: translate(0,0) scale(1); opacity: 0; }
+    5% { opacity: 1; }
+    100% { 
+        /* ✨ 動態算出螢幕四個角落的目標座標 (在 JS 設置) */
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+  }
 
 </style>
 </head>
@@ -105,7 +143,7 @@
     <div class="node" id="n1" style="bottom: 10%;"><div id="svg-n1"></div><div class="node-label">0-20 ‧ 初發心</div></div>
     <div class="node" id="n2" style="bottom: 30%;"><div id="svg-n2"></div><div class="node-label">21-40 ‧ 安立境</div></div>
     <div class="node" id="n3" style="bottom: 50%;"><div id="svg-n3"></div><div class="node-label">41-60 ‧ 萬行起</div></div>
-    <div class="node" id="n4" style="bottom: 70%;"><div id="svg-n4"></div><div class="node-label">61-80 ‧ 普迴向</div></div>
+    <div class="node" id="n4" style="bottom: 70%;"><div id="svg-n4"></div><div class="node-label">61-80 ‧普迴向</div></div>
     <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿相</div></div>
 </div>
 
@@ -126,9 +164,7 @@
 </div>
 
 <div id="anim-overlay">
-    <div id="anim-svg-container"></div>
-    <div id="anim-text"></div>
-    <button class="t-btn" id="close-anim-btn" style="opacity: 0; pointer-events: none; margin-top: 30px;" onclick="closeAnim()">功德圓滿</button>
+    <div id="full-screen-flash"></div> <div id="anim-svg-container"></div> <div id="anim-text"></div> <button class="t-btn" id="close-anim-btn" style="opacity: 0; pointer-events: none; margin-top: 30px; z-index: 30;" onclick="closeAnim()">功德圓滿</button>
 </div>
 
 <script>
@@ -156,7 +192,7 @@
     if (!db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0]; // 獨立儲存這 5 階圖騰
     function saveDB() { localStorage.setItem('PX_V15.0', JSON.stringify(db)); }
 
-    // ════ 星空引擎 (亮度加強與穿梭優化) ════
+    // ════ 星空引擎 (✨ 亮度加強、尖銳化群) ════
     const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
     let cw, ch, stars = [];
     let warpSpeed = 1.0; 
@@ -164,11 +200,11 @@
 
     function initStars() {
         cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        // ✨ 加亮星光顏色，讓背景更乾淨明亮
+        // ✨ 加亮星星顏色 (#ffffff)，增加尖銳星群感
         stars = Array.from({length: 300}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, c: Math.random()>0.4?'#ffffff':'#f3e5ab' }));
     }
     function drawStars() {
-        // ✨ 降低殘影的透明度 (0.2)，讓光速線條更亮、更長
+        // ✨ 殘影降低 (0.2)，讓背景更明亮清晰
         ctx.fillStyle = 'rgba(1, 2, 4, 0.2)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
         
         warpSpeed += (targetWarpSpeed - warpSpeed) * 0.05;
@@ -177,9 +213,9 @@
             s.z -= warpSpeed; if(s.z<=0) { s.z=2000; s.x=(Math.random()-0.5)*cw*2; s.y=(Math.random()-0.5)*ch*2; }
             let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
             
-            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*2); // 提高星星透明度上限
+            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*2); // ✨ 提高星星透明度上限
             ctx.beginPath();
-            if (warpSpeed > 5) { // 速度拉高時變成長線條
+            if (warpSpeed > 5) { // 速度拉高時變成長線條（尖銳線條）
                 let prevSc = 600 / (600 + s.z + warpSpeed * 3);
                 ctx.moveTo(px, py); ctx.lineTo(cw/2 + s.x*prevSc, ch/2 + s.y*prevSc);
                 ctx.lineWidth = 1.5 * sc; ctx.strokeStyle = s.c; ctx.stroke();
@@ -191,7 +227,7 @@
     }
     window.addEventListener('resize', initStars); initStars(); drawStars();
 
-    // ════ 陣法生成引擎 (保持不變) ════
+    // ════ 陣法生成引擎 (不變) ════
     function poly(n, r, rotDeg=0) { const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180; for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); } return pts; }
     function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
     function getFullWeb(pts, stroke, width, opacity) { let html = ''; for(let i=0; i<pts.length; i++) { for(let j=i+1; j<pts.length; j++) { html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}"/>`; } } return html; }
@@ -326,13 +362,10 @@
         }, 50);
     }
 
-    // ════ 第四階段：專屬迴向庫與微塵特效 (修復畫面不見的問題) ════
+    // ════ 第四階段：專屬迴向庫 ════
     function openVault() {
-        // ✨ 徹底隱藏前面的彈窗與跑分儀表板，防止 Z-index 互相遮擋
         document.getElementById('treasure-modal').style.display = 'none';
         document.getElementById('core-layer').style.display = 'none';
-        
-        // 喚醒紫金光幕
         document.getElementById('indra-bg').style.opacity = 1;
         
         const vaultLayer = document.getElementById('vault-layer');
@@ -352,7 +385,6 @@
             grid.appendChild(item);
         }
 
-        // ✨ 設定為 Flex 佈局並淡入
         vaultLayer.style.display = 'flex';
         setTimeout(() => {
             vaultLayer.style.opacity = 1; 
@@ -362,6 +394,7 @@
         speak("進入法界印記專屬庫，點擊即可迴向");
     }
 
+    // ════ ✨ 第五階段：震撼全螢幕震撼黃光微塵迴向動畫 ════
     function dedicateTotem(index, el) {
         db.mandalaVault[index]--;
         saveDB();
@@ -371,53 +404,80 @@
         const animSvg = document.getElementById('anim-svg-container');
         const animText = document.getElementById('anim-text');
         const closeBtn = document.getElementById('close-anim-btn');
+        const fullFlash = document.getElementById('full-screen-flash');
+
+        animOverlay.style.display = 'flex'; // 先佈局
 
         animSvg.innerHTML = generatedSVGs[index];
-        animSvg.style.transform = 'scale(1)'; animSvg.style.filter = 'drop-shadow(0 0 20px #d4af37)';
+        animSvg.style.transform = 'scale(1)'; animSvg.style.filter = 'drop-shadow(0 0 20px #ffd700)';
         animText.style.opacity = 0; closeBtn.style.opacity = 0; closeBtn.style.pointerEvents = 'none';
         
-        animOverlay.style.pointerEvents = 'auto'; animOverlay.style.opacity = 1;
+        // ✨ 先全白全黃光一瞬間 (爆炸感)
         speak("大願迴向十方");
+        
+        animOverlay.style.pointerEvents = 'auto'; animOverlay.style.opacity = 1;
+        animOverlay.classList.add('active'); // 觸發全螢幕黃光炸裂
 
+        // 1.5秒後，圖騰化現，開始爆發微塵
         setTimeout(() => {
             animSvg.style.transform = 'scale(1.5)';
             animSvg.style.filter = 'drop-shadow(0 0 50px #fff)';
             
             setTimeout(() => {
                 animSvg.innerHTML = '';
-                createDustParticles(animSvg, '#d4af37'); 
-                speak("化作微塵，無相大佈施");
-                animText.innerHTML = "【 因緣圓滿 ． 悉皆迴向 】<br><span style='font-size:0.9rem; color:#8ba89c;'><br>您的印記已化作無量光芒，迴向虛空法界。</span>";
+                // ✨ 增加大量微塵 (200顆)，黃光，向全螢幕擴散
+                createDustExplosionExplosion(animSvg); 
+                speak("化作無量微塵，悉皆迴向虛空");
+                animText.innerHTML = "【 因緣圓滿 ． 悉皆迴向 】<br><span style='font-size:0.9rem; color:#f3e5ab;'><br>您的印記已化作無漏金剛光束，迴向虛空法界。</span>";
                 animText.style.opacity = 1;
                 
                 setTimeout(() => {
                     closeBtn.style.opacity = 1; closeBtn.style.pointerEvents = 'auto';
                 }, 2000);
             }, 1000);
-        }, 1500);
+        }, 1200);
     }
 
-    function createDustParticles(container, color) {
-        for (let i = 0; i < 40; i++) {
+    // ✨ 創建向四面八方擴散至全螢幕的無量金黃微塵
+    function createDustExplosionExplosion(container) {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        // ✨ 顆粒數大幅增加至 250，增加震撼感
+        for (let i = 0; i < 250; i++) {
             let dust = document.createElement('div');
             dust.className = 'dust-particle';
-            dust.style.background = color;
-            dust.style.width = Math.random() * 4 + 2 + 'px';
+            
+            // ✨ 設置金黃色黃光 (#ffd700, #fffce0)
+            dust.style.background = Math.random() > 0.5 ? '#ffd700' : '#fffce0';
+            dust.style.width = Math.random() * 5 + 3 + 'px'; // 稍微加大
             dust.style.height = dust.style.width;
             dust.style.left = '50%'; dust.style.top = '50%';
             
+            // ✨ 算出四方高速擴向螢幕邊緣的坐標
             let angle = Math.random() * Math.PI * 2;
-            let distance = 50 + Math.random() * 200;
+            
+            // 目標距離：大約螢幕對角線長度，保證擴散出全螢幕
+            let maxDistance = Math.hypot(vw, vh); 
+            // 隨機距離 (確保全螢幕覆蓋)
+            let distance = (maxDistance / 2) + Math.random() * (maxDistance / 1.5);
+            
             dust.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
             dust.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
-            dust.style.animationDuration = (1 + Math.random() * 2) + 's';
+            
+            // 速度變快 (0.5s - 2.5s)，更有張力
+            dust.style.animationDuration = (0.5 + Math.random() * 2) + 's';
             container.appendChild(dust);
         }
     }
 
     function closeAnim() {
-        document.getElementById('anim-overlay').style.opacity = 0;
-        document.getElementById('anim-overlay').style.pointerEvents = 'none';
+        const animOverlay = document.getElementById('anim-overlay');
+        animOverlay.classList.remove('active');
+        animOverlay.style.opacity = 0;
+        animOverlay.style.pointerEvents = 'none';
+        setTimeout(() => {
+            animOverlay.style.display = 'none'; // 徹底清空
+        }, 800);
     }
 
 </script>
