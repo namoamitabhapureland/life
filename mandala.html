@@ -214,26 +214,21 @@
             transform-origin: center center;
             pointer-events: none;
         }
-/* 法輪旋轉動畫：緩慢且恆常 */
-@keyframes rotate-dharma {
+/* 曼陀羅法輪旋轉動畫 */
+@keyframes mandala-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* 法輪呼吸發光：與佛尊浮動同步 */
-@keyframes dharma-glow {
-  0% { opacity: 0.3; transform: scale(0.95); filter: drop-shadow(0 0 10px rgba(212,175,55,0.4)); }
-  100% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(212,175,55,0.8)); }
+.mandala-bg-wrap {
+  transform-origin: 500px 245px; /* 以佛尊頭部中心為軸 */
+  animation: mandala-spin 120s linear infinite;
 }
 
-.dharma-wheel-wrap {
-  transform-origin: 500px 245px; /* 以佛尊頭部光相中心為軸 */
-  animation: rotate-dharma 120s linear infinite;
+.mandala-line-glow {
+  filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
 }
 
-.dharma-mandala-effect {
-  animation: dharma-glow 8s ease-in-out infinite alternate;
-}
 
 
     </style>
@@ -370,26 +365,32 @@
                     <path d="M 500 815 Q 475 805, 465 780 C 465 730, 500 715, 500 715 C 500 715, 535 730, 535 780 Q 525 805, 500 815 Z" fill="none" />
                 </g>
             </defs>
-<g id="back-glow-layer">
-    <path d="M 500 10 C 650 100, 750 350, 750 550 C 750 750, 500 800, 500 800 C 500 800, 250 750, 250 550 C 250 350, 350 100, 500 10 Z" 
-          fill="url(#haloFillDef)" opacity="0.4" style="filter: blur(20px);" />
-    
-    <g class="dharma-wheel-wrap">
-        <g class="dharma-mandala-effect" fill="none" stroke="#D4AF37" stroke-width="0.8">
-            <path d="M 500 45 L 536 195 L 673 145 L 586 245 L 673 345 L 536 295 L 500 445 L 464 295 L 327 345 L 414 245 L 327 145 L 464 195 Z" opacity="0.6" />
-            
-            <circle cx="500" cy="245" r="180" stroke-width="0.3" opacity="0.3" />
-            <circle cx="500" cy="245" r="120" stroke-width="0.2" opacity="0.2" />
-            
-            <g opacity="0.5">
-                <circle cx="500" cy="65" r="3" fill="#D4AF37" />
-                <circle cx="500" cy="425" r="3" fill="#D4AF37" />
-                <circle cx="680" cy="245" r="3" fill="#D4AF37" />
-                <circle cx="320" cy="245" r="3" fill="#D4AF37" />
-                </g>
+            <g class="mandala-bg-wrap">
+    <g class="mandala-line-glow">
+        <g stroke="#D4AF37" stroke-width="0.5" opacity="0.4">
+            <path d="M500 -35 L766 158 L335 471 L233 158 L664 471 L500 -35 Z" />
+            <path d="M664 18 L766 331 L500 525 L233 331 L335 18 L664 18 Z" />
+            <path d="M500 -35 L766 331 L335 471 L335 18 L766 158 L233 331 L664 471 L500 525 L233 158 L664 18 Z" />
+            <path d="M500 -35 L500 525 M664 18 L335 471 M766 158 L233 331 M766 331 L233 158 M664 471 L335 18" />
+        </g>
+        
+        <path d="M500 45 L582 295 L418 295 L500 45 Z" fill="none" stroke="#f3e5ab" stroke-width="0.4" opacity="0.3" />
+        <path d="M500 445 L418 195 L582 195 L500 445 Z" fill="none" stroke="#f3e5ab" stroke-width="0.4" opacity="0.3" />
+
+        <circle cx="500" cy="245" r="280" fill="none" stroke="#D4AF37" stroke-width="1.2" opacity="0.7" />
+        <circle cx="500" cy="245" r="285" fill="none" stroke="#D4AF37" stroke-width="0.3" opacity="0.3" />
+        
+        <g fill="#f3e5ab">
+            <circle cx="500" cy="-35" r="2.5" /> <circle cx="664" cy="18" r="2.5" />
+            <circle cx="766" cy="158" r="2.5" /> <circle cx="766" cy="331" r="2.5" />
+            <circle cx="664" cy="471" r="2.5" /> <circle cx="500" cy="525" r="2.5" />
+            <circle cx="335" cy="471" r="2.5" /> <circle cx="233" cy="331" r="2.5" />
+            <circle cx="233" cy="158" r="2.5" /> <circle cx="335" cy="18" r="2.5" />
         </g>
     </g>
 </g>
+
+
 
             <circle class="halo-pulse" cx="500" cy="245" r="215" fill="url(#haloFillDef)" stroke="url(#haloGlow)" stroke-width="2" opacity="0.8" mask="url(#halo-mask)" />
             <circle class="halo-pulse" cx="500" cy="245" r="160" fill="none" stroke="url(#haloGlow)" stroke-width="2" mask="url(#halo-mask)" />
