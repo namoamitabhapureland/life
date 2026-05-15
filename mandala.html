@@ -3,97 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>法界業鏡 ‧ 歷史迴廊與結算</title>
+<title>法界業鏡 ‧ 直立結算樞紐</title>
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
-  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
   body {
-    background: radial-gradient(circle at 50% 10%, #1a1625 0%, var(--bg) 80%);
-    color: #fff; font-family: "PingFang TC", serif; min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; padding: 40px 20px;
-    overflow-x: hidden;
+    background: radial-gradient(circle at 50% 50%, #15111a 0%, var(--bg) 100%);
+    color: #fff; font-family: "PingFang TC", serif; height: 100vh; overflow: hidden;
+    display: flex; justify-content: center; align-items: center;
   }
 
-  /* 頂部資訊 */
-  .header { text-align: center; margin-bottom: 50px; z-index: 10; }
-  .title { font-size: 1.6rem; color: #f3e5ab; letter-spacing: 6px; margin-bottom: 12px; text-shadow: 0 0 15px rgba(243,229,171,0.4); }
-  .sub-info { font-size: 0.8rem; color: var(--cyan); letter-spacing: 2px; line-height: 1.8; opacity: 0.8; }
+  /* ════ 直立能量樞紐 ════ */
+  .vertical-core {
+    position: relative; width: 300px; height: 85vh; 
+    display: flex; justify-content: center;
+  }
 
-  /* ════ 動態能量棒與五大圖騰 ════ */
-  .energy-section { width: 100%; max-width: 800px; position: relative; margin-bottom: 80px; }
-  
-  .bar-track { position: relative; width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 130px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
-  
-  .bar-fill { position: absolute; left: 0; top: -1px; height: 6px; width: 0%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), #fff); box-shadow: 0 0 15px #fff, 0 0 30px var(--gold); border-radius: 3px; transition: width 3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5; }
+  /* 背景能量軌道 */
+  .track {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 100%; background: rgba(255,255,255,0.05);
+    border-radius: 2px; box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+  }
 
-  .nodes-container { position: absolute; top: -120px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 5%; pointer-events: none; }
-  
-  .node { display: flex; flex-direction: column; align-items: center; transition: all 0.8s ease; filter: grayscale(100%) brightness(0.4); transform: scale(0.85); position: relative; }
-  
-  .node.active { filter: grayscale(0%) brightness(1); transform: scale(1.1); z-index: 10; }
-  .node.ultimate { transform: scale(1.35); z-index: 20; filter: drop-shadow(0 0 25px rgba(212,175,55,0.8)); }
+  /* 向上衝刺的光束 */
+  .fill {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 0%; border-radius: 3px;
+    background: linear-gradient(0deg, transparent, #f3e5ab, #fff);
+    box-shadow: 0 0 20px #d4af37, 0 0 40px rgba(212,175,55,0.6);
+    transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 5;
+  }
 
-  .node svg { width: 110px; height: 110px; transition: filter 0.5s; }
+  /* ════ 陣法節點 ════ */
+  .node {
+    position: absolute; left: 50%; 
+    transform: translate(-50%, 50%) scale(0.4); 
+    display: flex; justify-content: center; align-items: center;
+    filter: grayscale(100%) brightness(0.3); opacity: 0.5;
+    transition: all 1s cubic-bezier(0.3, 1, 0.3, 1);
+  }
+
+  /* 點亮狀態 */
+  .node.active {
+    filter: grayscale(0%) brightness(1); opacity: 1;
+    transform: translate(-50%, 50%) scale(0.9); z-index: 10;
+  }
   
-  .node-label { margin-top: 25px; font-size: 0.75rem; color: #8ba89c; letter-spacing: 2px; text-align: center; }
-  .node-range { font-size: 0.7rem; color: #666; font-family: monospace; margin-top: 4px; }
-  .node.active .node-label { color: var(--gold); text-shadow: 0 0 8px rgba(212,175,55,0.5); }
-  .node.active .node-range { color: #aaa; }
+  /* 最終圓滿狀態 */
+  .node.ultimate {
+    transform: translate(-50%, 50%) scale(1.4); z-index: 20;
+    filter: drop-shadow(0 0 35px rgba(212,175,55,0.8));
+  }
 
-  #score-display { position: absolute; top: 10px; right: 0; font-size: 2.5rem; color: #fff; font-family: monospace; font-weight: bold; text-shadow: 0 0 20px var(--gold); opacity: 0; transition: opacity 1s; }
+  .node svg { width: 140px; height: 140px; }
 
-  /* ════ 百年歷史統計區塊 ════ */
-  .history-section { width: 100%; max-width: 800px; border-top: 1px dashed rgba(139,168,156,0.3); padding-top: 40px; text-align: center; }
-  .history-title { color: var(--cyan); letter-spacing: 6px; margin-bottom: 30px; font-size: 1rem; }
-  
-  .history-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
-  .history-card { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.02); padding: 15px 10px; border-radius: 12px; border: 1px solid rgba(139,168,156,0.1); width: 130px; transition: transform 0.3s; }
-  .history-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
-  .history-card svg { width: 60px; height: 60px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
-  .h-name { font-size: 0.7rem; color: #8ba89c; letter-spacing: 2px; margin-top: 15px; }
-  .h-count { font-size: 1.1rem; color: var(--gold); font-family: monospace; margin-top: 5px; font-weight: bold; }
+  /* 標籤文字 (置於圖騰右側) */
+  .node-label {
+    position: absolute; left: 90px; white-space: nowrap;
+    font-size: 0.8rem; color: var(--cyan); letter-spacing: 4px;
+    opacity: 0; transition: opacity 0.5s, color 0.5s;
+    text-shadow: 0 0 10px rgba(139,168,156,0.6);
+  }
+  .node.active .node-label { opacity: 1; color: var(--gold); }
+  .node.ultimate .node-label { font-size: 1rem; text-shadow: 0 0 15px var(--gold); left: 110px; }
 
-  /* 彩虹光譜動畫 (滿分大千陣專用) */
-  @keyframes rainbowPulse { 0% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(180deg); } 100% { filter: hue-rotate(360deg); } }
-  .rainbow-glow { animation: rainbowPulse 4s linear infinite; }
+  /* 分數跟隨器 */
+  #score-tracker {
+    position: absolute; left: 50%; bottom: 0%;
+    transform: translate(-50%, 50%);
+    font-size: 2rem; color: #fff; font-family: monospace; font-weight: bold;
+    text-shadow: 0 0 15px var(--gold); z-index: 30;
+    transition: bottom 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
 </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="title">法界業鏡 ‧ 結算迴廊</div>
-    <div class="sub-info" id="user-info">
-        行者：妙依 ｜ 結界創立：2026-03-21<br>
-        體檢指標：16項 (行願、行戒、定慧、六般若、苦集滅道)
-    </div>
-  </div>
-
-  <div class="energy-section">
-    <div class="nodes-container">
-      <div class="node" id="n1"><div id="svg-n1"></div><div class="node-label">九重之境</div><div class="node-range">0~20%</div></div>
-      <div class="node" id="n2"><div id="svg-n2"></div><div class="node-label">十一法界</div><div class="node-range">21~40%</div></div>
-      <div class="node" id="n3"><div id="svg-n3"></div><div class="node-label">雙重八識</div><div class="node-range">41~60%</div></div>
-      <div class="node" id="n4"><div id="svg-n4"></div><div class="node-label">十方網格</div><div class="node-range">61~80%</div></div>
-      <div class="node" id="n5"><div id="svg-n5"></div><div class="node-label">十二圓滿</div><div class="node-range">81~100%</div></div>
-    </div>
+  <div class="vertical-core">
+    <div class="track"></div>
+    <div class="fill" id="energy-fill"></div>
     
-    <div class="bar-track"><div class="bar-fill" id="energy-fill"></div></div>
-    <div id="score-display">0%</div>
-  </div>
+    <div id="score-tracker">0%</div>
 
-  <div class="history-section">
-    <div class="history-title">累劫資糧 ‧ 幾何印記</div>
-    <div class="history-grid">
-      <div class="history-card"><div id="hs-n1"></div><div class="h-name">一階 ‧ 青琉璃</div><div class="h-count">× 12</div></div>
-      <div class="history-card"><div id="hs-n2"></div><div class="h-name">二階 ‧ 綠翡翠</div><div class="h-count">× 8</div></div>
-      <div class="history-card"><div id="hs-n3"></div><div class="h-name">三階 ‧ 紫星晶</div><div class="h-count">× 15</div></div>
-      <div class="history-card"><div id="hs-n4"></div><div class="h-name">四階 ‧ 橙琥珀</div><div class="h-count">× 24</div></div>
-      <div class="history-card"><div id="hs-n5"></div><div class="h-name">五階 ‧ 大千金</div><div class="h-count">× 61</div></div>
-    </div>
+    <div class="node" id="n1" style="bottom: 10%;"><div id="svg-n1"></div><div class="node-label">0-20 ‧ 初心</div></div>
+    <div class="node" id="n2" style="bottom: 30%;"><div id="svg-n2"></div><div class="node-label">21-40 ‧ 安住</div></div>
+    <div class="node" id="n3" style="bottom: 50%;"><div id="svg-n3"></div><div class="node-label">41-60 ‧ 萬行</div></div>
+    <div class="node" id="n4" style="bottom: 70%;"><div id="svg-n4"></div><div class="node-label">61-80 ‧ 迴向</div></div>
+    <div class="node" id="n5" style="bottom: 90%;"><div id="svg-n5"></div><div class="node-label">81-100 ‧ 圓滿大千</div></div>
   </div>
 
 <script>
-  /* ── 核心工具函數 (來自您的代碼) ── */
+  /* ── 核心工具函數 ── */
   function poly(n, r, rotDeg=0) {
     const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
     for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); }
@@ -101,7 +104,6 @@
   }
   function ptStr(pts){ return pts.map(p=>p[0].toFixed(3)+','+p[1].toFixed(3)).join(' '); }
   
-  // 生成完全圖的連線 HTML
   function getFullWeb(pts, stroke, width, opacity) {
     let html = '';
     for(let i=0; i<pts.length; i++) {
@@ -112,57 +114,98 @@
     return html;
   }
 
-  /* ── 將您的陣法轉化為彩色琉璃 ── */
-  function generateTotemSVG(tier) {
+  /* ── 具有動態生命力與彩色華麗的陣法生成 ── */
+  function generateDynamicSVG(tier) {
+    // 主題色定義
     const themes = [
-      ['rgba(0, 180, 255, 0.12)', '#80dfff'],  // 1: 青琉璃
-      ['rgba(50, 255, 120, 0.12)', '#80ffc0'], // 2: 綠翡翠
-      ['rgba(200, 100, 255, 0.12)', '#e0c0ff'],// 3: 紫星晶
-      ['rgba(255, 150, 50, 0.12)', '#ffcc80'], // 4: 橙琥珀
-      ['rgba(255, 215, 0, 0.15)', '#fffce0']   // 5: 彩虹金
+      ['rgba(0, 180, 255, 0.1)', '#80dfff'],  // 1: 青
+      ['rgba(50, 255, 120, 0.1)', '#80ffc0'], // 2: 綠
+      ['rgba(200, 100, 255, 0.1)', '#e0c0ff'],// 3: 紫
+      ['rgba(255, 150, 50, 0.15)', '#ffcc80'],// 4: 橙
+      ['rgba(255, 215, 0, 0.2)', '#fffce0']   // 5: 金
     ];
     let fill = themes[tier-1][0], stroke = themes[tier-1][1];
     
     let svg = `<svg viewBox="-120 -120 240 240" style="overflow:visible;">`;
-    // 琉璃底板
-    svg += `<circle cx="0" cy="0" r="100" fill="${fill}" stroke="${stroke}" stroke-width="0.5" opacity="0.6"/>`;
 
-    if (tier === 1) { // M1: Novenaria (九重)
+    if (tier === 1) { 
+      // M1: 緩慢自轉的九重之境
       let pOut = poly(9, 100); let pIn = poly(9, 40, 20);
+      svg += `<g>`;
+      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="40s" repeatCount="indefinite"/>`;
       svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.5, 0.6);
-      svg += getFullWeb(pIn, '#fff', 0.4, 0.4);
+      svg += getFullWeb(pOut, stroke, 0.6, 0.6);
+      svg += getFullWeb(pIn, '#fff', 0.5, 0.5);
+      svg += `</g>`;
     } 
-    else if (tier === 2) { // M2: Hendecagram (十一)
+    else if (tier === 2) { 
+      // M2: 脈動呼吸的十一法界
       let pOut = poly(11, 100); let pIn = poly(11, 70, 180/11);
+      svg += `<g>`;
+      svg += `<animate attributeName="opacity" values="0.6; 1; 0.6" dur="3s" repeatCount="indefinite"/>`;
       svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.4, 0.6);
-      svg += getFullWeb(pIn, '#fff', 0.3, 0.5);
+      svg += getFullWeb(pOut, stroke, 0.5, 0.7);
+      svg += getFullWeb(pIn, '#fff', 0.4, 0.6);
+      svg += `</g>`;
     } 
-    else if (tier === 3) { // M3: Twin Ogdoad (雙八)
+    else if (tier === 3) { 
+      // M3: 雙向錯位旋轉的雙重八識
       let p1 = poly(8, 100, 0); let p2 = poly(8, 100, 22.5);
+      svg += `<g>`;
+      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/>`;
       svg += `<polygon points="${ptStr(p1)}" fill="${fill}"/>`;
+      svg += getFullWeb(p1, stroke, 0.4, 0.6);
+      svg += `</g>`;
+      svg += `<g>`;
+      svg += `<animateTransform attributeName="transform" type="rotate" from="360 0 0" to="0 0 0" dur="25s" repeatCount="indefinite"/>`;
       svg += `<polygon points="${ptStr(p2)}" fill="${fill}"/>`;
-      svg += getFullWeb([...p1, ...p2], stroke, 0.3, 0.5);
+      svg += getFullWeb(p2, '#fff', 0.4, 0.6);
+      svg += `</g>`;
     } 
-    else if (tier === 4) { // M4: Decalattice (十方)
+    else if (tier === 4) { 
+      // M4: 光芒收放的十方網格
       let pOut = poly(10, 100); let pIn = poly(5, 50, 18);
+      svg += `<g>`;
+      svg += `<animateTransform attributeName="transform" type="scale" values="0.95; 1.05; 0.95" dur="4s" repeatCount="indefinite"/>`;
       svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
       svg += getFullWeb(pOut, stroke, 0.5, 0.6);
-      svg += getFullWeb(pIn, '#fff', 0.4, 0.5);
+      svg += getFullWeb(pIn, '#fff', 0.6, 0.8);
+      svg += `</g>`;
     } 
-    else if (tier === 5) { // M5: Dodecasacrum (十二圓滿)
+    else if (tier === 5) { 
+      // M5: 極致彩色的十二圓滿大千金剛陣 (彩色華麗星空填色)
       let pOut = poly(12, 100);
-      svg += `<polygon points="${ptStr(pOut)}" fill="${fill}"/>`;
-      svg += getFullWeb(pOut, stroke, 0.4, 0.5);
-      
       const star = [];
       for(let i=0; i<12; i++) {
         star.push(pOut[i]);
         const midA = (i*30 + 15 - 90) * Math.PI / 180;
         star.push([35*Math.cos(midA), 35*Math.sin(midA)]);
       }
-      svg += `<polygon points="${ptStr(star)}" fill="rgba(255,255,255,0.15)" stroke="#fff" stroke-width="1.2" opacity="0.9"/>`;
+
+      svg += `<g>`;
+      // 緩慢自轉，讓彩色光芒流轉
+      svg += `<animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="60s" repeatCount="indefinite"/>`;
+      
+      // 填入 12 色相(Hue)的彩虹切片
+      for(let i=0; i<12; i++) {
+        let next = (i+1)%12;
+        let hue = i * 30;
+        
+        // 外部三角形切片
+        let sliceOut = `0,0 ${pOut[i][0]},${pOut[i][1]} ${pOut[next][0]},${pOut[next][1]}`;
+        svg += `<polygon points="${sliceOut}" fill="hsla(${hue}, 80%, 55%, 0.2)" />`;
+        
+        // 內部星芒切片 (加強色彩飽和度)
+        let sliceIn1 = `0,0 ${star[i*2][0]},${star[i*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}`;
+        let sliceIn2 = `0,0 ${star[next*2][0]},${star[next*2][1]} ${star[i*2+1][0]},${star[i*2+1][1]}`;
+        svg += `<polygon points="${sliceIn1}" fill="hsla(${hue+40}, 90%, 65%, 0.4)" />`;
+        svg += `<polygon points="${sliceIn2}" fill="hsla(${hue+80}, 90%, 65%, 0.4)" />`;
+      }
+
+      // 最後蓋上最複雜的完全網格金剛線，確保結構銳利
+      svg += getFullWeb(pOut, stroke, 0.6, 0.7);
+      svg += `<polygon points="${ptStr(star)}" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.9"/>`;
+      svg += `</g>`;
     }
 
     svg += `</svg>`;
@@ -171,36 +214,37 @@
 
   // 注入圖騰
   for(let i=1; i<=5; i++) {
-    document.getElementById(`svg-n${i}`).innerHTML = generateTotemSVG(i);
-    document.getElementById(`hs-n${i}`).innerHTML = generateTotemSVG(i);
+    document.getElementById(`svg-n${i}`).innerHTML = generateDynamicSVG(i);
   }
 
-  /* ── 動態跑分與點亮儀式 ── */
+  /* ── 直立跑分與點亮邏輯 ── */
   window.onload = () => {
-    // ✨ 假設系統結算為 100 分滿分
+    // ✨ 系統精準算分 (請隨意修改測試：20, 55, 88, 100)
     const finalScore = 100; 
     
     setTimeout(() => {
       const fillBar = document.getElementById('energy-fill');
-      const scoreDisplay = document.getElementById('score-display');
+      const scoreTracker = document.getElementById('score-tracker');
       
-      fillBar.style.width = finalScore + '%';
+      // 光束向上拉升
+      fillBar.style.height = finalScore + '%';
+      scoreTracker.style.bottom = finalScore + '%';
       
       let currentNum = 0;
       let timer = setInterval(() => {
-        currentNum += 2;
+        currentNum += 1;
         if(currentNum >= finalScore) { currentNum = finalScore; clearInterval(timer); }
-        scoreDisplay.innerText = currentNum + '%';
-        scoreDisplay.style.opacity = 1;
+        scoreTracker.innerText = currentNum + '%';
 
+        // 沿途點亮 (10, 30, 50, 70, 90 對應節點的位置)
         if(currentNum >= 10) document.getElementById('n1').classList.add('active');
         if(currentNum >= 30) document.getElementById('n2').classList.add('active');
         if(currentNum >= 50) document.getElementById('n3').classList.add('active');
         if(currentNum >= 70) document.getElementById('n4').classList.add('active');
         if(currentNum >= 90) document.getElementById('n5').classList.add('active'); 
-      }, 50);
+      }, 40); // 40ms 跳 1%，4秒跑完100%
 
-      // 最終定格特效
+      // 最終定格放大特效
       setTimeout(() => {
         let finalTier = Math.ceil(finalScore / 20); 
         if(finalTier < 1) finalTier = 1;
@@ -208,12 +252,9 @@
         let targetNode = document.getElementById(`n${finalTier}`);
         if(targetNode) {
           targetNode.classList.add('active', 'ultimate');
-          if(finalTier === 5) {
-              targetNode.querySelector('svg').classList.add('rainbow-glow');
-          }
         }
-      }, 3000); 
-    }, 800); 
+      }, 4000); // 配合光軌上升時間
+    }, 500); 
   };
 </script>
 </body>
