@@ -180,28 +180,41 @@
     if (!db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0];
     function saveDB() { localStorage.setItem('PX_V15.0', JSON.stringify(db)); }
 
-    // ════ ✨ 全新銳利星空引擎 (解決霧霾，創造長尾光束) ════
-    const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
+    // ════ ✨ 原汁原味：完全套用您 puxian.html 的銳利星空引擎 ════
+    const cvs = document.getElementById('starCanvas'); 
+    const ctx = cvs.getContext('2d');
     let cw, ch, stars = [];
-    let warpSpeed = 1.0; 
-    let targetWarpSpeed = 1.0; 
+    let warpSpeed = 0.5; 
+    let targetWarpSpeed = 0.5; 
+    let starScale = 1;
+    let targetStarScale = 1;
 
     function initStars() {
-        cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        // ✨ 高亮度純白星群
-        stars = Array.from({length: 350}, () => ({ 
-            x: (Math.random()-0.5)*cw*2, 
-            y: (Math.random()-0.5)*ch*2, 
-            z: Math.random()*2000, 
-            c: Math.random() > 0.1 ? '#ffffff' : '#f3e5ab' 
-        }));
+        cw = cvs.width = window.innerWidth; 
+        ch = cvs.height = window.innerHeight;
+        stars = [];
+        // 沿用您的明亮星群配色
+        const STAR_COLORS = ['#f3e5ab', '#ffffff', '#89CFF0', '#ff9a9e', '#C9A0DC']; 
+        for (let i = 0; i < 350; i++) { 
+            stars.push({ 
+                x: (Math.random() - 0.5) * 2000, 
+                y: (Math.random() - 0.5) * 2000, 
+                z: Math.random() * 2000, 
+                c: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)], 
+                s: Math.random() * 2.5 + 0.5 
+            }); 
+        }
     }
+    
     function drawStars() {
-        // ✨ 徹底清除畫布，絕不留殘影，解決「霧霧」的問題
-        ctx.clearRect(0, 0, cw, ch); 
+        // ✨ 不畫死線條，直接用您的 rgba(2, 2, 4, 0.4) 製造銳利的天然殘影拖曳
+        ctx.fillStyle = 'rgba(2, 2, 4, 0.4)'; 
+        ctx.fillRect(0, 0, cw, ch); 
         ctx.globalCompositeOperation = 'screen';
         
-        warpSpeed += (targetWarpSpeed - warpSpeed) * 0.1;
+        // 平滑加速
+        warpSpeed += (targetWarpSpeed - warpSpeed) * 0.05;
+        starScale += (targetStarScale - starScale) * 0.05;
 
         stars.forEach(s => {
             s.z -= warpSpeed; 
@@ -210,30 +223,15 @@
                 s.x = (Math.random()-0.5)*cw*2; 
                 s.y = (Math.random()-0.5)*ch*2; 
             }
-            
-            let sc = 600 / (600 + s.z);
-            let px = cw/2 + s.x*sc; 
-            let py = ch/2 + s.y*sc;
-            
-            ctx.globalAlpha = Math.min(1, sc*3); 
-
+            let sc = 400 / (400 + s.z); 
             ctx.beginPath();
-            if (warpSpeed > 5) { 
-                // ✨ 依照速度動態拉長尾跡，並保持絕對銳利的實線
-                let tail = warpSpeed * 8; 
-                let prevSc = 600 / (600 + s.z + tail);
-                ctx.moveTo(px, py); 
-                ctx.lineTo(cw/2 + s.x*prevSc, ch/2 + s.y*prevSc);
-                ctx.lineWidth = 1.5 * sc; 
-                ctx.strokeStyle = s.c; 
-                ctx.stroke();
-            } else {
-                ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); 
-                ctx.fillStyle = s.c; 
-                ctx.fill();
-            }
+            // 直接畫圓，當速度夠快時自然會拉出乾淨的線條
+            ctx.arc((cw / 2) + s.x * sc, (ch / 2) + s.y * sc, s.s * sc * starScale, 0, Math.PI * 2);
+            ctx.fillStyle = s.c; 
+            ctx.globalAlpha = Math.min(1, sc * 2.5); 
+            ctx.fill(); 
+            ctx.globalAlpha = 1;
         });
-        ctx.globalAlpha = 1; 
         ctx.globalCompositeOperation = 'source-over'; 
         requestAnimationFrame(drawStars);
     }
@@ -295,7 +293,9 @@
 
     function nextVow() {
         if (vowStep === -1) {
-            targetWarpSpeed = 45; 
+            // ✨ 開啟極速星空 (使用您的引擎參數)
+            targetWarpSpeed = 25; 
+            targetStarScale = 3; 
             document.getElementById('vow-hint').style.display = 'none';
         }
         vowStep++;
@@ -311,7 +311,9 @@
         } else if (vowStep === 4) {
             vowLayer.style.opacity = 0;
             vowLayer.style.pointerEvents = 'none';
-            targetWarpSpeed = 1.0; 
+            // ✨ 星空恢復平靜
+            targetWarpSpeed = 0.5; 
+            targetStarScale = 1; 
             speak("功德結集，業鏡顯化");
             
             setTimeout(() => {
