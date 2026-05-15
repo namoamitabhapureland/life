@@ -214,20 +214,28 @@
             transform-origin: center center;
             pointer-events: none;
         }
-/* 曼陀羅法輪旋轉動畫 */
+        /* 十方網格慢速旋轉 */
 @keyframes mandala-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.mandala-bg-wrap {
-  transform-origin: 500px 245px; /* 以佛尊頭部中心為軸 */
-  animation: mandala-spin 120s linear infinite;
+/* 金線呼吸發光感 */
+@keyframes mandala-gold-glow {
+    0% { opacity: 0.5; filter: drop-shadow(0 0 8px rgba(255,215,0,0.4)); }
+    100% { opacity: 0.9; filter: drop-shadow(0 0 20px rgba(255,215,0,0.8)); }
 }
 
-.mandala-line-glow {
-  filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
+.mandala-upgrade-wrap {
+    transform-origin: 500px 245px;
+    animation: mandala-spin 180s linear infinite;
 }
+
+.mandala-effect-layer {
+    animation: mandala-gold-glow 10s ease-in-out infinite alternate;
+}
+
+
 
 
 
@@ -365,30 +373,28 @@
                     <path d="M 500 815 Q 475 805, 465 780 C 465 730, 500 715, 500 715 C 500 715, 535 730, 535 780 Q 525 805, 500 815 Z" fill="none" />
                 </g>
             </defs>
-            <g class="mandala-bg-wrap">
-    <g class="mandala-line-glow">
-        <g stroke="#D4AF37" stroke-width="0.5" opacity="0.4">
-            <path d="M500 -35 L766 158 L335 471 L233 158 L664 471 L500 -35 Z" />
-            <path d="M664 18 L766 331 L500 525 L233 331 L335 18 L664 18 Z" />
-            <path d="M500 -35 L766 331 L335 471 L335 18 L766 158 L233 331 L664 471 L500 525 L233 158 L664 18 Z" />
-            <path d="M500 -35 L500 525 M664 18 L335 471 M766 158 L233 331 M766 331 L233 158 M664 471 L335 18" />
-        </g>
-        
-        <path d="M500 45 L582 295 L418 295 L500 45 Z" fill="none" stroke="#f3e5ab" stroke-width="0.4" opacity="0.3" />
-        <path d="M500 445 L418 195 L582 195 L500 445 Z" fill="none" stroke="#f3e5ab" stroke-width="0.4" opacity="0.3" />
+                <g class="mandala-upgrade-wrap">
+        <g class="mandala-effect-layer">
+            <g stroke="#FFD700" stroke-width="1.2" opacity="0.6" fill="none">
+                <path d="M500 -205 L764 24 L844 331 L685 586 L364 646 L108 506 L43 203 L156 -81 L411 -205 Z" />
+                <path d="M500 -205 L844 331 L364 646 L43 203 L411 -205 L764 24 L685 586 L108 506 L156 -81 L500 -205" opacity="0.5" />
+                <path d="M500 -205 L685 586 L43 203 L764 24 L108 506 L411 -205 L844 331 L156 -81 L364 646 L500 -205" opacity="0.4" />
+                <path d="M500 -205 L500 695 M764 24 L236 466 M844 331 L156 -81 M685 586 L315 -96 M364 646 L636 -156" opacity="0.3" stroke-width="0.8" />
+            </g>
 
-        <circle cx="500" cy="245" r="280" fill="none" stroke="#D4AF37" stroke-width="1.2" opacity="0.7" />
-        <circle cx="500" cy="245" r="285" fill="none" stroke="#D4AF37" stroke-width="0.3" opacity="0.3" />
-        
-        <g fill="#f3e5ab">
-            <circle cx="500" cy="-35" r="2.5" /> <circle cx="664" cy="18" r="2.5" />
-            <circle cx="766" cy="158" r="2.5" /> <circle cx="766" cy="331" r="2.5" />
-            <circle cx="664" cy="471" r="2.5" /> <circle cx="500" cy="525" r="2.5" />
-            <circle cx="335" cy="471" r="2.5" /> <circle cx="233" cy="331" r="2.5" />
-            <circle cx="233" cy="158" r="2.5" /> <circle cx="335" cy="18" r="2.5" />
+            <circle cx="500" cy="245" r="450" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.8" />
+            <circle cx="500" cy="245" r="460" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.4" />
+            
+            <g fill="#FFF4D1">
+                <circle cx="500" cy="-205" r="4" /> <circle cx="764" cy="24" r="4" />
+                <circle cx="844" cy="331" r="4" /> <circle cx="764" cy="586" r="4" />
+                <circle cx="685" cy="673" r="4" /> <circle cx="500" cy="695" r="4" />
+                <circle cx="315" cy="673" r="4" /> <circle cx="156" cy="586" r="4" />
+                <circle cx="43" cy="331" r="4" /> <circle cx="108" cy="24" r="4" />
+            </g>
         </g>
     </g>
-</g>
+
 
 
 
