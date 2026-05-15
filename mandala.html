@@ -214,31 +214,20 @@
             transform-origin: center center;
             pointer-events: none;
         }
-        /* 統一旋轉中心，解決跑位問題 */
-@keyframes mandala-rotate-sync {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+      /* 取消旋轉，改為深邃的幾何呼吸感 */
+@keyframes mandala-divine-glow {
+    0% { opacity: 0.4; filter: drop-shadow(0 0 10px rgba(255,215,0,0.4)); }
+    100% { opacity: 0.9; filter: drop-shadow(0 0 30px rgba(255,215,0,0.8)); }
 }
 
-@keyframes mandala-rotate-sync {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.mandala-static-container {
+    transform-origin: 500px 245px;
+    /* 移除旋轉 animation */
 }
 
-@keyframes mandala-breathe-glow {
-    0% { opacity: 0.6; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); }
-    100% { opacity: 1; filter: drop-shadow(0 0 35px rgba(255,215,0,1)); }
+.mandala-glow-effect {
+    animation: mandala-divine-glow 8s ease-in-out infinite alternate;
 }
-
-.mandala-sync-container {
-    transform-origin: 500px 245px; /* 關鍵：嚴格對齊頭部圓心 */
-    animation: mandala-rotate-sync 180s linear infinite;
-}
-
-.mandala-glow-layer {
-    animation: mandala-breathe-glow 8s ease-in-out infinite alternate;
-}
-
 
 
     </style>
@@ -376,31 +365,32 @@
                     <path d="M 500 815 Q 475 805, 465 780 C 465 730, 500 715, 500 715 C 500 715, 535 730, 535 780 Q 525 805, 500 815 Z" fill="none" />
                 </g>
             </defs>
-          <g class="mandala-sync-container" mask="url(#halo-mask)">
-    <g class="mandala-glow-layer">
-        <g stroke="#FFD700" stroke-width="2" fill="none">
-            <path d="M500 -205 L764.5 -119.1 L928 105.9 L928 384.1 L764.5 609.1 L500 695 L235.5 609.1 L72 384.1 L72 105.9 L235.5 -119.1 Z" opacity="0.8" />
-            <path d="M500 -205 L928 105.9 L764.5 609.1 L235.5 609.1 L72 105.9 L500 -205 Z" opacity="0.6" />
-            <path d="M764.5 -119.1 L928 384.1 L500 695 L72 384.1 L235.5 -119.1 L764.5 -119.1 Z" opacity="0.6" />
-            <path d="M500 -205 L928 384.1 L235.5 609.1 L235.5 -119.1 L928 105.9 L500 695 L72 105.9 L764.5 -119.1 L764.5 609.1 L72 384.1 L500 -205 Z" opacity="0.4" />
+        <g class="mandala-static-container" mask="url(#halo-mask)">
+    <g class="mandala-glow-effect">
+        <g stroke="#FFD700" stroke-width="1.8" fill="none">
+            <path d="M500 5 L641 51 L728 171 L728 319 L641 439 L500 485 L359 439 L272 319 L272 171 L359 51 Z" opacity="0.8" />
+            <path d="M500 5 L728 171 L641 439 L359 439 L272 171 L500 5 Z" opacity="0.6" />
+            <path d="M641 51 L728 319 L500 485 L272 319 L359 51 L641 51 Z" opacity="0.6" />
+            <path d="M500 5 L728 319 L359 439 L359 51 L728 171 L272 319 L641 439 L500 485 L272 171 L641 51 L500 5 Z" opacity="0.4" />
         </g>
 
-        <circle cx="500" cy="245" r="450" fill="none" stroke="#FFD700" stroke-width="3.5" opacity="0.9" />
+        <circle cx="500" cy="245" r="240" fill="none" stroke="#FFD700" stroke-width="3" opacity="0.8" />
         
         <g fill="#FFF4D1">
-            <circle cx="500" cy="-205" r="6" />
-            <circle cx="764.5" cy="-119.1" r="6" />
-            <circle cx="928" cy="105.9" r="6" />
-            <circle cx="928" cy="384.1" r="6" />
-            <circle cx="764.5" cy="609.1" r="6" />
-            <circle cx="500" cy="695" r="6" />
-            <circle cx="235.5" cy="609.1" r="6" />
-            <circle cx="72" cy="384.1" r="6" />
-            <circle cx="72" cy="105.9" r="6" />
-            <circle cx="235.5" cy="-119.1" r="6" />
+            <circle cx="500" cy="5" r="5" />
+            <circle cx="641" cy="51" r="5" />
+            <circle cx="728" cy="171" r="5" />
+            <circle cx="728" cy="319" r="5" />
+            <circle cx="641" cy="439" r="5" />
+            <circle cx="500" cy="485" r="5" />
+            <circle cx="359" cy="439" r="5" />
+            <circle cx="272" cy="319" r="5" />
+            <circle cx="272" cy="171" r="5" />
+            <circle cx="359" cy="51" r="5" />
         </g>
     </g>
 </g>
+
 
             <circle class="halo-pulse" cx="500" cy="245" r="215" fill="url(#haloFillDef)" stroke="url(#haloGlow)" stroke-width="2" opacity="0.8" mask="url(#halo-mask)" />
             <circle class="halo-pulse" cx="500" cy="245" r="160" fill="none" stroke="url(#haloGlow)" stroke-width="2" mask="url(#halo-mask)" />
