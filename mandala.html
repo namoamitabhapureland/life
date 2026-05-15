@@ -3,214 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>法界業鏡 ‧ 歷史迴廊</title>
+<title>法界業鏡 ‧ 歷史迴廊與結算</title>
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
-  * { margin:0; padding:0; box-sizing:border-box; user-select:none; }
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
   body {
-    background: radial-gradient(circle at 50% 0%, #151520 0%, var(--bg) 80%);
+    background: radial-gradient(circle at 50% 10%, #1a1625 0%, var(--bg) 80%);
     color: #fff; font-family: "PingFang TC", serif; min-height: 100vh;
     display: flex; flex-direction: column; align-items: center; padding: 40px 20px;
     overflow-x: hidden;
   }
 
   /* 頂部資訊 */
-  .header { text-align: center; margin-bottom: 40px; }
-  .title { font-size: 1.5rem; color: #f3e5ab; letter-spacing: 8px; margin-bottom: 10px; }
-  .sub-info { font-size: 0.85rem; color: var(--cyan); letter-spacing: 2px; }
+  .header { text-align: center; margin-bottom: 50px; z-index: 10; }
+  .title { font-size: 1.6rem; color: #f3e5ab; letter-spacing: 6px; margin-bottom: 12px; text-shadow: 0 0 15px rgba(243,229,171,0.4); }
+  .sub-info { font-size: 0.8rem; color: var(--cyan); letter-spacing: 2px; line-height: 1.8; opacity: 0.8; }
 
-  /* 能量棒區塊 */
-  .energy-section { width: 100%; max-width: 600px; margin-bottom: 60px; position: relative; }
-  .bar-container { position: relative; width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 60px; }
+  /* ════ 動態能量棒與五大圖騰 ════ */
+  .energy-section { width: 100%; max-width: 800px; position: relative; margin-bottom: 80px; }
   
-  /* 會跑動的能量光束 */
-  .bar-fill { position: absolute; left: 0; top: -1px; height: 6px; width: 0%; background: linear-gradient(90deg, transparent, #fff, #f3e5ab); box-shadow: 0 0 15px #d4af37; border-radius: 3px; transition: width 2.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-  /* 能量棒上的五個節點圖騰 */
-  .node { position: absolute; top: -45px; transform: translateX(-50%) scale(0.5); filter: grayscale(100%) opacity(0.3); transition: all 0.5s ease; display: flex; flex-direction: column; align-items: center; }
-  .node.active { filter: grayscale(0%) opacity(1); transform: translateX(-50%) scale(1.1); z-index: 10; }
-  .node svg { width: 80px; height: 80px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
-  .node-score { margin-top: 10px; font-size: 0.75rem; color: var(--gold); font-family: monospace; letter-spacing: 2px; }
-
-  /* 最終分數顯示 */
-  .final-score-display { text-align: center; margin-top: 60px; font-size: 3rem; color: #fff; font-family: monospace; text-shadow: 0 0 20px var(--gold); opacity: 0; transition: opacity 1s; }
-
-  /* 歷史統計區塊 */
-  .history-section { width: 100%; max-width: 800px; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 40px; text-align: center; }
-  .history-title { color: var(--cyan); letter-spacing: 6px; margin-bottom: 30px; font-size: 1.1rem; }
+  /* 能量棒底槽 */
+  .bar-track { position: relative; width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 130px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
   
-  .totem-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; }
-  .totem-card { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); min-width: 120px; }
-  .totem-card svg { width: 100px; height: 100px; }
-  .totem-name { font-size: 0.75rem; color: #aaa; letter-spacing: 2px; margin-top: 10px; }
-  .totem-count { font-size: 1.2rem; color: var(--gold); font-family: monospace; margin-top: 5px; }
+  /* 會跑動的高光束 */
+  .bar-fill { position: absolute; left: 0; top: -1px; height: 6px; width: 0%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), #fff); box-shadow: 0 0 15px #fff, 0 0 30px var(--gold); border-radius: 3px; transition: width 3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5; }
 
+  /* 節點定位 */
+  .nodes-container { position: absolute; top: -120px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 5%; pointer-events: none; }
+  
+  .node { display: flex; flex-direction: column; align-items: center; transition: all 0.8s ease; filter: grayscale(100%) brightness(0.4); transform: scale(0.85); position: relative; }
+  
+  /* 點亮狀態 */
+  .node.active { filter: grayscale(0%) brightness(1); transform: scale(1.1); z-index: 10; }
+  .node.ultimate { transform: scale(1.3); z-index: 20; filter: drop-shadow(0 0 25px rgba(212,175,55,0.8)); }
+
+  .node svg { width: 110px; height: 110px; transition: filter 0.5s; }
+  
+  /* 刻度與標示 */
+  .node-label { margin-top: 25px; font-size: 0.75rem; color: #8ba89c; letter-spacing: 2px; text-align: center; }
+  .node-range { font-size: 0.7rem; color: #666; font-family: monospace; margin-top: 4px; }
+  .node.active .node-label { color: var(--gold); text-shadow: 0 0 8px rgba(212,175,55,0.5); }
+  .node.active .node-range { color: #aaa; }
+
+  /* 最終分數浮動顯示 */
+  #score-display { position: absolute; top: 10px; right: 0; font-size: 2.5rem; color: #fff; font-family: monospace; font-weight: bold; text-shadow: 0 0 20px var(--gold); opacity: 0; transition: opacity 1s; }
+
+  /* ════ 百年歷史統計區塊 ════ */
+  .history-section { width: 100%; max-width: 800px; border-top: 1px dashed rgba(139,168,156,0.3); padding-top: 40px; text-align: center; }
+  .history-title { color: var(--cyan); letter-spacing: 6px; margin-bottom: 30px; font-size: 1rem; }
+  
+  .history-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+  .history-card { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.02); padding: 15px 10px; border-radius: 12px; border: 1px solid rgba(139,168,156,0.1); width: 130px; transition: transform 0.3s; }
+  .history-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); }
+  .history-card svg { width: 60px; height: 60px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+  .h-name { font-size: 0.7rem; color: #8ba89c; letter-spacing: 2px; margin-top: 15px; }
+  .h-count { font-size: 1.1rem; color: var(--gold); font-family: monospace; margin-top: 5px; font-weight: bold; }
+
+  /* 彩虹光譜動畫 (第五階專用) */
+  @keyframes rainbowPulse { 0% { filter: hue-rotate(0deg) drop-shadow(0 0 15px #d4af37); } 50% { filter: hue-rotate(60deg) drop-shadow(0 0 25px #fff); } 100% { filter: hue-rotate(0deg) drop-shadow(0 0 15px #d4af37); } }
+  .rainbow-glow { animation: rainbowPulse 4s infinite alternate; }
 </style>
 </head>
 <body>
 
   <div class="header">
     <div class="title">法界業鏡 ‧ 結算迴廊</div>
-    <div class="sub-info" id="user-info">行者：妙依 ｜ 創立日：2026-01-01</div>
+    <div class="sub-info" id="user-info">
+        行者：妙依 ｜ 結界創立：2026-03-21<br>
+        本月體檢指標：16項 (行願、行戒、定慧、六般若、苦集滅道)
+    </div>
   </div>
 
   <div class="energy-section">
-    <div style="text-align: center; color: var(--cyan); font-size: 0.85rem; letter-spacing: 3px;">本月清淨百分比</div>
-    <div class="bar-container">
-      <div class="bar-fill" id="energy-fill"></div>
-      <div class="node" id="n1" style="left: 10%;"><svg id="svg1" viewBox="-100 -100 200 200"></svg><div class="node-score">0~20</div></div>
-      <div class="node" id="n2" style="left: 30%;"><svg id="svg2" viewBox="-100 -100 200 200"></svg><div class="node-score">21~40</div></div>
-      <div class="node" id="n3" style="left: 50%;"><svg id="svg3" viewBox="-100 -100 200 200"></svg><div class="node-score">41~60</div></div>
-      <div class="node" id="n4" style="left: 70%;"><svg id="svg4" viewBox="-100 -100 200 200"></svg><div class="node-score">61~80</div></div>
-      <div class="node" id="n5" style="left: 90%;"><svg id="svg5" viewBox="-100 -100 200 200"></svg><div class="node-score">81~100</div></div>
+    <div class="nodes-container">
+      <div class="node" id="n1"><div id="svg-n1"></div><div class="node-label">初發心</div><div class="node-range">0~20%</div></div>
+      <div class="node" id="n2"><div id="svg-n2"></div><div class="node-label">安立境</div><div class="node-range">21~40%</div></div>
+      <div class="node" id="n3"><div id="svg-n3"></div><div class="node-label">萬行起</div><div class="node-range">41~60%</div></div>
+      <div class="node" id="n4"><div id="svg-n4"></div><div class="node-label">普迴向</div><div class="node-range">61~80%</div></div>
+      <div class="node" id="n5"><div id="svg-n5"></div><div class="node-label">十地圓</div><div class="node-range">81~100%</div></div>
     </div>
-    <div class="final-score-display" id="final-score">0%</div>
+    
+    <div class="bar-track">
+      <div class="bar-fill" id="energy-fill"></div>
+    </div>
+    <div id="score-display">0%</div>
   </div>
 
   <div class="history-section">
-    <div class="history-title">累劫資糧 ‧ 圖騰印記</div>
-    <div class="totem-grid">
-      <div class="totem-card"><svg id="hs1" viewBox="-100 -100 200 200"></svg><div class="totem-name">一階 ‧ 青琉璃</div><div class="totem-count">× 12</div></div>
-      <div class="totem-card"><svg id="hs2" viewBox="-100 -100 200 200"></svg><div class="totem-name">二階 ‧ 綠翡翠</div><div class="totem-count">× 8</div></div>
-      <div class="totem-card"><svg id="hs3" viewBox="-100 -100 200 200"></svg><div class="totem-name">三階 ‧ 紫星晶</div><div class="totem-count">× 15</div></div>
-      <div class="totem-card"><svg id="hs4" viewBox="-100 -100 200 200"></svg><div class="totem-name">四階 ‧ 橙琥珀</div><div class="totem-count">× 24</div></div>
-      <div class="totem-card"><svg id="hs5" viewBox="-100 -100 200 200"></svg><div class="totem-name">五階 ‧ 大千金</div><div class="totem-count">× 61</div></div>
+    <div class="history-title">累劫資糧 ‧ 法相印記</div>
+    <div class="history-grid">
+      <div class="history-card"><div id="hs-n1"></div><div class="h-name">信 ‧ 琉璃</div><div class="h-count">× 12</div></div>
+      <div class="history-card"><div id="hs-n2"></div><div class="h-name">住 ‧ 翡翠</div><div class="h-count">× 8</div></div>
+      <div class="history-card"><div id="hs-n3"></div><div class="h-name">行 ‧ 星晶</div><div class="h-count">× 15</div></div>
+      <div class="history-card"><div id="hs-n4"></div><div class="h-name">迴 ‧ 琥珀</div><div class="h-count">× 24</div></div>
+      <div class="history-card"><div id="hs-n5"></div><div class="h-name">地 ‧ 大千</div><div class="h-count">× 61</div></div>
     </div>
   </div>
 
 <script>
-  const NS = 'http://www.w3.org/2000/svg';
-
-  /* ── 彩色琉璃曼陀羅 生成引擎 ── */
-  function el(tag, attrs={}) {
-    const e = document.createElementNS(NS, tag);
-    for (const [k,v] of Object.entries(attrs)) e.setAttribute(k, v);
-    return e;
-  }
-  function add(parent, tag, attrs={}) { const e = el(tag, attrs); parent.appendChild(e); return e; }
-  
-  // 計算多邊形頂點
-  function poly(n, r, rotDeg=0) {
-    const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
-    for(let k=0;k<n;k++){ pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]); }
-    return pts;
-  }
-
-  // 繪製彩色透明玻璃花瓣 (核心)
-  function drawGlassPetals(svg, pts, innerPts, baseColor, glowColor) {
-    const g = add(svg, 'g');
-    for(let i=0; i<pts.length; i++) {
-      let next = (i+1) % pts.length;
-      // 繪製從圓心到外緣邊緣的透明三角形
-      let d = `M 0 0 L ${pts[i][0]} ${pts[i][1]} L ${pts[next][0]} ${pts[next][1]} Z`;
-      // 顏色交替，營造光影折射感
-      let opacity = i%2===0 ? 0.4 : 0.2;
-      add(g, 'path', { d: d, fill: baseColor, stroke: glowColor, 'stroke-width': 0.5, opacity: opacity });
-      
-      // 內層星芒疊加
-      if(innerPts) {
-        let dIn = `M 0 0 L ${innerPts[i][0]} ${innerPts[i][1]} L ${innerPts[next][0]} ${innerPts[next][1]} Z`;
-        add(g, 'path', { d: dIn, fill: glowColor, stroke: '#fff', 'stroke-width': 0.3, opacity: 0.3, 'mix-blend-mode': 'screen' });
-      }
-    }
-  }
-
-  /* ── 分階定義 5 個琉璃圖騰 ── */
-  function renderTotems(svgId, tier) {
-    const svg = document.getElementById(svgId);
-    if(!svg) return;
+  /* ── 核心：提取您的幾何座標，注入彩色琉璃 ── */
+  function generateTotemSVG(tier) {
+    // 定義五階的色彩主題 [基礎填充色, 線條高光色]
+    const themes = [
+      ['rgba(0, 180, 255, 0.2)', '#80dfff'],  // 1: 青琉璃
+      ['rgba(50, 255, 120, 0.2)', '#80ffc0'], // 2: 綠翡翠
+      ['rgba(200, 100, 255, 0.2)', '#e0c0ff'],// 3: 紫星晶
+      ['rgba(255, 150, 50, 0.25)', '#ffcc80'],// 4: 橙琥珀
+      ['rgba(255, 215, 0, 0.3)', '#fffce0']   // 5: 彩虹金 (最高階)
+    ];
     
-    // 底座外框
-    add(svg, 'circle', {cx:0, cy:0, r:90, fill:'none', stroke:'rgba(255,255,255,0.2)', 'stroke-width':0.5, 'stroke-dasharray':'2 4'});
+    let fill = themes[tier-1][0];
+    let stroke = themes[tier-1][1];
+    let innerHtml = '';
 
-    if(tier === 1) { // 0-20: 九角青琉璃 (Novenaria)
-      let pts = poly(9, 85); let ptsIn = poly(9, 45, 20);
-      drawGlassPetals(svg, pts, ptsIn, 'rgba(0, 200, 255, 0.4)', 'rgba(255, 255, 255, 0.6)');
+    // 共通的 SVG 畫布設定，對齊您原本的 100x100 座標系，透過 viewBox 置中
+    let svgStart = `<svg viewBox="0 0 100 100" style="overflow:visible;">`;
+    let svgEnd = `</svg>`;
+    
+    // 建立群組，設定線條與填色屬性，並將中心從 (50,50) 為基準運作
+    let gStart = `<g stroke="${stroke}" stroke-width="1.2" stroke-linejoin="round" fill="${fill}">`;
+    let gEnd = `</g>`;
+
+    // 根據階級套用您設計的坐標 (拔除所有虛線與白點)
+    if (tier === 1) { // 【 信 】
+      innerHtml += `
+        <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" />
+        <path d="M 50 33 L 62 38 L 67 50 L 62 62 L 50 67 L 38 62 L 33 50 L 38 38 Z" fill="rgba(255,255,255,0.1)"/>
+        <line x1="50" y1="50" x2="50" y2="33"/><line x1="50" y1="50" x2="62" y2="38"/>
+        <line x1="50" y1="50" x2="67" y2="50"/><line x1="50" y1="50" x2="62" y2="62"/>
+        <line x1="50" y1="50" x2="50" y2="67"/><line x1="50" y1="50" x2="38" y2="62"/>
+        <line x1="50" y1="50" x2="33" y2="50"/><line x1="50" y1="50" x2="38" y2="38"/>
+        <circle cx="50" cy="50" r="8" fill="none" stroke="${stroke}" stroke-width="1.5"/>
+      `;
+    } 
+    else if (tier === 2) { // 【 住 】
+      innerHtml += `
+        <polygon points="50,23 52.5,32.5 62,28 57.5,37.5 67,40 57.5,42.5 62,52 52.5,47.5 50,57 47.5,47.5 38,52 42.5,42.5 33,40 42.5,37.5 38,28 47.5,32.5" />
+        <path d="M 50 23 L 62 28 L 67 40 L 62 52 L 50 57 L 38 52 L 33 40 L 38 28 Z" fill="rgba(255,255,255,0.1)"/>
+        <line x1="50" y1="40" x2="50" y2="23"/><line x1="50" y1="40" x2="62" y2="28"/><line x1="50" y1="40" x2="67" y2="40"/><line x1="50" y1="40" x2="62" y2="52"/><line x1="50" y1="40" x2="50" y2="57"/><line x1="50" y1="40" x2="38" y2="52"/><line x1="50" y1="40" x2="33" y2="40"/><line x1="50" y1="40" x2="38" y2="28"/>
+        <circle cx="50" cy="40" r="8" fill="none" stroke="${stroke}" stroke-width="1.5"/>
+        <path d="M 30 78 L 70 78 L 70 75 L 67 75 L 67 72 L 64 72 L 64 69 L 61 69 L 61 66 L 39 66 L 39 69 L 36 69 L 36 72 L 33 72 L 33 75 L 30 75 Z" fill="${fill}"/>
+      `;
     }
-    else if(tier === 2) { // 21-40: 十一角綠翡翠 (Hendecagram)
-      let pts = poly(11, 85); let ptsIn = poly(11, 50, 15);
-      drawGlassPetals(svg, pts, ptsIn, 'rgba(50, 255, 150, 0.3)', 'rgba(200, 255, 200, 0.6)');
-      add(svg, 'circle', {cx:0, cy:0, r:20, fill:'rgba(100,255,150,0.2)', stroke:'#fff', 'stroke-width':1});
+    else if (tier === 3) { // 【 行 】
+      innerHtml += `
+        <polygon points="50,15 54,31 68,22 60,36 75,40 60,44 68,58 54,49 50,65 46,49 32,58 40,44 25,40 40,36 32,22 46,31" />
+        <path d="M 50 15 L 68 22 L 75 40 L 68 58 L 50 65 L 32 58 L 25 40 L 32 22 Z" fill="rgba(255,255,255,0.1)"/>
+        <line x1="50" y1="40" x2="50" y2="15"/><line x1="50" y1="40" x2="68" y2="22"/>
+        <line x1="50" y1="40" x2="75" y2="40"/><line x1="50" y1="40" x2="68" y2="58"/>
+        <line x1="50" y1="40" x2="50" y2="65"/><line x1="50" y1="40" x2="32" y2="58"/>
+        <line x1="50" y1="40" x2="25" y2="40"/><line x1="50" y1="40" x2="32" y2="22"/>
+        <circle cx="50" cy="40" r="8" fill="none" stroke="${stroke}" stroke-width="1.5"/>
+      `;
     }
-    else if(tier === 3) { // 41-60: 雙八角紫星晶 (Twin Ogdoad)
-      let pts1 = poly(8, 85, 0); let pts2 = poly(8, 85, 22.5);
-      drawGlassPetals(svg, pts1, null, 'rgba(200, 100, 255, 0.3)', 'rgba(255, 180, 255, 0.7)');
-      drawGlassPetals(svg, pts2, null, 'rgba(255, 100, 150, 0.3)', 'rgba(255, 255, 255, 0.5)');
+    else if (tier === 4) { // 【 迴 】 (疊加放大)
+      innerHtml += `
+        <g transform="translate(50, 50) scale(1.35) translate(-50, -50)" stroke-width="0.8" fill="rgba(255,255,255,0.05)">
+            <path d="M 50 33 L 62 38 L 67 50 L 62 62 L 50 67 L 38 62 L 33 50 L 38 38 Z" />
+        </g>
+        <polygon points="50,33 52.5,42.5 62,38 57.5,47.5 67,50 57.5,52.5 62,62 52.5,57.5 50,67 47.5,57.5 38,62 42.5,52.5 33,50 42.5,47.5 38,38 47.5,42.5" />
+        <path d="M 50 33 L 62 38 L 67 50 L 62 62 L 50 67 L 38 62 L 33 50 L 38 38 Z" fill="rgba(255,255,255,0.1)"/>
+        <line x1="50" y1="50" x2="50" y2="33"/> <line x1="50" y1="50" x2="62" y2="38"/>
+        <line x1="50" y1="50" x2="67" y2="50"/> <line x1="50" y1="50" x2="62" y2="62"/>
+        <line x1="50" y1="50" x2="50" y2="67"/> <line x1="50" y1="50" x2="38" y2="62"/>
+        <line x1="50" y1="50" x2="33" y2="50"/> <line x1="50" y1="50" x2="38" y2="38"/>
+        <circle cx="50" cy="50" r="8" fill="none" stroke="${stroke}" stroke-width="1.5"/>
+      `;
     }
-    else if(tier === 4) { // 61-80: 十角橙琥珀 (Decalattice)
-      let pts = poly(10, 85); let ptsIn = poly(10, 55, 18);
-      drawGlassPetals(svg, pts, ptsIn, 'rgba(255, 150, 50, 0.4)', 'rgba(255, 220, 100, 0.8)');
-      pts.forEach(p => add(svg, 'circle', {cx:p[0], cy:p[1], r:3, fill:'#fff'}));
+    else if (tier === 5) { // 【 地 】 (滿分大千陣)
+      innerHtml += `
+        <polygon points="50,10 54,30 70,20 60,36 80,40 60,44 70,60 54,50 50,70 46,50 30,60 40,44 20,40 40,36 30,20 46,30" />
+        <path d="M 50 10 L 70 20 L 80 40 L 70 60 L 50 70 L 30 60 L 20 40 L 30 20 Z" fill="rgba(255,255,255,0.15)"/>
+        <line x1="50" y1="40" x2="50" y2="10"/><line x1="50" y1="40" x2="80" y2="40"/><line x1="50" y1="40" x2="50" y2="70"/><line x1="50" y1="40" x2="20" y2="40"/>
+        <line x1="50" y1="40" x2="70" y2="20"/><line x1="50" y1="40" x2="70" y2="60"/><line x1="50" y1="40" x2="30" y2="60"/><line x1="50" y1="40" x2="30" y2="20"/>
+        <path d="M 50 10 L 80 40 L 50 70 L 20 40 Z" fill="rgba(255,255,255,0.1)"/>
+        <path d="M 70 20 L 70 60 L 30 60 L 30 20 Z" fill="rgba(255,255,255,0.1)"/>
+        <circle cx="50" cy="40" r="8" fill="none" stroke="${stroke}" stroke-width="1.5"/>
+      `;
     }
-    else if(tier === 5) { // 81-100: 十二角大千金 (Dodecasacrum - 滿分彩虹金)
-      let pts = poly(12, 85); let ptsIn = poly(12, 45, 15);
-      // 滿分加入彩色漸層感
-      const g = add(svg, 'g');
-      for(let i=0; i<12; i++) {
-        let next = (i+1)%12;
-        let hue = i * 30; // 0 到 360 彩虹色譜
-        let d = `M 0 0 L ${pts[i][0]} ${pts[i][1]} L ${pts[next][0]} ${pts[next][1]} Z`;
-        add(g, 'path', { d: d, fill: `hsla(${hue}, 80%, 60%, 0.3)`, stroke: '#f3e5ab', 'stroke-width': 0.8 });
-        
-        let dIn = `M 0 0 L ${ptsIn[i][0]} ${ptsIn[i][1]} L ${ptsIn[next][0]} ${ptsIn[next][1]} Z`;
-        add(g, 'path', { d: dIn, fill: `hsla(${hue+180}, 80%, 70%, 0.4)`, stroke: '#fff', 'stroke-width': 0.5 });
-      }
-      add(svg, 'circle', {cx:0, cy:0, r:15, fill:'#fff', filter:'drop-shadow(0 0 10px #fff)'});
-    }
+
+    return svgStart + gStart + innerHtml + gEnd + svgEnd;
   }
 
-  // 渲染節點與歷史圖騰
+  // 將生成的 SVG 注入到 HTML 容器中
   for(let i=1; i<=5; i++) {
-    renderTotems(`svg${i}`, i); // 渲染能量棒上的圖騰
-    renderTotems(`hs${i}`, i);  // 渲染歷史紀錄的小圖騰
+    document.getElementById(`svg-n${i}`).innerHTML = generateTotemSVG(i);
+    document.getElementById(`hs-n${i}`).innerHTML = generateTotemSVG(i);
   }
 
-  /* ── 互動：當月結算能量跑動 ── */
+  /* ── 互動：跑分與點亮儀式 ── */
   window.onload = () => {
-    // 假設系統經過完美比例換算後，行者本月得分為 88%
+    // ✨ 系統精準算分 (真實情況由 localStorage 讀取並計算百分比)
+    // 假設行者當月 16 項指標綜合結算為 88%
     const finalScore = 88; 
     
-    // 延遲啟動動畫，製造期待感
     setTimeout(() => {
       const fillBar = document.getElementById('energy-fill');
-      const scoreText = document.getElementById('final-score');
+      const scoreDisplay = document.getElementById('score-display');
       
-      // 光軌跑動
+      // 光軌物理衝刺
       fillBar.style.width = finalScore + '%';
       
-      // 數字滾動效果
+      // 數字飛跳效果
       let currentNum = 0;
       let timer = setInterval(() => {
         currentNum += 2;
-        if(currentNum >= finalScore) { currentNum = finalScore; clearInterval(timer); }
-        scoreText.innerText = currentNum + '%';
-        scoreText.style.opacity = 1;
+        if(currentNum >= finalScore) { 
+            currentNum = finalScore; 
+            clearInterval(timer); 
+        }
+        scoreDisplay.innerText = currentNum + '%';
+        scoreDisplay.style.opacity = 1;
 
-        // 沿途點亮圖騰 (依照 20, 40, 60, 80, 100 刻度)
+        // 沿路依序點亮圖騰 (門檻：10, 30, 50, 70, 90)
+        // 因為是 0~20, 21~40，所以過半就亮
         if(currentNum >= 10) document.getElementById('n1').classList.add('active');
         if(currentNum >= 30) document.getElementById('n2').classList.add('active');
         if(currentNum >= 50) document.getElementById('n3').classList.add('active');
         if(currentNum >= 70) document.getElementById('n4').classList.add('active');
-        if(currentNum >= 90) document.getElementById('n5').classList.add('active'); // 88分不會點亮第五個，以此類推
+        if(currentNum >= 90) document.getElementById('n5').classList.add('active'); 
+        // 88分未滿 90，所以第 5 個（81~100區間的滿分圖騰）會保持灰階未點亮狀態。
+      }, 60);
 
-      }, 50);
-
-      // 最後把最終達標的那個圖騰放大發光 (這裡以判斷階級為例)
+      // 最終結算：將達到的最高階圖騰巨大化並賦予神聖光輝
       setTimeout(() => {
-        let activeTier = Math.ceil(finalScore / 20); // 88/20 = 4.4 -> 階級5
-        if(activeTier < 1) activeTier = 1;
+        // 算出對應階級 (例如 88 -> 5，但因為 88 落在 81~100 區間，所以是第五階)
+        let finalTier = Math.ceil(finalScore / 20); 
+        if(finalTier < 1) finalTier = 1;
         
-        let targetNode = document.getElementById(`n${activeTier}`);
+        let targetNode = document.getElementById(`n${finalTier}`);
         if(targetNode) {
-          targetNode.style.transform = 'translateX(-50%) scale(1.6)';
-          targetNode.style.filter = 'drop-shadow(0 0 25px rgba(255,255,255,0.8))';
-          targetNode.style.zIndex = '20';
+          targetNode.classList.add('active'); // 強制點亮所屬階級
+          targetNode.classList.add('ultimate');
+          
+          // 如果是滿分階級 (Tier 5)，加上彩虹脈衝呼吸燈
+          if(finalTier === 5) {
+              targetNode.querySelector('svg').classList.add('rainbow-glow');
+          }
         }
-      }, 2500); // 等待跑動結束
+      }, 3000); // 等待光軌跑完
 
-    }, 500);
+    }, 800); // 載入後延遲啟動，製造莊嚴感
   };
-
 </script>
 </body>
 </html>
