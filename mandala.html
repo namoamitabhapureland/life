@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>華藏月相 ‧ 菩提結算與專屬迴向</title>
+<title>法界業鏡 ‧ 菩提迴向與震撼賜寶</title>
 <style>
   :root { --bg: #010204; --gold: #d4af37; --cyan: #8ba89c; }
   * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -11,31 +11,59 @@
   body {
     background: radial-gradient(circle at 50% 50%, #15111a 0%, var(--bg) 100%);
     color: #fff; font-family: "Songti TC", "PMingLiU", "Noto Serif TC", serif; 
-    height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+    height: 100vh; overflow: hidden;
+    display: flex; justify-content: center; align-items: center;
   }
 
   /* ════ 頂部導航列 ════ */
   .top-nav { position: absolute; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; z-index: 100; pointer-events: none; }
-  .nav-btn { pointer-events: auto; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); color: var(--gold); padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); }
+  .nav-btn { pointer-events: auto; background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.3); color: var(--gold); padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; letter-spacing: 2px; cursor: pointer; transition: 0.3s; backdrop-filter: blur(5px); font-family: inherit; }
   .nav-btn:active { background: rgba(212,175,55,0.2); }
-  .nav-btn.circle { width: 36px; height: 36px; padding: 0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+  .nav-btn.circle { width: 36px; height: 36px; padding: 0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-family: Arial, sans-serif; }
+
+  /* ════ 說明面板 (問號) ════ */
+  #help-panel { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s; }
+  .help-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 15px; max-width: 90%; width: 400px; color: #ccc; line-height: 1.8; letter-spacing: 2px; font-size: 0.95rem; text-align: justify; box-shadow: 0 0 30px rgba(139,168,156,0.2); }
+  .help-box h3 { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.2rem; letter-spacing: 5px; }
 
   /* ════ 星空與多寶閣紫金光幕 ════ */
   canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-  #indra-bg { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1.5s; background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(156, 39, 176, 0.08) 2px, transparent 6px), radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 70%); }
+  #indra-bg { 
+    position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1.5s;
+    background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, rgba(156, 39, 176, 0.08) 2px, transparent 6px), radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+  }
 
-  /* ════ 第一階段：發菩提心 ════ */
-  #vow-layer { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(1, 2, 4, 0.4); backdrop-filter: blur(3px); transition: opacity 1s ease; cursor: pointer; pointer-events: auto; }
-  #bodhi-light { width: 25px; height: 25px; border-radius: 50%; background: #ffd700; box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37, 0 0 80px #d4af37; animation: bodhiBreathe 3s ease-in-out infinite; margin-bottom: 40px; transition: transform 0.5s; }
-  @keyframes bodhiBreathe { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37; opacity: 0.8; } 50% { transform: scale(1.8); box-shadow: 0 0 30px #fffce0, 0 0 60px #ffd700, 0 0 120px #d4af37; opacity: 1; } }
-  #vow-text { font-size: 2rem; color: #f3e5ab; letter-spacing: 8px; text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px; opacity: 1; transition: opacity 0.3s; text-align: center; }
+  /* ════ 第一階段：發菩提心 (金黃光點呼吸 + 誓願) ════ */
+  #vow-layer {
+    position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: rgba(1, 2, 4, 0.4); backdrop-filter: blur(3px); transition: opacity 1s ease; cursor: pointer;
+  }
+  
+  #bodhi-light {
+    width: 25px; height: 25px; border-radius: 50%; background: #ffd700;
+    box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37, 0 0 80px #d4af37;
+    animation: bodhiBreathe 3s ease-in-out infinite; margin-bottom: 40px; transition: transform 0.5s;
+  }
+  @keyframes bodhiBreathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px #ffd700, 0 0 40px #d4af37; opacity: 0.8; }
+    50% { transform: scale(1.8); box-shadow: 0 0 30px #fffce0, 0 0 60px #ffd700, 0 0 120px #d4af37; opacity: 1; }
+  }
+
+  #vow-text { font-size: 2rem; color: #f3e5ab; letter-spacing: 8px; font-weight: normal; text-shadow: 0 0 20px rgba(212,175,55,0.8); margin-bottom: 20px; opacity: 1; transition: opacity 0.3s; text-align: center; }
   #vow-hint { font-size: 0.95rem; color: var(--cyan); letter-spacing: 5px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-  /* ════ 第二階段：直立能量樞紐 ════ */
+  /* ════ 第二階段：直立能量樞紐 (彩色透明能量柱) ════ */
   #core-layer { position: relative; width: 300px; height: 85vh; z-index: 10; display: flex; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 1.5s ease; }
   .track { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: rgba(255,255,255,0.05); border-radius: 2px; }
-  .fill { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 8px; height: 0%; border-radius: 3px; background: linear-gradient(180deg, rgba(255,215,0,0.5), rgba(255,150,50,0.4), rgba(200,100,255,0.4), rgba(50,255,120,0.4), rgba(0,180,255,0.3)); box-shadow: 0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(255,255,255,0.3); transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5; }
+  
+  .fill { 
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 8px; height: 0%; border-radius: 3px;
+    background: linear-gradient(180deg, rgba(255,215,0,0.5), rgba(255,150,50,0.4), rgba(200,100,255,0.4), rgba(50,255,120,0.4), rgba(0,180,255,0.3));
+    box-shadow: 0 0 15px rgba(212,175,55,0.8), 0 0 30px rgba(255,255,255,0.3);
+    transition: height 4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5;
+  }
+
   .node { position: absolute; left: 50%; transform: translate(-50%, 50%) scale(0.4); display: flex; justify-content: center; align-items: center; filter: grayscale(100%) brightness(0.3); opacity: 0.5; transition: all 1s cubic-bezier(0.3, 1, 0.3, 1); }
   .node.active { filter: grayscale(0%) brightness(1); opacity: 1; transform: translate(-50%, 50%) scale(0.9); z-index: 10; }
   .node.ultimate { transform: translate(-50%, 50%) scale(1.4); z-index: 20; filter: drop-shadow(0 0 35px rgba(212,175,55,0.8)); }
@@ -51,16 +79,16 @@
   .modal-overlay.show .t-box { transform: scale(1); }
   .t-title { font-size: 1.2rem; color: var(--cyan); letter-spacing: 6px; margin-bottom: 10px; }
   .t-svg-wrap { width: 160px; height: 160px; filter: drop-shadow(0 0 20px var(--gold)); margin-bottom: 15px; }
-  .t-name { font-size: 1.6rem; color: var(--gold); letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 15px; font-weight: bold; }
+  .t-name { font-size: 1.8rem; color: var(--gold); letter-spacing: 5px; text-shadow: 0 0 15px var(--gold); margin-bottom: 15px; font-weight: bold;}
   
-  /* ✨ 華麗的結算文案 */
+  /* ✨ 絕美法義文案 */
   .t-desc { font-size: 0.95rem; color: #e0e0e0; letter-spacing: 3px; line-height: 1.8; margin-bottom: 15px; }
   .t-highlight { color: #f3e5ab; font-weight: bold; }
-  
+
   .t-btn { margin-top: 15px; padding: 10px 30px; background: transparent; border: 1px solid var(--gold); color: var(--gold); font-size: 1rem; border-radius: 25px; letter-spacing: 4px; cursor: pointer; transition: 0.3s; font-family: inherit; }
   .t-btn:active { background: rgba(212,175,55,0.2); }
 
-  /* ════ 第四階段：專屬迴向庫 ════ */
+  /* ════ 第四階段：專屬迴向庫 UI ════ */
   #vault-layer { position: absolute; inset: 0; z-index: 60; background: transparent; display: none; flex-direction: column; align-items: center; padding-top: 80px; opacity: 0; transition: opacity 0.8s; overflow-y: auto; }
   .vault-title { font-size: 1.6rem; color: var(--gold); letter-spacing: 8px; margin-bottom: 40px; text-shadow: 0 0 20px var(--gold); }
   .vault-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 800px; padding-bottom: 50px; }
@@ -71,20 +99,32 @@
   .v-name { color: var(--cyan); font-size: 0.85rem; letter-spacing: 2px; }
 
   /* ════ 第五階段：防錯位，絕對置中全螢幕震撼黃光微塵 ════ */
-  #anim-overlay { position: fixed; inset: 0; z-index: 200; display: none; background: rgba(1,1,3,0.9); opacity: 0; transition: opacity 0.5s; }
-  #full-screen-flash { position: absolute; inset: 0; z-index: 10; background: radial-gradient(circle at 50% 50%, #fffce0 0%, #ffd700 40%, transparent 80%); opacity: 0; transform: scale(0); transition: transform 0.3s ease-out, opacity 0.8s; }
-  #anim-svg-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); width: 250px; height: 250px; transition: transform 1.5s ease-in, filter 1s; z-index: 20; }
+  #anim-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none; 
+    background: rgba(1,1,3,0.9); opacity: 0; transition: opacity 0.5s;
+  }
+  #full-screen-flash {
+    position: absolute; inset: 0; z-index: 10;
+    background: radial-gradient(circle at 50% 50%, #fffce0 0%, #ffd700 40%, transparent 80%);
+    opacity: 0; transform: scale(0); transition: transform 0.3s ease-out, opacity 0.8s; 
+  }
+  #anim-svg-container { 
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1);
+    width: 250px; height: 250px; transition: transform 1.5s ease-in, filter 1s; z-index: 20; 
+  }
   #anim-svg-container svg { width: 100%; height: 100%; }
   #anim-text { position: absolute; top: 75%; left: 50%; transform: translateX(-50%); width: 100%; font-size: 1.3rem; color: #fffce0; letter-spacing: 6px; opacity: 0; transition: opacity 1.5s; text-align: center; line-height: 2.2; z-index: 30; }
   #close-anim-btn { position: absolute; top: 85%; left: 50%; transform: translateX(-50%); z-index: 40; }
 
-  .dust-particle { position: absolute; top: 50%; left: 50%; border-radius: 50%; opacity: 0; z-index: 15; animation: floatDustExplosion ease-out forwards; }
-  @keyframes floatDustExplosion { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
-
-  /* ════ 說明面板 (問號) ════ */
-  #help-panel { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.5s; }
-  .help-box { background: #111; border: 1px solid var(--cyan); padding: 30px; border-radius: 15px; max-width: 90%; width: 400px; color: #ccc; line-height: 1.8; letter-spacing: 2px; font-size: 0.95rem; text-align: justify; }
-  .help-box h3 { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.2rem; letter-spacing: 5px; }
+  .dust-particle {
+    position: absolute; top: 50%; left: 50%; border-radius: 50%; opacity: 0; z-index: 15;
+    animation: floatDustExplosion ease-out forwards;
+  }
+  @keyframes floatDustExplosion {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    5% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+  }
 
 </style>
 </head>
@@ -165,25 +205,22 @@
         const now = audioCtx.currentTime;
 
         if (type === 'low') {
-            // 低頻共鳴 (發願時的震撼感)
+            // 低頻共鳴 (發願)
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(108, now); // 108Hz
+            osc.frequency.setValueAtTime(108, now); 
             gain.gain.setValueAtTime(0, now);
             gain.gain.linearRampToValueAtTime(0.6, now + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
-            osc.start(now);
-            osc.stop(now + 1.5);
+            osc.start(now); osc.stop(now + 1.5);
         } else if (type === 'high') {
-            // 高頻引磬 (分數定格、賜寶時的清脆聲)
+            // 高頻引磬 (分數定格、迴向爆裂)
             osc.type = 'sine';
-            // 混合頻率製造引磬特有金屬聲
             osc.frequency.setValueAtTime(880, now); 
             osc.frequency.exponentialRampToValueAtTime(440, now + 2);
             gain.gain.setValueAtTime(0, now);
             gain.gain.linearRampToValueAtTime(0.8, now + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 3);
-            osc.start(now);
-            osc.stop(now + 3);
+            osc.start(now); osc.stop(now + 3);
         }
     }
 
@@ -193,7 +230,6 @@
     if (!db) db = {};
     if (!db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0];
     
-    // ✨ 抓取行者名字
     const userName = db.name || "行者";
 
     let todayDate = new Date();
@@ -235,16 +271,15 @@
 
     // 語音引擎
     let iosAudioUnlocked = false;
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('mousedown', unlockAudio, { once: true });
     function unlockAudio() {
         if (!iosAudioUnlocked) {
-            initAudio(); // 同時解鎖引磬音效
+            initAudio(); // 初始化法界引磬音效
             if(window.speechSynthesis) window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
             iosAudioUnlocked = true;
         }
     }
-    document.body.addEventListener('touchstart', unlockAudio, { once: true });
-    document.body.addEventListener('mousedown', unlockAudio, { once: true });
-    
     function speak(t) {
         if (!window.speechSynthesis) return; 
         window.speechSynthesis.cancel(); 
@@ -253,34 +288,45 @@
         window.speechSynthesis.speak(m);
     }
 
-    // ════ 說明面板 ════
+    // ════ 說明面板 (問號) ════
     function toggleHelp(show) {
         const el = document.getElementById('help-panel');
-        if(show) { el.style.display = 'flex'; setTimeout(()=> el.style.opacity = 1, 10); }
-        else { el.style.opacity = 0; setTimeout(()=> el.style.display = 'none', 500); }
+        if(show) { 
+            el.style.display = 'flex'; 
+            setTimeout(()=> el.style.opacity = 1, 10); 
+        } else { 
+            el.style.opacity = 0; 
+            setTimeout(()=> el.style.display = 'none', 500); 
+        }
     }
 
-    // ════ 銳利星空引擎 ════
+    // ════ 銳利星空引擎 (完美無霧霾版) ════
     const cvs = document.getElementById('starCanvas'); const ctx = cvs.getContext('2d');
-    let cw, ch, stars = [], warpSpeed = 1.0, targetWarpSpeed = 1.0; 
+    let cw, ch, stars = [];
+    let warpSpeed = 1.0; 
+    let targetWarpSpeed = 1.0; 
+
     function initStars() {
         cw = cvs.width = window.innerWidth; ch = cvs.height = window.innerHeight;
-        stars = Array.from({length: 350}, () => ({ x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, c: Math.random()>0.2?'#ffffff':'#f3e5ab' }));
+        stars = Array.from({length: 400}, () => ({ 
+            x: (Math.random()-0.5)*cw*2, y: (Math.random()-0.5)*ch*2, z: Math.random()*2000, 
+            c: Math.random()>0.2?'#ffffff':'#f3e5ab' 
+        }));
     }
     function drawStars() {
-        ctx.clearRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = 'rgba(1, 2, 4, 0.4)'; ctx.fillRect(0, 0, cw, ch); ctx.globalCompositeOperation = 'screen';
         warpSpeed += (targetWarpSpeed - warpSpeed) * 0.1;
         stars.forEach(s => {
             s.z -= warpSpeed; if(s.z<=0) { s.z=2000; s.x=(Math.random()-0.5)*cw*2; s.y=(Math.random()-0.5)*ch*2; }
             let sc = 600 / (600 + s.z), px = cw/2 + s.x*sc, py = ch/2 + s.y*sc;
-            ctx.globalAlpha = Math.min(1, sc*3); 
+            ctx.fillStyle = s.c; ctx.globalAlpha = Math.min(1, sc*3); 
             ctx.beginPath();
             if (warpSpeed > 5) { 
-                let prevSc = 600 / (600 + s.z + warpSpeed * 8);
+                let prevSc = 600 / (600 + s.z + warpSpeed * 6);
                 ctx.moveTo(px, py); ctx.lineTo(cw/2 + s.x*prevSc, ch/2 + s.y*prevSc);
-                ctx.lineWidth = 1.5 * sc; ctx.strokeStyle = s.c; ctx.stroke();
+                ctx.lineWidth = 2 * sc; ctx.strokeStyle = s.c; ctx.stroke();
             } else {
-                ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); ctx.fillStyle = s.c; ctx.fill();
+                ctx.arc(px, py, 1.5*sc, 0, Math.PI*2); ctx.fill();
             }
         });
         ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; requestAnimationFrame(drawStars);
@@ -342,8 +388,7 @@
     const bodhiLight = document.getElementById('bodhi-light');
 
     function nextVow() {
-        // ✨ 觸發低頻引磬聲
-        playBell('low');
+        playBell('low'); // ✨ 觸發低頻引磬音效
 
         if (vowStep === -1) {
             document.getElementById('top-nav').style.display = 'none'; // 隱藏頂部選單
@@ -377,7 +422,7 @@
     // ════ 第二階段：跑分動畫 ════
     let finalTier = 1;
     function startScoreAnimation() {
-        const finalScore = calculatedPercentage; 
+        const finalScore = calculatedPercentage; // 真實算分
         
         const fillBar = document.getElementById('energy-fill');
         const scoreTracker = document.getElementById('score-tracker');
@@ -397,8 +442,7 @@
             if(currentNum >= finalScore) { 
                 currentNum = finalScore; 
                 clearInterval(timer); 
-                // ✨ 停止時觸發高頻引磬清脆聲
-                playBell('high');
+                playBell('high'); // ✨ 停止時觸發高頻引磬清脆聲
             }
             scoreTracker.innerText = currentNum + '%';
 
@@ -418,7 +462,7 @@
         }, 4000);
     }
 
-    // ════ 第三階段：法寶賜予 (注入專屬文案) ════
+    // ════ 第三階段：法寶賜予 ════
     function showTreasureModal() {
         const modal = document.getElementById('treasure-modal');
         modal.style.display = 'flex'; 
@@ -433,9 +477,8 @@
             資糧具足，法界特賜此印記。
         `;
 
-        // 存入法印並月度歸零
         db.mandalaVault[finalTier - 1]++;
-        db.lunar.dailyPoints = 0;
+        db.lunar.dailyPoints = 0; // ✨ 賜寶後月度結算歸零
         saveDB();
 
         speak(`獲贈印記，${totemNames[finalTier - 1]}`);
@@ -451,7 +494,7 @@
     function openVault() {
         document.getElementById('treasure-modal').style.display = 'none';
         document.getElementById('core-layer').style.display = 'none';
-        document.getElementById('top-nav').style.display = 'flex'; // 顯示回道場按鈕
+        document.getElementById('top-nav').style.display = 'flex'; // 恢復導航
         document.getElementById('indra-bg').style.opacity = 1;
         
         const vaultLayer = document.getElementById('vault-layer');
@@ -480,9 +523,10 @@
         speak("進入法界印記專屬庫，點擊即可迴向");
     }
 
-    // ════ 第五階段：絕對置中全螢幕黃光微塵 ════
+    // ════ 第五階段：防錯位，絕對置中全螢幕震撼黃光微塵 ════
     function dedicateTotem(index, el) {
-        db.mandalaVault[index]--; saveDB();
+        db.mandalaVault[index]--;
+        saveDB();
         el.querySelector('.v-count').innerText = `× ${db.mandalaVault[index]}`;
 
         const animOverlay = document.getElementById('anim-overlay');
@@ -500,39 +544,50 @@
         flash.style.opacity = 0; flash.style.transform = 'scale(0)';
 
         speak("大願迴向十方");
-        playBell('low'); // 迴向時的低頻共鳴
+        playBell('low'); // ✨ 迴向時的低頻共鳴
 
-        setTimeout(() => { animOverlay.style.opacity = 1; }, 50);
+        setTimeout(() => {
+            animOverlay.style.opacity = 1;
+        }, 50);
 
         setTimeout(() => {
             animSvg.style.transform = 'translate(-50%, -50%) scale(1.5)';
             animSvg.style.filter = 'drop-shadow(0 0 60px #fff)';
             
             setTimeout(() => {
-                flash.style.transform = 'scale(2)'; flash.style.opacity = 1;
+                flash.style.transform = 'scale(2)';
+                flash.style.opacity = 1;
+                
                 animSvg.innerHTML = '';
                 
                 createDustExplosionExplosion(document.getElementById('anim-overlay')); 
+                
                 speak("化作無量微塵，悉皆迴向虛空");
-                playBell('high'); // 爆裂時的高頻清脆聲
+                playBell('high'); // ✨ 爆裂時的高頻清脆聲
                 
                 setTimeout(() => { flash.style.opacity = 0; }, 300);
 
                 animText.innerHTML = "【 因緣圓滿 ． 悉皆迴向 】<br><span style='font-size:0.9rem; color:#f3e5ab;'><br>您的印記已化作無漏金剛光束，迴向虛空法界。</span>";
                 animText.style.opacity = 1;
                 
-                setTimeout(() => { closeBtn.style.opacity = 1; closeBtn.style.pointerEvents = 'auto'; }, 2000);
+                setTimeout(() => {
+                    closeBtn.style.opacity = 1; closeBtn.style.pointerEvents = 'auto';
+                }, 2000);
 
             }, 1500); 
         }, 1000); 
     }
 
     function createDustExplosionExplosion(container) {
-        const vw = window.innerWidth, vh = window.innerHeight;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
         for (let i = 0; i < 300; i++) {
-            let dust = document.createElement('div'); dust.className = 'dust-particle';
+            let dust = document.createElement('div');
+            dust.className = 'dust-particle';
+            
             dust.style.background = Math.random() > 0.5 ? '#ffd700' : '#fffce0';
-            dust.style.width = Math.random() * 5 + 3 + 'px'; dust.style.height = dust.style.width;
+            dust.style.width = Math.random() * 5 + 3 + 'px'; 
+            dust.style.height = dust.style.width;
             
             let angle = Math.random() * Math.PI * 2;
             let maxDistance = Math.hypot(vw, vh); 
@@ -540,6 +595,7 @@
             
             dust.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
             dust.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+            
             dust.style.animationDuration = (0.5 + Math.random() * 2) + 's';
             container.appendChild(dust);
         }
@@ -547,12 +603,14 @@
 
     function closeAnim() {
         const animOverlay = document.getElementById('anim-overlay');
-        animOverlay.style.opacity = 0; animOverlay.style.pointerEvents = 'none';
+        animOverlay.style.opacity = 0;
+        animOverlay.style.pointerEvents = 'none';
         setTimeout(() => {
             animOverlay.style.display = 'none'; 
             document.querySelectorAll('.dust-particle').forEach(e => e.remove());
         }, 800);
     }
+
 </script>
 </body>
 </html>
