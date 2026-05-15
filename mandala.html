@@ -340,6 +340,10 @@
                     <stop offset="60%" stop-color="#FFFAF0" />
                     <stop offset="100%" stop-color="#FFD700" stop-opacity="0.95"/>
                 </radialGradient>
+                <radialGradient id="mandalaInnerFill" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#FFD700" stop-opacity="0.15" />
+    <stop offset="100%" stop-color="#8B6508" stop-opacity="0" />
+</radialGradient>
                 
                 <g id="flower-base-model">
                     <path d="M 0 0 C 8 -12, 12 -22, 0 -26 C -12 -22, -8 -12, 0 0 Z" stroke-width="0.8"/>
@@ -370,11 +374,9 @@
                     <path d="M 500 815 Q 475 805, 465 780 C 465 730, 500 715, 500 715 C 500 715, 535 730, 535 780 Q 525 805, 500 815 Z" fill="none" />
                 </g>
             </defs>
-   <g class="mandala-static-container" mask="url(#mandala-total-mask)">
+            <g class="mandala-static-container" mask="url(#mandala-total-mask)">
     <g class="mandala-glow-effect">
-        </g>
-</g>
-
+        
         <g stroke="#FFD700" stroke-width="2.2" fill="none">
             <path d="M500 10 L764.5 95.9 L928 320.9 L928 599.1 L764.5 824.1 L500 910 L235.5 824.1 L72 599.1 L72 320.9 L235.5 95.9 Z" opacity="0.8" />
             <path d="M500 10 L928 320.9 L764.5 824.1 L235.5 824.1 L72 320.9 L500 10 Z" opacity="0.6" />
@@ -397,8 +399,10 @@
             <circle cx="72" cy="320.9" r="6" />
             <circle cx="235.5" cy="95.9" r="6" />
         </g>
-    </g>
-</g>
+        
+    </g> </g> 
+
+  
 
             <circle class="halo-pulse" cx="500" cy="245" r="215" fill="url(#haloFillDef)" stroke="url(#haloGlow)" stroke-width="2" opacity="0.8" mask="url(#halo-mask)" />
             <circle class="halo-pulse" cx="500" cy="245" r="160" fill="none" stroke="url(#haloGlow)" stroke-width="2" mask="url(#halo-mask)" />
