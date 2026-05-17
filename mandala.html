@@ -2,237 +2,81 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>淨土法界美學 ‧ 三層法輪改良與敞口金線淨瓶</title>
+    <title>琉璃淨瓶供瓶示範</title>
     <style>
-        :root {
-            --bg-deep: #010103;
-            --gold-light: #f3e5ab; /* 淺金色線框 */
-            --gold-solid: #d4af37; /* 雙層金框專用 */
-            --water-cyan: rgba(139, 168, 156, 0.25); /* 琉璃清淨法水色 */
-        }
-        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         body {
-            background: radial-gradient(circle at 50% 50%, #16110a 0%, var(--bg-deep) 100%);
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
+            background-color: #f0e6d6;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: "PingFang TC", "Microsoft JhengHei", serif;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        #starCanvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-        #mainStage { position: absolute; width: 100vw; height: 100vh; z-index: 2; }
+        .altar {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+        .vessel-container {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <div class="altar">
+        <div class="vessel-container">
+            <svg class="w-vessel" width="100" height="150" viewBox="0 0 100 150">
+                <defs>
+                    <linearGradient id="glassGradLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.9" />
+                    </linearGradient>
+                    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#B0E0E6;stop-opacity:0.7" />
+                        <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.8" />
+                    </linearGradient>
+                </defs>
+                <path d="M20,10 C20,10 10,20 10,40 C10,60 20,70 30,75 L30,120 C30,130 40,140 50,140 C60,140 70,130 70,120 L70,75 C80,70 90,60 90,40 C90,20 80,10 80,10 Z" fill="url(#glassGradLeft)" stroke="#333" stroke-width="1"/>
+                <path d="M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z" fill="url(#waterGrad)">
+                    <animate attributeName="d" dur="3s" repeatCount="indefinite" values="M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z; M30,110 Q50,115 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z; M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z"/>
+                </path>
+            </svg>
+        </div>
 
-    <canvas id="starCanvas"></canvas>
+        <div class="vessel-container">
+            <svg class="f-vessel" width="150" height="200" viewBox="0 0 150 200">
+                <defs>
+                    <linearGradient id="glassGradCenter" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.9" />
+                    </linearGradient>
+                </defs>
+                <line x1="75" y1="90" x2="75" y2="160" stroke="#228B22" stroke-width="2"/>
+                <line x1="75" y1="100" x2="55" y2="80" stroke="#228B22" stroke-width="1.5"/>
+                <line x1="75" y1="110" x2="95" y2="90" stroke="#228B22" stroke-width="1.5"/>
+                <circle cx="75" cy="70" r="15" fill="#FFC0CB" stroke="#C71585" stroke-width="1"/>
+                <circle cx="75" cy="70" r="5" fill="#FFFF00"/>
+                <circle cx="50" cy="75" r="10" fill="#D8BFD8" stroke="#8B008B" stroke-width="1"/>
+                <circle cx="100" cy="85" r="8" fill="#E6E6FA" stroke="#4B0082" stroke-width="1"/>
+                <path d="M30,15 C30,15 15,30 15,60 C15,90 30,105 45,112 L45,180 C45,195 60,210 75,210 C90,210 105,195 105,180 L105,112 C115,105 135,90 135,60 C135,30 120,15 120,15 Z" fill="url(#glassGradCenter)" stroke="#333" stroke-width="1" transform="translate(0, -10)"/>
+            </svg>
+        </div>
 
-    <svg id="mainStage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
-        <defs>
-            <filter id="fine-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.2" result="blur" />
-                <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                </feMerge>
-            </filter>
-
-            <linearGradient id="wheel-gold-body" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#8B6508" stop-opacity="0.2"/>
-                <stop offset="30%" stop-color="var(--gold-solid)" stop-opacity="0.6"/>
-                <stop offset="50%" stop-color="#ffffff" stop-opacity="0.3"/>
-                <stop offset="70%" stop-color="var(--gold-solid)" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#8B6508" stop-opacity="0.2"/>
-            </linearGradient>
-
-            <linearGradient id="wheel-lid-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
-                <stop offset="60%" stop-color="var(--gold-light)" stop-opacity="0.4" />
-                <stop offset="100%" stop-color="var(--gold-solid)" stop-opacity="0.2" />
-            </linearGradient>
-
-            <g id="open-neck-vase">
-                <path class="dynamic-water" d="M -9,3 C -13,15 -14,26 0,28 C 14,26 13,15 9,3 Z" fill="var(--water-cyan)" />
-                
-                <g stroke="var(--gold-light)" stroke-width="1.0" fill="none" filter="url(#fine-glow)">
-                    <path d="M -7,-15 C -7,-8 -15,0 -15,15 C -15,26 -8,30 0,30 C 8,30 15,26 15,15 C 15,0 7,-8 7,-15" />
-                    <ellipse cx="0" cy="-15" rx="7" ry="1.8" />
-                    <path d="M -5,30 C -5,32 5,32 5,30" />
-                </g>
-                
-                <ellipse cx="0" cy="3" rx="8.5" ry="1.5" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.6" />
-            </g>
-        </defs>
-
-        <g id="dharma-wheel-stage"></g>
-
-        <g id="three-vases-align">
-            <ellipse cx="500" cy="910" rx="120" ry="10" fill="#010103" opacity="0.7" filter="blur(4px)"/>
-            
-            <use href="#open-neck-vase" transform="translate(435, 845) scale(1.5)" />
-            
-            <use href="#open-neck-vase" transform="translate(500, 825) scale(2.1)" />
-            
-            <use href="#open-neck-vase" transform="translate(565, 845) scale(1.5)" />
-        </g>
-
-    </svg>
-
-    <script>
-        // --- 1. 星空背景恆常運算 ---
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
-
-        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
-        window.addEventListener('resize', resize); resize();
-
-        const STAR_COLORS = ['#8ba89c', '#ffffff', '#f3e5ab'];
-        for (let i = 0; i < 120; i++) {
-            stars.push({ x: (Math.random() - 0.5) * 2000, y: (Math.random() - 0.5) * 2000, z: Math.random() * 2000, color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)], s: Math.random() * 2.5 + 0.5 });
-        }
-
-        function renderStars() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.globalCompositeOperation = 'screen';
-            stars.forEach(s => {
-                s.z -= 0.5;
-                if (s.z <= 0) { s.z = 2000; s.x = (Math.random() - 0.5) * 2000; s.y = (Math.random() - 0.5) * 2000; }
-                let sc = 400 / (400 + s.z);
-                let drawY = (height / 2) + s.y * sc;
-                if (drawY > height * 0.75) return;
-                ctx.beginPath();
-                ctx.arc((width / 2) + s.x * sc, drawY, s.s * sc, 0, Math.PI * 2);
-                ctx.fillStyle = s.color;
-                ctx.globalAlpha = Math.min(1, sc * 2.5) * 0.4;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            });
-            requestAnimationFrame(renderStars);
-        }
-        renderStars();
-
-        // --- 2. 淨水微瀾引擎 (純數學路徑重構) ---
-        const waterPaths = document.querySelectorAll('.dynamic-water');
-        let waterTime = 0;
-
-        function animateWater() {
-            waterTime += 0.04;
-            waterPaths.forEach((path, index) => {
-                let leftWave = Math.sin(waterTime + index) * 1.2;
-                let rightWave = Math.cos(waterTime + index) * 1.2;
-                // 敞口水面邊緣波浪張力動態重算
-                let d = `M -9,${3 + leftWave} 
-                         Q 0,${3 + (leftWave + rightWave)/2 + Math.sin(waterTime * 2.0)*1.5} 9,${3 + rightWave} 
-                         L 13,26 C 13,26 8,29 0,29 C -8,29 -13,26 -13,26 Z`;
-                path.setAttribute('d', d);
-            });
-            requestAnimationFrame(animateWater);
-        }
-        animateWater();
-
-
-        // --- 3. 改良型轉法輪引擎 (純線條 + 雙層金框鑲嵌寶珠 + 水滴中軸頂端) ---
-        const wheelStage = document.getElementById('dharma-wheel-stage');
-        
-        // 三層配置：位置、半徑、高度、轉速
-        const wheelLayers = [
-            { cy: 220, r: 40, h: 45, speed: 0.018 },  // 上層
-            { cy: 310, r: 58, h: 60, speed: 0.013 },  // 中層
-            { cy: 420, r: 80, h: 75, speed: 0.009 }   // 下層
-        ];
-
-        let stageHTML = '';
-        
-        // 🌟 改良：中央軸頂端不要箭頭，重刻為完美流線的「水滴狀」摩尼寶頂
-        stageHTML += `<path d="M 500,105 C 507,122 514,136 514,142 C 514,150 508,154 500,154 C 492,154 486,150 486,142 C 486,136 493,122 500,105 Z" fill="none" stroke="var(--gold-light)" stroke-width="1.5" style="filter: drop-shadow(0 0 8px var(--gold-solid));" />`;
-        // 金剛中軸線
-        stageHTML += `<line x1="500" y1="154" x2="500" y2="540" stroke="var(--gold-light)" stroke-width="4" opacity="0.8" />`;
-
-        // 靜態外框構造
-        wheelLayers.forEach((w, idx) => {
-            let rx = w.r;
-            let ry = w.r * 0.22; // 3D 俯視視角斜率
-            let topY = w.cy;
-            let botY = w.cy + w.h;
-
-            // 輪體暗面邊緣
-            stageHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 1 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 0 ${500-rx},${botY} Z" fill="#2a1e02" opacity="0.4"/>`;
-            // 輪體金屬亮面
-            stageHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 0 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 1 ${500-rx},${botY} Z" fill="url(#wheel-gold-body)" />`;
-            
-            // 🌟 改良：米色蓋子顏色修正為與下面差不多、更淺一點的淺金色橢圓上蓋
-            stageHTML += `<ellipse cx="500" cy="${topY}" rx="${rx}" ry="${ry}" fill="url(#wheel-lid-gold)" stroke="var(--gold-light)" stroke-width="1.2"/>`;
-            // 下緣裝飾邊圈
-            stageHTML += `<ellipse cx="500" cy="${botY}" rx="${rx}" ry="${ry}" fill="none" stroke="var(--gold-light)" stroke-width="1.0" opacity="0.6"/>`;
-            
-            // 旋轉符文與鑲嵌寶珠群組
-            stageHTML += `<g id="layer-gems-${idx}"></g>`;
-        });
-
-        wheelStage.innerHTML = stageHTML;
-
-        // 寶珠顏色庫：紅、藍、金循環鑲嵌
-        const gemColors = ['#ff4d4d', '#4d94ff', '#ffd700'];
-        let globalTicks = 0;
-
-        function rotateDharmaWheel() {
-            globalTicks += 1;
-            
-            wheelLayers.forEach((w, idx) => {
-                const gemGroup = document.getElementById(`layer-gems-${idx}`);
-                let dynamicHTML = '';
-                const totalLines = 10; // 每層法輪等距分佈 10 條功德線
-                
-                for(let i = 0; i < totalLines; i++) {
-                    // 計算刻痕當前 3D 水平角度
-                    let theta = (globalTicks * w.speed) + (i * Math.PI * 2 / totalLines);
-                    theta = theta % (Math.PI * 2);
-                    
-                    // 只繪製面向行者的正半週 (0 到 PI)
-                    if (theta > 0 && theta < Math.PI) {
-                        // 3D 橫向正弦投影
-                        let xPos = 500 + (w.r * Math.cos(theta));
-                        // 縱向橢圓弧度位移
-                        let yShift = w.r * 0.22 * Math.sin(theta);
-                        
-                        let visibility = Math.sin(theta); // 越接近邊緣越細、越淡
-                        let opacity = visibility * 0.8;
-
-                        // 🌟 改良：灰色實線全部修正為白色實線
-                        dynamicHTML += `<path d="M ${xPos},${w.cy + yShift} L ${xPos},${w.cy + w.h + yShift}" stroke="#ffffff" stroke-width="${visibility * 1.3}" fill="none" opacity="${opacity}" />`;
-                        
-                        // 計算線條正中心的 Y 軸座標，用以精確鑲嵌寶珠
-                        let midY = w.cy + (w.h / 2) + yShift;
-                        let gemColor = gemColors[i % gemColors.length];
-                        
-                        // 寶珠隨 3D 視角做等比例邊緣縮放
-                        let rOuter = visibility * 4.5;
-                        let rInner = visibility * 3.2;
-                        let rCore = visibility * 1.8;
-
-                        if (rOuter > 1.2) {
-                            // 🌟 改良：每一條白線正中間鑲嵌雙層金框寶珠 (紅/藍/金)
-                            // 第一層金框 (外圈)
-                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rOuter}" fill="none" stroke="var(--gold-solid)" stroke-width="0.6" opacity="${opacity}" />`;
-                            // 第二層金框 (內圈)
-                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rInner}" fill="none" stroke="var(--gold-light)" stroke-width="0.4" opacity="${opacity}" />`;
-                            // 核心寶珠
-                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rCore}" fill="${gemColor}" stroke="none" opacity="${opacity}" style="filter: drop-shadow(0 0 3px ${gemColor});" />`;
-                        }
-                    }
-                }
-                gemGroup.innerHTML = dynamicHTML;
-            });
-            
-            requestAnimationFrame(rotateDharmaWheel);
-        }
-
-        // 啟動轉法輪
-        rotateDharmaWheel();
-    </script>
+        <div class="vessel-container">
+            <svg class="w-vessel" width="100" height="150" viewBox="0 0 100 150">
+                <defs>
+                    <linearGradient id="glassGradRight" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#4682B4;stop-opacity:0.9" />
+                    </linearGradient>
+                    </defs>
+                <path d="M20,10 C20,10 10,20 10,40 C10,60 20,70 30,75 L30,120 C30,130 40,140 50,140 C60,140 70,130 70,120 L70,75 C80,70 90,60 90,40 C90,20 80,10 80,10 Z" fill="url(#glassGradRight)" stroke="#333" stroke-width="1"/>
+                <path d="M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z" fill="url(#waterGrad)">
+                    <animate attributeName="d" dur="3s" repeatCount="indefinite" values="M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z; M30,110 Q50,115 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z; M30,110 Q50,105 70,110 L70,120 C70,130 60,140 50,140 C40,140 30,130 30,120 Z"/>
+                </path>
+            </svg>
+        </div>
+    </div>
 </body>
 </html>
