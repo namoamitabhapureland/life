@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>純向量法界美學 ‧ 選項一：透明琉璃光球與淺金淨瓶</title>
+    <title>淨土法界 ‧ 三層轉經輪與活水淨瓶</title>
     <style>
         :root {
             --bg-deep: #010103;
-            --gold-light: #f3e5ab; /* 淺金色，用於透明線框 */
+            --gold-light: #f3e5ab;
             --gold-solid: #d4af37;
         }
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
@@ -21,12 +21,8 @@
             align-items: center;
             font-family: "PingFang TC", "Microsoft JhengHei", serif;
         }
-
         #starCanvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         #mainStage { position: absolute; width: 100vw; height: 100vh; z-index: 2; }
-        
-        .title-text { fill: var(--gold-light); font-size: 18px; letter-spacing: 4px; text-anchor: middle; filter: drop-shadow(0 0 5px rgba(243,229,171,0.5)); }
-        .sub-text { fill: rgba(243,229,171,0.6); font-size: 13px; letter-spacing: 2px; text-anchor: middle; }
     </style>
 </head>
 <body>
@@ -43,66 +39,58 @@
                 </feMerge>
             </filter>
 
-            <radialGradient id="glass-orb" cx="35%" cy="35%" r="65%">
+            <linearGradient id="facet-light" x1="0%" y1="0%" x2="50%" y2="100%">
                 <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
-                <stop offset="25%" stop-color="#ffffff" stop-opacity="0.05"/>
-                <stop offset="85%" stop-color="var(--gold-light)" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="var(--gold-light)" stop-opacity="0.9"/>
-            </radialGradient>
+                <stop offset="100%" stop-color="#f3e5ab" stop-opacity="0.2"/>
+            </linearGradient>
+            <linearGradient id="facet-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#b2ebf2" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#00838f" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="facet-dark" x1="50%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#d4af37" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#b8860b" stop-opacity="0.8"/>
+            </linearGradient>
 
-            <g id="mani-jewel">
-                <circle cx="0" cy="0" r="12" fill="url(#glass-orb)" stroke="var(--gold-light)" stroke-width="0.5" filter="url(#fine-glow)"/>
-                <circle cx="0" cy="0" r="1.5" fill="#ffffff" style="filter: drop-shadow(0 0 4px var(--gold-solid));"/>
-                <ellipse cx="-4" cy="-4" rx="4" ry="2" fill="#ffffff" opacity="0.8" transform="rotate(-40 -4 -4)" />
-            </g>
+            <linearGradient id="wheel-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#8B6508" />
+                <stop offset="20%" stop-color="#FFDF00" />
+                <stop offset="50%" stop-color="#FFF" />
+                <stop offset="80%" stop-color="#D4AF37" />
+                <stop offset="100%" stop-color="#8B6508" />
+            </linearGradient>
 
-            <g id="pure-water-bottle">
-                <g>
-                    <ellipse cx="0" cy="5" rx="12" ry="2.5" fill="rgba(243, 229, 171, 0.2)">
-                        <animate attributeName="ry" values="2.5; 3.5; 2.5" dur="3s" repeatCount="indefinite" />
-                        <animate attributeName="cy" values="5; 4.5; 5" dur="4s" repeatCount="indefinite" />
-                    </ellipse>
-                    
-                    <path d="M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z" fill="rgba(243, 229, 171, 0.08)">
-                        <animate attributeName="d" 
-                                 values="M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z; 
-                                         M -12,4.5 C -14,15 -10,25 0,27 C 10,25 14,15 12,4.5 Z; 
-                                         M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z" 
-                                 dur="4s" repeatCount="indefinite" />
-                    </path>
-
-                    <path d="M -6,5 Q 0,4 6,5" stroke="#ffffff" stroke-width="0.8" fill="none" opacity="0.8">
-                        <animate attributeName="d" values="M -6,5 Q 0,4 6,5; M -6,4 Q 0,6 6,4; M -6,5 Q 0,4 6,5" dur="3s" repeatCount="indefinite" />
-                    </path>
-                </g>
-
-                <g stroke="var(--gold-light)" stroke-width="1.0" fill="none" filter="url(#fine-glow)">
-                    <path d="M -8,-15 C -8,-8 -16,0 -16,15 C -16,25 -8,30 0,30 C 8,30 16,25 16,15 C 16,0 8,-8 8,-15" />
-                    <ellipse cx="0" cy="-15" rx="8" ry="2" />
-                    <path d="M -6,30 C -6,32 6,32 6,30" />
-                </g>
+            <g id="treasure-vase">
+                <polygon points="45,20 55,20 60,40 40,40" fill="url(#facet-light)" stroke="#fff" stroke-width="0.5"/>
+                
+                <path class="dynamic-water" d="M 40,40 L 60,40 L 75,90 L 25,90 Z" fill="url(#facet-cyan)" opacity="0.95" stroke="#fff" stroke-width="0.5"/>
+                
+                <polygon points="50,40 60,40 75,90 50,90" fill="url(#facet-dark)" opacity="0.5"/>
+                <polygon points="25,90 75,90 60,120 40,120" fill="url(#facet-light)" stroke="#f3e5ab" stroke-width="0.5"/>
+                <polygon points="50,90 75,90 60,120 50,120" fill="url(#facet-dark)" opacity="0.7"/>
+                <polygon points="40,25 60,25" stroke="#f3e5ab" stroke-width="1"/>
             </g>
         </defs>
 
-        <text x="500" y="200" class="title-text">選項一：透明摩尼寶珠落雨 ＆ 淺金活水淨瓶</text>
-        <text x="500" y="235" class="sub-text">( 觀察水面的無耗能波紋起伏，與光球的立體通透感 )</text>
+        <circle cx="500" cy="380" r="180" fill="rgba(212,175,55,0.05)" filter="blur(15px)" />
+        <g id="dharma-wheel-container"></g>
 
-        <g id="center-display">
-            <ellipse cx="500" cy="550" rx="140" ry="12" fill="#010103" opacity="0.6" filter="blur(6px)"/>
-            
-            <use href="#pure-water-bottle" transform="translate(380, 500) scale(1.6)" />
-            
-            <use href="#pure-water-bottle" transform="translate(500, 480) scale(2.3)" />
-            
-            <use href="#pure-water-bottle" transform="translate(620, 500) scale(1.6)" />
+
+        <g id="altar-area" transform="translate(0, -20)">
+            <g filter="url(#fine-glow)">
+                <ellipse cx="500" cy="950" rx="180" ry="15" fill="#010103" opacity="0.8" filter="blur(5px)"/>
+                <path d="M 320,950 Q 500,965 680,950" fill="none" stroke="var(--gold-solid)" stroke-width="1.5" opacity="0.8"/>
+                <path d="M 340,958 Q 500,970 660,958" fill="none" stroke="var(--gold-light)" stroke-width="0.8" opacity="0.5"/>
+            </g>
+
+            <use href="#treasure-vase" x="350" y="810" transform="scale(1.1)" />
+            <use href="#treasure-vase" x="363" y="775" transform="scale(1.25)" />
+            <use href="#treasure-vase" x="468" y="810" transform="scale(1.1)" />
         </g>
-
-        <g id="orb-layer"></g>
-
     </svg>
 
     <script>
-        // 星空背景邏輯 (Canvas)
+        // --- 1. 星空背景 ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
@@ -135,61 +123,112 @@
         }
         renderStars();
 
-        // 漫天透明光球 (摩尼寶珠) 動態邏輯
-        const orbLayer = document.getElementById('orb-layer');
-        const activeOrbs = [];
+        // --- 2. 活水蕩漾引擎 (針對淨瓶中的水面) ---
+        // 我們直接操作 SVG 的路徑字串，模擬真實液體的正弦波起伏
+        const waterPaths = document.querySelectorAll('.dynamic-water');
+        let time = 0;
 
-        function createOrb() {
-            if (activeOrbs.length >= 40) return; // 控制滿天寶珠的清淨密度
-            
-            const useTag = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-            useTag.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#mani-jewel'); 
-            
-            const x = Math.random() * 1200 - 100;
-            const y = -50;
-            // 給予不同的大小比例，營造強烈的空間遠近感
-            const scale = 0.4 + Math.random() * 0.8; 
-            
-            // 光球比花瓣重，下落軌跡更平穩優雅
-            const speedY = 0.6 + Math.random() * 1.0; 
-            const speedX = (Math.random() - 0.5) * 0.3;
-            
-            let swayStep = Math.random() * 100;
-
-            useTag.setAttribute('transform', `translate(${x}, ${y}) scale(${scale})`);
-            orbLayer.appendChild(useTag);
-
-            activeOrbs.push({ 
-                element: useTag, x: x, y: y, scale: scale, 
-                speedY: speedY, speedX: speedX, swayStep: swayStep 
+        function animateWater() {
+            time += 0.05;
+            waterPaths.forEach((path, index) => {
+                // 原水面座標：左上 (40,40) 右上 (60,40) 左下 (25,90) 右下 (75,90)
+                // 我們讓 Y=40 的水面產生波浪起伏
+                let waveOffsetLeft = Math.sin(time + index) * 2;
+                let waveOffsetRight = Math.cos(time + index) * 2;
+                
+                // 動態重構 Bezier 曲線以表現水的張力
+                // M 左上 Q 控制點 右上 L 右下 L 左下 Z
+                let d = `M 40,${40 + waveOffsetLeft} 
+                         Q 50,${40 + (waveOffsetLeft + waveOffsetRight)/2 + Math.sin(time*1.5)*3} 60,${40 + waveOffsetRight} 
+                         L 75,90 L 25,90 Z`;
+                path.setAttribute('d', d);
             });
+            requestAnimationFrame(animateWater);
         }
+        animateWater();
 
-        function updateOrbs() {
-            for (let i = activeOrbs.length - 1; i >= 0; i--) {
-                const p = activeOrbs[i];
-                p.y += p.speedY; 
-                p.swayStep += 0.015; // 極其緩慢的空氣阻力搖擺
-                p.x += p.speedX + Math.sin(p.swayStep) * 0.3; 
-                
-                // 光球不需旋轉，只需平移與縮放
-                p.element.setAttribute('transform', `translate(${p.x}, ${p.y}) scale(${p.scale})`);
-                
-                // 越過邊界自動消散
-                if (p.y > 1050) { 
-                    p.element.remove(); 
-                    activeOrbs.splice(i, 1); 
-                }
-            }
-            
-            // 控制法雨落下的頻率
-            if (Math.random() < 0.06) createOrb();
-            
-            requestAnimationFrame(updateOrbs);
-        }
+        // --- 3. 核心亮點：純向量 3D 三層轉經輪 (數學投影) ---
+        const wheelContainer = document.getElementById('dharma-wheel-container');
         
-        // 啟動摩尼寶珠飄落
-        updateOrbs();
+        // 定義三層法輪的 3D 結構 (由上到下)
+        const wheels = [
+            { cy: 220, r: 35, h: 50, speed: 0.02 },  // 頂層 (小)
+            { cy: 320, r: 50, h: 70, speed: 0.015 }, // 中層 (中)
+            { cy: 440, r: 70, h: 90, speed: 0.01 }   // 底層 (大)
+        ];
+
+        // 建立法輪基礎 SVG 結構
+        let wheelHTML = '';
+        
+        // 繪製中心金剛軸
+        wheelHTML += `<line x1="500" y1="150" x2="500" y2="580" stroke="var(--gold-solid)" stroke-width="6" style="filter: drop-shadow(0 0 10px #f3e5ab);"/>`;
+        wheelHTML += `<polygon points="495,150 505,150 500,120" fill="var(--gold-solid)" style="filter: drop-shadow(0 0 10px #f3e5ab);"/>`;
+
+        // 建立每個法輪的圓柱體與旋轉刻痕
+        wheels.forEach((w, index) => {
+            let rx = w.r;
+            let ry = w.r * 0.25; // 產生俯視 3D 透視感
+            let topY = w.cy;
+            let botY = w.cy + w.h;
+
+            // 圓柱體背部 (暗面)
+            wheelHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 1 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 0 ${500-rx},${botY} Z" fill="#3a2a00" opacity="0.8"/>`;
+            
+            // 圓柱體正面 (金屬光澤)
+            wheelHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 0 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 1 ${500-rx},${botY} Z" fill="url(#wheel-gold)" style="filter: drop-shadow(0 0 8px rgba(212,175,55,0.4));"/>`;
+            
+            // 法輪頂蓋
+            wheelHTML += `<ellipse cx="500" cy="${topY}" rx="${rx}" ry="${ry}" fill="#f3e5ab" stroke="#d4af37" stroke-width="1.5"/>`;
+            // 法輪底蓋裝飾緣
+            wheelHTML += `<ellipse cx="500" cy="${botY}" rx="${rx}" ry="${ry}" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>`;
+
+            // 產生旋轉刻文 (動態線條) 的容器
+            wheelHTML += `<g id="wheel-lines-${index}" stroke="#010103" stroke-width="2" opacity="0.6"></g>`;
+        });
+
+        wheelContainer.innerHTML = wheelHTML;
+
+        // 3D 旋轉引擎：利用三角函數投影到 2D 平面
+        let rotationAngle = 0;
+        function animateWheels() {
+            rotationAngle += 1; // 統一時間軸
+            
+            wheels.forEach((w, index) => {
+                const lineGroup = document.getElementById(`wheel-lines-${index}`);
+                let linesHTML = '';
+                const numLines = 12; // 法輪上的梵文刻痕數量
+                
+                for(let i = 0; i < numLines; i++) {
+                    // 計算每條刻痕當前的 3D 角度
+                    let angle = (rotationAngle * w.speed) + (i * Math.PI * 2 / numLines);
+                    angle = angle % (Math.PI * 2);
+                    
+                    // 只繪製在「正面」的刻痕 (角度介於 0 到 PI 之間)
+                    if (angle > 0 && angle < Math.PI) {
+                        // X 軸座標投影：R * cos(θ)
+                        let x = 500 + (w.r * Math.cos(angle));
+                        
+                        // Y 軸上下橢圓邊緣的位移：R_y * sin(θ)
+                        let yOffset = w.r * 0.25 * Math.sin(angle);
+                        
+                        // 計算線條粗細與透明度 (越靠近邊緣越細、越淡，表現圓柱體的曲面感)
+                        let visibility = Math.sin(angle);
+                        let strokeWidth = visibility * 3;
+                        let opacity = visibility * 0.7;
+
+                        // 繪製垂直刻痕 (可以想像這是梵字或真言)
+                        linesHTML += `<path d="M ${x},${w.cy + yOffset} L ${x},${w.cy + w.h + yOffset}" stroke-width="${strokeWidth}" opacity="${opacity}" />`;
+                        
+                        // 加一點點莊嚴的金點裝飾在中央
+                        linesHTML += `<circle cx="${x}" cy="${w.cy + w.h/2 + yOffset}" r="${visibility*1.5}" fill="#f3e5ab" opacity="${opacity}" stroke="none"/>`;
+                    }
+                }
+                lineGroup.innerHTML = linesHTML;
+            });
+            requestAnimationFrame(animateWheels);
+        }
+        animateWheels();
+
     </script>
 </body>
 </html>
