@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>彌陀淨土 ． 大乘五供 (絕對水平版)</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; 
+            background: #010103; 
+            overflow: hidden; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-family: "PingFang TC", "Microsoft JhengHei", serif;
+        }
 
+        #bgCanvas { position: fixed; inset: 0; z-index: 0; }
+
+        /* 隱形供桌佈局：絕對底部對齊，沒有任何上下位移，呈現完美水平線 */
+        .altar {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: flex-end; /* 強制所有供品底部貼齊同一條水平線 */
+            justify-content: center;
+            gap: 15px; 
+            transform: translateY(40px); /* 整體稍微往下移一點，讓視覺居中 */
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .vessel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.15));
+            transition: transform 0.3s ease;
+        }
+
+        /* 1. 外側：琉璃淨水盞 */
+        .water-cup { 
+            width: 75px; 
+            height: 110px; 
+            z-index: 5; 
+        }
+
+        /* 2. 中側：三色供果盤 */
+        .fruit-plate {
+            width: 110px;
+            height: 160px;
+            z-index: 10;
+        }
+
+        /* 3. 核心：中央供花大瓶 */
+        .center-vase { 
+            width: 260px; 
+            height: 390px; 
+            z-index: 20; 
+            margin: 0 -10px; 
+            filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
+        }
+        
+        .svg-content { width: 100%; height: 100%; overflow: visible; }
+
+        .demo-panel { position: absolute; bottom: 40px; z-index: 100; display: flex; gap: 20px; }
+        .demo-btn {
+            color: #f3e5ab; font-size: 0.9rem; letter-spacing: 4px; cursor: pointer;
+            padding: 12px 24px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.5); border-radius: 25px;
+            backdrop-filter: blur(8px); transition: all 0.4s;
+        }
+        .demo-btn:hover { background: rgba(212,175,55,0.2); box-shadow: 0 0 15px rgba(212,175,55,0.4); color: #fff; }
+
+        #gold-powder-container { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+        .gold-powder {
+            position: absolute; top: -10px;
+            background: radial-gradient(circle, #fff 0%, #d4af37 50%, transparent 100%);
+            border-radius: 50%; box-shadow: 0 0 10px #d4af37, 0 0 3px #fff;
+            opacity: 0; animation: powder-fall linear forwards;
+        }
+        @keyframes powder-fall {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(100vh) translateX(var(--drift)) scale(0.4); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+    <div id="gold-powder-container"></div>
+
+    <svg style="width:0; height:0; position:absolute;">
+        <defs>
+            <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.6)"/><stop offset="30%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(0,0,0,0.4)"/>
+            </linearGradient>
+            <linearGradient id="water-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(0, 229, 255, 0.7)"/><stop offset="100%" stop-color="rgba(0, 77, 64, 0.9)"/>
+            </linearGradient>
+            <linearGradient id="water-light" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="rgba(224, 247, 250, 0.8)"/><stop offset="100%" stop-color="rgba(0, 131, 143, 0.4)"/>
+            </linearGradient>
+            <radialGradient id="fruit-yellow" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#fff9c4"/><stop offset="60%" stop-color="#fbc02d"/><stop offset="100%" stop-color="#f57f17"/>
+            </radialGradient>
+            <radialGradient id="fruit-pink" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#fce4ec"/><stop offset="60%" stop-color="#f06292"/><stop offset="100%" stop-color="#c2185b"/>
+            </radialGradient>
+            <radialGradient id="fruit-green" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#e8f5e9"/><stop offset="60%" stop-color="#81c784"/><stop offset="100%" stop-color="#388e3c"/>
+            </radialGradient>
+
+            <g id="water-cup-model">
+                <clipPath id="cup-clip"><path d="M15,40 C15,95 85,95 85,40 Z"/></clipPath>
+                <path d="M40,140 Q50,110 50,90 Q50,110 60,140 Z" fill="#d4af37" opacity="0.8"/>
+                <ellipse cx="50" cy="140" rx="25" ry="5" fill="#d4af37" />
+                <ellipse cx="50" cy="90" rx="15" ry="3" fill="#d4af37" />
+                <g clip-path="url(#cup-clip)">
+                    <rect x="0" y="55" width="100" height="50" fill="url(#water-grad)" />
+                    <path fill="url(#water-light)" opacity="0.5"><animate attributeName="d" dur="3s" repeatCount="indefinite" values="M0,65 Q25,55 50,65 T100,65 L100,100 L0,100 Z; M0,65 Q25,75 50,65 T100,65 L100,100 L0,100 Z; M0,65 Q25,55 50,65 T100,65 L100,100 L0,100 Z" /></path>
+                    <path fill="url(#water-light)" opacity="0.7"><animate attributeName="d" dur="2.4s" repeatCount="indefinite" values="M0,70 Q25,80 50,70 T100,70 L100,100 L0,100 Z; M0,70 Q25,60 50,70 T100,70 L100,100 L0,100 Z; M0,70 Q25,80 50,70 T100,70 L100,100 L0,100 Z" /></path>
+                </g>
+                <path d="M15,40 C15,95 85,95 85,40 Z" fill="rgba(255,255,255,0.05)"/>
+                <path d="M15,40 C15,95 85,95 85,40 Z" fill="url(#glass-glare)"/>
+                <ellipse cx="50" cy="40" rx="35" ry="6" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+                <path d="M15,40 C15,95 85,95 85,40" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+            </g>
+
+            <g id="fruit-plate-model">
+                <path d="M40,140 Q50,110 50,90 Q50,110 60,140 Z" fill="#d4af37" opacity="0.8"/>
+                <ellipse cx="50" cy="140" rx="30" ry="6" fill="#d4af37" />
+                
+                <ellipse cx="50" cy="90" rx="45" ry="12" fill="rgba(255,255,255,0.1)" stroke="#d4af37" stroke-width="2"/>
+                <ellipse cx="50" cy="90" rx="45" ry="12" fill="url(#glass-glare)"/>
+                <ellipse cx="50" cy="90" rx="20" ry="4" fill="#d4af37" />
+
+                <circle cx="50" cy="65" r="22" fill="url(#fruit-green)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <path d="M50,43 Q55,35 60,38" fill="none" stroke="#5a7a6c" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="32" cy="80" r="22" fill="url(#fruit-yellow)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <circle cx="68" cy="80" r="22" fill="url(#fruit-pink)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            </g>
+
+            <linearGradient id="petal-main" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#fce4ec"/><stop offset="100%" stop-color="#c2185b"><animate attributeName="stop-color" values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" dur="15s" repeatCount="indefinite" /></stop></linearGradient>
+            <linearGradient id="petal-light" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f3e5ab"><animate attributeName="stop-color" values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" dur="15s" repeatCount="indefinite" /></stop></linearGradient>
+            <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(212,175,55,0.8)"/><stop offset="100%" stop-color="rgba(139,168,156,0.3)"/></linearGradient>
+            <path id="petal" d="M 0,0 C 12,-15 12,-40 0,-60 C -12,-40 -12,-15 0,0 Z" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+            <path id="petal-s" d="M 0,0 C 8,-10 8,-30 0,-45 C -8,-30 -8,-10 0,0 Z" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
+            <g id="lotus-bloom">
+                <use href="#petal" transform="rotate(-45) scale(0.9)" fill="url(#petal-main)" opacity="0.8"/>
+                <use href="#petal" transform="rotate(45) scale(0.9)" fill="url(#petal-main)" opacity="0.8"/>
+                <use href="#petal" transform="rotate(-25) scale(0.95)" fill="url(#petal-main)"/><use href="#petal" transform="rotate(25) scale(0.95)" fill="url(#petal-main)"/>
+                <use href="#petal" transform="rotate(-12)" fill="url(#petal-light)"/><use href="#petal" transform="rotate(12)" fill="url(#petal-light)"/>
+                <use href="#petal" transform="rotate(0) scale(1.05)" fill="#ffffff"/>
+                <path d="M0,0 L-5,-25 M0,0 L0,-28 M0,0 L5,-25" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+                <circle cx="-5" cy="-25" r="2" fill="#f3e5ab"/><circle cx="0" cy="-28" r="2" fill="#f3e5ab"/><circle cx="5" cy="-25" r="2" fill="#f3e5ab"/>
+            </g>
+            <g id="lotus-bud"><use href="#petal-s" transform="rotate(-15)" fill="url(#petal-main)"/><use href="#petal-s" transform="rotate(15)" fill="url(#petal-main)"/><use href="#petal-s" transform="rotate(0) scale(1.1)" fill="url(#petal-light)"/></g>
+        </defs>
+    </svg>
+
+    <div class="altar">
+        
+        <div class="vessel-container water-cup">
+            <svg class="svg-content" viewBox="0 0 100 150">
+                <use href="#water-cup-model" />
+            </svg>
+        </div>
+
+        <div class="vessel-container fruit-plate">
+            <svg class="svg-content" viewBox="0 0 100 150">
+                <use href="#fruit-plate-model" />
+            </svg>
+        </div>
+
+        <div class="vessel-container center-vase">
+            <svg class="svg-content" viewBox="0 0 200 300">
+                <defs><clipPath id="vase-clip"><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" /></clipPath></defs>
+                <g transform="translate(50, 100)">
+                    <g clip-path="url(#vase-clip)">
+                        <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
+                        <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                        <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
+                        <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6">
+                            <path d="M50,25 Q45,70 50,110" /><path d="M50,25 Q55,60 45,105" stroke-width="1.5" /><path d="M50,25 Q40,50 55,100" stroke-width="1.5" /><path d="M50,25 Q60,40 50,85" stroke-width="1.5" />
+                        </g>
+                    </g>
+                </g>
+                <g transform="translate(50, 100)">
+                    <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" />
+                    <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
+                    <ellipse cx="50" cy="95" rx="22" ry="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" pointer-events="none"/>
+                    <path d="M45,25 L55,25 L58,50 L72,95 L60,125 L40,125 L28,95 L42,50 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" pointer-events="none"/>
+                    <path d="M40,125 Q50,135 60,125" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round" pointer-events="none"/>
+                </g>
+
+                <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="5s" fill="freeze" />
+                    <path d="M100,125 Q80,70 65,35" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"><animate attributeName="stroke-dashoffset" values="120; 0" dur="2s" begin="5s" fill="freeze" /></path>
+                    <g transform="translate(65, 35) rotate(-35)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 1" dur="1.5s" begin="6.5s" fill="freeze" />
+                            <g><animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" begin="8s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
+                    </g></g>
+                </g>
+                <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="6s" fill="freeze" />
+                    <path d="M100,125 Q125,95 135,75" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="100" stroke-dashoffset="100"><animate attributeName="stroke-dashoffset" values="100; 0" dur="2s" begin="6s" fill="freeze" /></path>
+                    <g transform="translate(135, 75) rotate(45)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 0.8" dur="1.5s" begin="7.5s" fill="freeze" />
+                            <g><animateTransform attributeName="transform" type="rotate" values="0; -3; 0; 3; 0" dur="4s" begin="9s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
+                    </g></g>
+                </g>
+
+                <g stroke="#8ba89c" stroke-width="2" fill="none">
+                    <path d="M100,125 Q90,90 100,50"/> <path d="M100,125 Q130,90 145,60"/> <path d="M100,125 Q70,95 55,75"/> <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> 
+                </g>
+                <g fill="url(#leaf-grad)" stroke="rgba(212,175,55,0.5)" stroke-width="0.5">
+                    <path d="M100,110 Q140,115 160,80 Q130,85 100,110 Z"/><path d="M98,115 Q60,120 40,90 Q70,95 98,115 Z"/>
+                    <path d="M102,90 Q135,70 140,30 Q120,55 102,90 Z" opacity="0.7"/><path d="M95,85 Q65,65 55,35 Q75,55 95,85 Z" opacity="0.7"/>
+                </g>
+
+                <g transform="translate(55, 75) scale(0.8)"><g><animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                <g transform="translate(145, 60) scale(0.85)"><g><animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+                <g transform="translate(115, 85) scale(0.65)"><g><animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                <g transform="translate(100, 50) scale(1.1)"><g><animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+            </svg>
+        </div>
+
+        <div class="vessel-container fruit-plate">
+            <svg class="svg-content" viewBox="0 0 100 150">
+                <use href="#fruit-plate-model" />
+            </svg>
+        </div>
+
+        <div class="vessel-container water-cup">
+            <svg class="svg-content" viewBox="0 0 100 150">
+                <use href="#water-cup-model" />
+            </svg>
+        </div>
+
+    </div>
+
+    <div class="demo-panel">
+        <div class="demo-btn" onclick="triggerGoldPowderRain()">滿天法喜</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let cw, ch, stars = [];
+
+        function initCanvas() {
+            cw = canvas.width = window.innerWidth;
+            ch = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+
+        for(let i=0; i<150; i++) {
+            stars.push({
+                x: (Math.random() - 0.5) * 2000, y: (Math.random() - 0.5) * 2000, 
+                z: Math.random() * 2000, s: Math.random() * 1.5 + 0.5
+            });
+        }
+
+        function drawStars() {
+            ctx.fillStyle = '#010103';
+            ctx.fillRect(0, 0, cw, ch);
+            
+            let gradient = ctx.createRadialGradient(cw/2, ch/2, 0, cw/2, ch/2, ch);
+            gradient.addColorStop(0, 'rgba(212, 175, 55, 0.05)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, cw, ch);
+
+            ctx.globalCompositeOperation = 'screen';
+            
+            stars.forEach(star => {
+                star.z -= 1.0; 
+                if(star.z <= 0) {
+                    star.z = 2000;
+                    star.x = (Math.random() - 0.5) * 2000;
+                    star.y = (Math.random() - 0.5) * 2000;
+                }
+                let scale = 800 / (800 + star.z);
+                let px = cw/2 + star.x * scale;
+                let py = ch/2 + star.y * scale;
+                
+                if(px > 0 && px < cw && py > 0 && py < ch) { 
+                    ctx.fillStyle = `rgba(243, 229, 171, ${scale})`; 
+                    ctx.beginPath(); 
+                    ctx.arc(px, py, star.s * scale, 0, Math.PI*2); 
+                    ctx.fill(); 
+                }
+            });
+            ctx.globalCompositeOperation = 'source-over';
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        function triggerGoldPowderRain() {
+            const container = document.getElementById('gold-powder-container');
+            for (let i = 0; i < 250; i++) {
+                const powder = document.createElement('div');
+                powder.className = 'gold-powder';
+                const size = Math.random() * 3 + 1.5; 
+                const startX = Math.random() * window.innerWidth;
+                const drift = (Math.random() - 0.5) * 250; 
+                const dur = Math.random() * 5 + 4; 
+                const delay = Math.random() * 2.5; 
+
+                powder.style.width = size + 'px'; powder.style.height = size + 'px';
+                powder.style.left = startX + 'px';
+                powder.style.setProperty('--drift', drift + 'px');
+                powder.style.animationDuration = dur + 's';
+                powder.style.animationDelay = delay + 's';
+
+                container.appendChild(powder);
+                setTimeout(() => { if (powder.parentNode) powder.remove(); }, (dur + delay) * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
