@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>淨土法界美學 ‧ 十日借花獻佛 (極致優化版)</title>
+    <title>純向量法界美學 ‧ 選項一：透明琉璃光球與淺金淨瓶</title>
     <style>
         :root {
             --bg-deep: #010103;
-            --gold-light: #f3e5ab;
+            --gold-light: #f3e5ab; /* 淺金色，用於透明線框 */
             --gold-solid: #d4af37;
-            --water-cyan: rgba(224, 247, 250, 0.15); /* 淨水微光 */
         }
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         body {
@@ -26,7 +25,8 @@
         #starCanvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         #mainStage { position: absolute; width: 100vw; height: 100vh; z-index: 2; }
         
-        .compare-text { fill: var(--gold-light); font-size: 16px; letter-spacing: 2px; text-anchor: middle; filter: drop-shadow(0 0 5px rgba(243,229,171,0.5)); }
+        .title-text { fill: var(--gold-light); font-size: 18px; letter-spacing: 4px; text-anchor: middle; filter: drop-shadow(0 0 5px rgba(243,229,171,0.5)); }
+        .sub-text { fill: rgba(243,229,171,0.6); font-size: 13px; letter-spacing: 2px; text-anchor: middle; }
     </style>
 </head>
 <body>
@@ -36,24 +36,37 @@
     <svg id="mainStage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
         <defs>
             <filter id="fine-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.2" result="blur" />
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
                 <feMerge>
                     <feMergeNode in="blur" />
                     <feMergeNode in="SourceGraphic" />
                 </feMerge>
             </filter>
 
+            <radialGradient id="glass-orb" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+                <stop offset="25%" stop-color="#ffffff" stop-opacity="0.05"/>
+                <stop offset="85%" stop-color="var(--gold-light)" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="var(--gold-light)" stop-opacity="0.9"/>
+            </radialGradient>
+
+            <g id="mani-jewel">
+                <circle cx="0" cy="0" r="12" fill="url(#glass-orb)" stroke="var(--gold-light)" stroke-width="0.5" filter="url(#fine-glow)"/>
+                <circle cx="0" cy="0" r="1.5" fill="#ffffff" style="filter: drop-shadow(0 0 4px var(--gold-solid));"/>
+                <ellipse cx="-4" cy="-4" rx="4" ry="2" fill="#ffffff" opacity="0.8" transform="rotate(-40 -4 -4)" />
+            </g>
+
             <g id="pure-water-bottle">
                 <g>
-                    <ellipse cx="0" cy="5" rx="12" ry="2.5" fill="rgba(255, 255, 255, 0.3)">
+                    <ellipse cx="0" cy="5" rx="12" ry="2.5" fill="rgba(243, 229, 171, 0.2)">
                         <animate attributeName="ry" values="2.5; 3.5; 2.5" dur="3s" repeatCount="indefinite" />
                         <animate attributeName="cy" values="5; 4.5; 5" dur="4s" repeatCount="indefinite" />
                     </ellipse>
                     
-                    <path d="M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z" fill="var(--water-cyan)">
+                    <path d="M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z" fill="rgba(243, 229, 171, 0.08)">
                         <animate attributeName="d" 
                                  values="M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z; 
-                                         M -12,4.5 C -14,15 -10,25 0,28 C 10,25 14,15 12,4.5 Z; 
+                                         M -12,4.5 C -14,15 -10,25 0,27 C 10,25 14,15 12,4.5 Z; 
                                          M -12,5 C -14,15 -10,25 0,28 C 10,25 14,15 12,5 Z" 
                                  dur="4s" repeatCount="indefinite" />
                     </path>
@@ -63,85 +76,33 @@
                     </path>
                 </g>
 
-                <g stroke="var(--gold-solid)" stroke-width="1.3" fill="none" filter="url(#fine-glow)">
+                <g stroke="var(--gold-light)" stroke-width="1.0" fill="none" filter="url(#fine-glow)">
                     <path d="M -8,-15 C -8,-8 -16,0 -16,15 C -16,25 -8,30 0,30 C 8,30 16,25 16,15 C 16,0 8,-8 8,-15" />
                     <ellipse cx="0" cy="-15" rx="8" ry="2" />
                     <path d="M -6,30 C -6,32 6,32 6,30" />
                 </g>
             </g>
-
-
-            <g id="flower-type-1" stroke="var(--gold-light)" stroke-width="1.2" fill="rgba(255,255,255,0.03)" style="filter: drop-shadow(0 0 6px rgba(243,229,171,0.5));">
-                <path d="M 0,0 C -20,-10 -25,-30 -10,-40 C -5,-25 0,-10 0,0 Z" />
-                <path d="M 0,0 C 20,-10 25,-30 10,-40 C 5,-25 0,-10 0,0 Z" />
-                <path d="M 0,0 C -12,-20 -15,-40 -5,-50 C -2,-30 0,-15 0,0 Z" />
-                <path d="M 0,0 C 12,-20 15,-40 5,-50 C 2,-30 0,-15 0,0 Z" />
-                <path d="M 0,0 C -6,-25 0,-45 0,-55 C 0,-45 6,-25 0,0 Z" stroke="#fff" fill="rgba(255,255,255,0.08)"/>
-                <circle cx="0" cy="0" r="1.5" fill="#fff" stroke="none" />
-            </g>
-
-            <g id="flower-type-2" stroke="var(--gold-light)" stroke-width="1.2" fill="rgba(255,255,255,0.04)" style="filter: drop-shadow(0 0 6px rgba(243,229,171,0.5));">
-                <path d="M 0,0 C -10,-10 -30,-20 -25,-35 C -10,-20 0,-10 0,0 Z" />
-                <path d="M 0,0 C -5,-15 -20,-35 -10,-45 C -2,-25 0,-10 0,0 Z" />
-                <path d="M 0,0 C 10,-15 15,-30 20,-40 C 10,-25 5,-10 0,0 Z" />
-                <path d="M 0,0 C 5,-20 -5,-45 5,-55 C 8,-35 2,-15 0,0 Z" stroke="#fff" fill="rgba(255,255,255,0.06)"/>
-                <circle cx="0" cy="-1" r="1.5" fill="#fff" stroke="none" />
-            </g>
-
-            <g id="flower-type-3" stroke="var(--gold-light)" stroke-width="1.2" fill="rgba(255,255,255,0.05)" style="filter: drop-shadow(0 0 6px rgba(243,229,171,0.5));">
-                <path d="M 0,0 C -20,-10 -25,-25 -10,-35 C -10,-20 -5,-10 0,0 Z" />
-                <path d="M 0,0 C 20,-10 25,-25 10,-35 C 10,-20 5,-10 0,0 Z" />
-                <path d="M 0,0 C -12,-15 -8,-35 0,-45 C 8,-35 12,-15 0,0 Z" stroke="#fff" fill="rgba(255,255,255,0.1)"/>
-                <circle cx="0" cy="0" r="1.2" fill="#fff" stroke="none" />
-            </g>
-
-            <g id="leaf-type-1" stroke="var(--gold-solid)" stroke-width="1.0" fill="rgba(139,168,156,0.1)" style="filter: drop-shadow(0 0 4px rgba(212,175,55,0.3));">
-                <path d="M 0,0 C -15,10 -20,25 0,40 C 20,25 15,10 0,0 Z" />
-                <path d="M 0,0 Q 2,20 0,38" fill="none" stroke-width="0.8" opacity="0.6"/>
-            </g>
-
-
-            <g id="base-lotus">
-                <g stroke="var(--gold-light)" stroke-width="1.2" fill="none" opacity="0.3">
-                    <path d="M0,0 C-8,-15 -12,-30 0,-45 C12,-30 8,-15 0,0 Z" transform="rotate(36)" />
-                    <path d="M0,0 C-8,-15 -12,-30 0,-45 C12,-30 8,-15 0,0 Z" transform="rotate(108)" />
-                    <path d="M0,0 C-8,-15 -12,-30 0,-45 C12,-30 8,-15 0,0 Z" transform="rotate(180)" />
-                    <path d="M0,0 C-8,-15 -12,-30 0,-45 C12,-30 8,-15 0,0 Z" transform="rotate(252)" />
-                    <path d="M0,0 C-8,-15 -12,-30 0,-45 C12,-30 8,-15 0,0 Z" transform="rotate(324)" />
-                </g>
-                <g stroke="var(--gold-solid)" stroke-width="1.2" fill="none" opacity="0.7" filter="url(#fine-glow)">
-                    <path d="M0,0 C-12,-20 -18,-40 0,-55 C18,-40 12,-20 0,0 Z" transform="rotate(0)" />
-                    <path d="M0,0 C-12,-20 -18,-40 0,-55 C18,-40 12,-20 0,0 Z" transform="rotate(72)" />
-                    <path d="M0,0 C-12,-20 -18,-40 0,-55 C18,-40 12,-20 0,0 Z" transform="rotate(144)" />
-                    <path d="M0,0 C-12,-20 -18,-40 0,-55 C18,-40 12,-20 0,0 Z" transform="rotate(216)" />
-                    <path d="M0,0 C-12,-20 -18,-40 0,-55 C18,-40 12,-20 0,0 Z" transform="rotate(288)" />
-                </g>
-            </g>
         </defs>
 
-        <text x="500" y="300" class="compare-text">觀看下方淨水波動與漫天花葉</text>
-        <text x="500" y="330" class="compare-text" style="font-size: 12px; opacity: 0.6;">(3種半開曼陀羅、1種菩提葉、純金動態淨瓶)</text>
+        <text x="500" y="200" class="title-text">選項一：透明摩尼寶珠落雨 ＆ 淺金活水淨瓶</text>
+        <text x="500" y="235" class="sub-text">( 觀察水面的無耗能波紋起伏，與光球的立體通透感 )</text>
 
-        <g id="bottom-lotus-field">
-            <use href="#base-lotus" x="350" y="850" transform="scale(1.2)" opacity="0.5"/>
-            <use href="#base-lotus" x="650" y="850" transform="scale(1.2)" opacity="0.5"/>
-            <use href="#base-lotus" x="440" y="860" transform="scale(1.4)" opacity="0.6"/>
-            <use href="#base-lotus" x="560" y="860" transform="scale(1.4)" opacity="0.6"/>
-            <use href="#base-lotus" x="500" y="880" transform="scale(1.8)" opacity="0.9"/>
+        <g id="center-display">
+            <ellipse cx="500" cy="550" rx="140" ry="12" fill="#010103" opacity="0.6" filter="blur(6px)"/>
+            
+            <use href="#pure-water-bottle" transform="translate(380, 500) scale(1.6)" />
+            
+            <use href="#pure-water-bottle" transform="translate(500, 480) scale(2.3)" />
+            
+            <use href="#pure-water-bottle" transform="translate(620, 500) scale(1.6)" />
         </g>
 
-        <g id="three-water-bottles">
-            <use href="#pure-water-bottle" x="465" y="720" transform="scale(1.4)" />
-            <use href="#pure-water-bottle" x="500" y="725" transform="scale(1.4)" />
-            <use href="#pure-water-bottle" x="535" y="720" transform="scale(1.4)" />
-        </g>
-
-        <g id="petal-layer"></g>
+        <g id="orb-layer"></g>
 
     </svg>
 
     <script>
-        // 星空背景
+        // 星空背景邏輯 (Canvas)
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
@@ -174,61 +135,61 @@
         }
         renderStars();
 
-        // 漫天落花葉動態
-        const petalLayer = document.getElementById('petal-layer');
-        const activePetals = [];
-        
-        // 陣列分配機率：3種花與1種葉子。葉子比例稍微調低。
-        const flowerTypes = [
-            '#flower-type-1', '#flower-type-1', 
-            '#flower-type-2', '#flower-type-2', 
-            '#flower-type-3', 
-            '#leaf-type-1'
-        ];
+        // 漫天透明光球 (摩尼寶珠) 動態邏輯
+        const orbLayer = document.getElementById('orb-layer');
+        const activeOrbs = [];
 
-        function createPetal() {
-            if (activePetals.length >= 35) return;
-            const useTag = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        function createOrb() {
+            if (activeOrbs.length >= 40) return; // 控制滿天寶珠的清淨密度
             
-            // 隨機抽取花或葉
-            const type = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
-            useTag.setAttributeNS('http://www.w3.org/1999/xlink', 'href', type); 
+            const useTag = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            useTag.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#mani-jewel'); 
             
             const x = Math.random() * 1200 - 100;
             const y = -50;
-            const scale = 0.5 + Math.random() * 0.6; // 稍微調整大小比例
-            const speedY = 0.8 + Math.random() * 1.5;
-            const speedX = (Math.random() - 0.5) * 0.6;
-            const rotSpeed = (Math.random() - 0.5) * 1.2;
-            let rotation = Math.random() * 360;
+            // 給予不同的大小比例，營造強烈的空間遠近感
+            const scale = 0.4 + Math.random() * 0.8; 
+            
+            // 光球比花瓣重，下落軌跡更平穩優雅
+            const speedY = 0.6 + Math.random() * 1.0; 
+            const speedX = (Math.random() - 0.5) * 0.3;
+            
             let swayStep = Math.random() * 100;
 
-            useTag.setAttribute('transform', `translate(${x}, ${y}) scale(${scale}) rotate(${rotation})`);
-            petalLayer.appendChild(useTag);
+            useTag.setAttribute('transform', `translate(${x}, ${y}) scale(${scale})`);
+            orbLayer.appendChild(useTag);
 
-            activePetals.push({ element: useTag, x: x, y: y, scale: scale, speedY: speedY, speedX: speedX, rotSpeed: rotSpeed, rotation: rotation, swayStep: swayStep });
+            activeOrbs.push({ 
+                element: useTag, x: x, y: y, scale: scale, 
+                speedY: speedY, speedX: speedX, swayStep: swayStep 
+            });
         }
 
-        function updatePetals() {
-            for (let i = activePetals.length - 1; i >= 0; i--) {
-                const p = activePetals[i];
+        function updateOrbs() {
+            for (let i = activeOrbs.length - 1; i >= 0; i--) {
+                const p = activeOrbs[i];
                 p.y += p.speedY; 
-                p.swayStep += 0.02; 
-                p.x += p.speedX + Math.sin(p.swayStep) * 0.6; 
-                p.rotation += p.rotSpeed;
+                p.swayStep += 0.015; // 極其緩慢的空氣阻力搖擺
+                p.x += p.speedX + Math.sin(p.swayStep) * 0.3; 
                 
-                p.element.setAttribute('transform', `translate(${p.x}, ${p.y}) scale(${p.scale}) rotate(${p.rotation})`);
+                // 光球不需旋轉，只需平移與縮放
+                p.element.setAttribute('transform', `translate(${p.x}, ${p.y}) scale(${p.scale})`);
                 
-                if (p.y > 950) { 
+                // 越過邊界自動消散
+                if (p.y > 1050) { 
                     p.element.remove(); 
-                    activePetals.splice(i, 1); 
+                    activeOrbs.splice(i, 1); 
                 }
             }
-            if (Math.random() < 0.08) createPetal();
-            requestAnimationFrame(updatePetals);
+            
+            // 控制法雨落下的頻率
+            if (Math.random() < 0.06) createOrb();
+            
+            requestAnimationFrame(updateOrbs);
         }
         
-        updatePetals();
+        // 啟動摩尼寶珠飄落
+        updateOrbs();
     </script>
 </body>
 </html>
