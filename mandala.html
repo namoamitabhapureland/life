@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>五位階終極曼陀羅矩陣 × 基礎白蓮測試</title>
+<title>五位階終極曼陀羅矩陣 × 彩色地/迴測試</title>
 <style>
     body {
         background-color: #050403;
@@ -26,7 +26,7 @@
         border: 1px solid rgba(212, 168, 36, 0.15);
         border-radius: 12px;
         padding: 30px 20px;
-        width: 170px;
+        width: 180px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
     }
     .svg-container {
@@ -45,6 +45,8 @@
         color: #888;
         margin-top: 8px;
         letter-spacing: 0.1em;
+        text-align: center;
+        line-height: 1.4;
     }
 </style>
 </head>
@@ -138,17 +140,25 @@ function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
             <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/><stop offset="25%" stop-color="#e6f9ff" stop-opacity="0.85"/><stop offset="65%" stop-color="#33bbff" stop-opacity="0.2"/><stop offset="100%" stop-color="#0066aa" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="rg-glow-dedication-${id}" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/><stop offset="25%" stop-color="#fae6fa" stop-opacity="0.85"/><stop offset="65%" stop-color="#dd66dd" stop-opacity="0.2"/><stop offset="100%" stop-color="#880088" stop-opacity="0"/>
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+            <stop offset="25%" stop-color="#ffe6fa" stop-opacity="0.85"/>
+            <stop offset="50%" stop-color="#dd66dd" stop-opacity="0.4"/>
+            <stop offset="75%" stop-color="#66ccff" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#440088" stop-opacity="0"/>
         </radialGradient>
         <radialGradient id="rg-glow-bhumi-${id}" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/><stop offset="25%" stop-color="#e6ffe6" stop-opacity="0.85"/><stop offset="65%" stop-color="#33cc77" stop-opacity="0.2"/><stop offset="100%" stop-color="#007733" stop-opacity="0"/>
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+            <stop offset="20%" stop-color="#fffaee" stop-opacity="0.9"/>
+            <stop offset="45%" stop-color="#ff99cc" stop-opacity="0.5"/>
+            <stop offset="70%" stop-color="#66ccff" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#aa66ff" stop-opacity="0"/>
         </radialGradient>
     </defs>`;
 
     const voidBg = `<circle cx="50" cy="50" r="42" fill="url(#rg-void)"><animate attributeName="r" values="41;43;41" dur="6s" repeatCount="indefinite"/></circle>`;
 
     let innerSvg = '';
-    let glowId = `rg-glow-abiding-${id}`; // 預設
+    let glowId = `rg-glow-abiding-${id}`; 
 
     const isRank = (t) => safeRank.includes(t);
 
@@ -199,25 +209,40 @@ function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
         let all = [...o1, ...o2];
         innerSvg = `
         <polygon points="${pStr(o1)}" stroke="#ffccff" stroke-width="1.2" fill="none" opacity="0.8"/>
-        <polygon points="${pStr(o2)}" stroke="#ee99ee" stroke-width="1.2" fill="none" opacity="0.8"/>
-        ${K(all,'#dd66dd',0.2,0.3)}
-        <polygon points="${pStr(st(8,97,20,0))}" stroke="#ffe6ff" stroke-width="1.5" fill="rgba(255,100,255,0.05)"/>
+        <polygon points="${pStr(o2)}" stroke="#99eeff" stroke-width="1.2" fill="none" opacity="0.8"/>
+        ${K(all,'#ddaaee',0.2,0.4)}
+        <polygon points="${pStr(st(8,97,20,0))}" stroke="#ffddaa" stroke-width="1.5" fill="rgba(255,200,100,0.06)"/>
         <polygon points="${pStr(st(8,97,20,22.5))}" stroke="#eebbff" stroke-width="1.2" fill="none"/>
-        ${K(i1,'#ee77ee',0.5,0.6)}
-        ${D(o1,2,'#ffccff',0.8)}
-        ${D(o2,2,'#ee99ee',0.8)}
+        ${K(i1,'#ee99ff',0.5,0.6)}
+        ${D(o1,2.2,'#ffccff',0.8)}
+        ${D(o2,2.2,'#99eeff',0.8)}
         `;
     } else if (isRank('地') || isRank('Bhumi')) {
         glowId = `rg-glow-bhumi-${id}`;
-        let o = pt(14,97,0), i = pt(14,45,12.85);
+        let o = pt(14,97,0);
+        
+        // 華嚴七寶色彩陣列 (紅, 橙, 金, 綠, 藍, 紫, 珍珠白)
+        const colors = ['#ff7b7b', '#ffb347', '#ffea70', '#85e085', '#70b3ff', '#c299ff', '#ffb3e6'];
+        
+        let stars = '';
+        for(let k=0; k<7; k++) {
+            let rOut = 97 - k * 7;
+            let rIn = 25 + k * 6;
+            stars += `<polygon points="${pStr(st(14, rOut, rIn, k * 12.85))}" stroke="${colors[k]}" stroke-width="1.2" fill="rgba(255,255,255,0.03)"/>`;
+        }
+
+        let colorfulDots = `<g opacity="0.9">`;
+        let pts = pt(14,97,0);
+        for(let k=0; k<14; k++) {
+            colorfulDots += `<circle cx="${pts[k][0].toFixed(2)}" cy="${pts[k][1].toFixed(2)}" r="2.5" fill="${colors[k%7]}"/>`;
+        }
+        colorfulDots += `</g>`;
+
         innerSvg = `
-        <polygon points="${pStr(o)}" stroke="#ccffcc" stroke-width="1.2" fill="none" opacity="0.8"/>
-        ${K(o,'#66dd99',0.18,0.35)}
-        <polygon points="${pStr(st(14,97,30,0))}" stroke="#aaffaa" stroke-width="1.5" fill="rgba(100,255,100,0.05)"/>
-        ${K(i,'#33cc77',0.4,0.5)}
-        <polygon points="${pStr(st(7,45,15,0))}" stroke="#99ff99" stroke-width="1" fill="none"/>
-        <polygon points="${pStr(st(7,45,15,25.7))}" stroke="#99ff99" stroke-width="1" fill="none"/>
-        ${D(o,2,'#ccffcc',0.8)}
+        ${K(o,'#ffffff',0.12,0.4)}
+        ${stars}
+        <polygon points="${pStr(pt(14, 25, 0))}" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        ${colorfulDots}
         `;
     }
 
@@ -236,7 +261,6 @@ function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
     }
 
     let lotusContent = '';
-
     if (nLevel === 1) { 
         lotusContent = `<defs><radialGradient id="lA${id}" cx="50%" cy="75%" r="100%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="100%" stop-color="#cfd8dc" stop-opacity="0.6"/></radialGradient><radialGradient id="lB${id}" cx="50%" cy="65%" r="100%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/><stop offset="100%" stop-color="#eceff1" stop-opacity="0.7"/></radialGradient></defs>
         ${rotatedPetals(8,22,46,7,11,'round',`url(#lA${id})`,.85)}${rotatedPetals(8,22,38,5.5,8,'round',`url(#lB${id})`,.65,22.5)}`;
@@ -254,11 +278,11 @@ function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
 }
 
 const ranksToTest = [
-    { type: '信', label: '信位底座', desc: '晨曦玫瑰金 ‧ 9角星芒' },
-    { type: '住', label: '住位底座', desc: '純粹琥珀金 ‧ 10角安住' },
-    { type: '行', label: '行位底座', desc: '流光鉑金青 ‧ 12角動能' },
-    { type: '迴', label: '迴向底座', desc: '悲智紫水晶 ‧ 16角雙疊' },
-    { type: '地', label: '地位底座', desc: '厚德大地綠 ‧ 14角絕對密網' }
+    { type: '信', label: '信位底座', desc: '晨曦玫瑰金 ‧ 9角' },
+    { type: '住', label: '住位底座', desc: '純粹琥珀金 ‧ 10角' },
+    { type: '行', label: '行位底座', desc: '流光鉑金青 ‧ 12角' },
+    { type: '迴', label: '迴向底座', desc: '星雲流轉色 ‧ 16角\n(紫粉揉合琉璃青)' },
+    { type: '地', label: '地位底座', desc: '華嚴七寶彩虹 ‧ 14角\n(彩色極致陣列)' }
 ];
 
 ranksToTest.forEach(rank => {
