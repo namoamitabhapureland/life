@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>琉璃淨水供花 ． 天降金粉示範</title>
+    <title>琉璃淨水供花 ． 天降金粉 (景深動態版)</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -23,13 +23,14 @@
             z-index: 0; 
         }
 
+        /* 壇城佈局：利用 margin 與 translateY 製造完美景深 */
         .altar {
             position: relative;
             z-index: 10;
             display: flex;
             align-items: flex-end;
-            gap: 25px;
-            transform: translateY(20px);
+            justify-content: center;
+            transform: translateY(30px);
         }
 
         .vase-container {
@@ -40,8 +41,23 @@
             filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.15));
         }
 
-        .side-vase { width: 140px; height: 210px; }
-        .center-vase { width: 220px; height: 330px; z-index: 5; filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.25)); }
+        /* 兩側水瓶：退居後方，向上推移以符合透視 */
+        .side-vase { 
+            width: 140px; 
+            height: 210px; 
+            z-index: 5; 
+            transform: translateY(-55px); 
+        }
+
+        /* 中央大瓶：穩居前方，微疊加於水瓶之上 */
+        .center-vase { 
+            width: 220px; 
+            height: 330px; 
+            z-index: 10; 
+            margin: 0 -25px; 
+            filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.3)); 
+        }
+        
         .svg-content { width: 100%; height: 100%; overflow: visible; }
 
         /* 示範用按鈕 */
@@ -83,15 +99,15 @@
             top: -10px;
             background: radial-gradient(circle, #fff 0%, #d4af37 50%, transparent 100%);
             border-radius: 50%;
-            box-shadow: 0 0 8px #d4af37, 0 0 2px #fff;
+            box-shadow: 0 0 10px #d4af37, 0 0 3px #fff;
             opacity: 0;
             animation: powder-fall linear forwards;
         }
         @keyframes powder-fall {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
             10% { opacity: 1; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(100vh) translateX(var(--drift)) scale(0.5); opacity: 0; }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(100vh) translateX(var(--drift)) scale(0.4); opacity: 0; }
         }
     </style>
 </head>
@@ -125,18 +141,18 @@
                 </defs>
 
                 <g clip-path="url(#vase-clip)">
-                    <rect x="0" y="60" width="100" height="100" fill="url(#water-grad)" />
+                    <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
                     <path fill="url(#water-light)" opacity="0.4">
                         <animate attributeName="d" dur="3.5s" repeatCount="indefinite"
-                            values="M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z;
-                                    M-50,75 C-20,85 10,65 40,75 C70,85 100,65 130,75 L130,150 L-50,150 Z;
-                                    M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z" />
+                            values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
+                                    M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
+                                    M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
                     </path>
                     <path fill="url(#water-light)" opacity="0.6">
                         <animate attributeName="d" dur="2.8s" repeatCount="indefinite"
-                            values="M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z;
-                                    M-20,82 C10,72 40,92 70,82 C100,72 130,92 160,82 L160,150 L-20,150 Z;
-                                    M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z" />
+                            values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
+                                    M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
+                                    M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
                     </path>
                 </g>
 
@@ -156,16 +172,16 @@
                         <stop offset="60%" stop-color="#fce4ec"/>
                         <stop offset="100%" stop-color="#c2185b">
                             <animate attributeName="stop-color" 
-                                     values="#c2185b; #4527a0; #0288d1; #00695c; #c2185b" 
-                                     dur="18s" repeatCount="indefinite" />
+                                     values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" 
+                                     dur="15s" repeatCount="indefinite" />
                         </stop>
                     </linearGradient>
                     <linearGradient id="petal-light" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#ffffff"/>
                         <stop offset="100%" stop-color="#f3e5ab">
                             <animate attributeName="stop-color" 
-                                     values="#f3e5ab; #ce93d8; #81d4fa; #80cbc4; #f3e5ab" 
-                                     dur="18s" repeatCount="indefinite" />
+                                     values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" 
+                                     dur="15s" repeatCount="indefinite" />
                         </stop>
                     </linearGradient>
                     <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -198,18 +214,18 @@
 
                 <g transform="translate(50, 100)">
                     <g clip-path="url(#vase-clip)">
-                        <rect x="0" y="60" width="100" height="100" fill="url(#water-grad)" />
+                        <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
                         <path fill="url(#water-light)" opacity="0.4">
                             <animate attributeName="d" dur="3.5s" repeatCount="indefinite"
-                                values="M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z;
-                                        M-50,75 C-20,85 10,65 40,75 C70,85 100,65 130,75 L130,150 L-50,150 Z;
-                                        M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z" />
+                                values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
+                                        M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
+                                        M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
                         </path>
                         <path fill="url(#water-light)" opacity="0.6">
                             <animate attributeName="d" dur="2.8s" repeatCount="indefinite"
-                                values="M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z;
-                                        M-20,82 C10,72 40,92 70,82 C100,72 130,92 160,82 L160,150 L-20,150 Z;
-                                        M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z" />
+                                values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
+                                        M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
+                                        M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
                         </path>
                         
                         <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6">
@@ -230,7 +246,11 @@
                 </g>
 
                 <g stroke="#8ba89c" stroke-width="2" fill="none">
-                    <path d="M100,125 Q90,90 100,50"/> <path d="M100,125 Q130,90 145,60"/> <path d="M100,125 Q70,95 55,75"/>   <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> </g>
+                    <path d="M100,125 Q90,90 100,50"/> 
+                    <path d="M100,125 Q130,90 145,60"/> 
+                    <path d="M100,125 Q70,95 55,75"/>   
+                    <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> 
+                </g>
                 <g fill="url(#leaf-grad)" stroke="rgba(212,175,55,0.5)" stroke-width="0.5">
                     <path d="M100,110 Q140,115 160,80 Q130,85 100,110 Z"/>
                     <path d="M98,115 Q60,120 40,90 Q70,95 98,115 Z"/>
@@ -238,27 +258,48 @@
                     <path d="M95,85 Q65,65 55,35 Q75,55 95,85 Z" opacity="0.7"/>
                 </g>
 
-                <use href="#lotus-bud" transform="translate(55, 75) rotate(-20) scale(0.8)"/>
-                <use href="#lotus-bloom" transform="translate(145, 60) rotate(15) scale(0.85)"/>
-                <use href="#lotus-bud" transform="translate(115, 85) rotate(35) scale(0.65)"/> <use href="#lotus-bloom" transform="translate(100, 50) scale(1.1)"/>
+                <g transform="translate(55, 75) scale(0.8)">
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" />
+                        <use href="#lotus-bud"/>
+                    </g>
+                </g>
+                <g transform="translate(145, 60) scale(0.85)">
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" />
+                        <use href="#lotus-bloom"/>
+                    </g>
+                </g>
+                <g transform="translate(115, 85) scale(0.65)">
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" />
+                        <use href="#lotus-bud"/>
+                    </g>
+                </g>
+                <g transform="translate(100, 50) scale(1.1)">
+                    <g>
+                        <animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" />
+                        <use href="#lotus-bloom"/>
+                    </g>
+                </g>
             </svg>
         </div>
 
         <div class="vase-container side-vase">
             <svg class="svg-content" viewBox="0 0 100 150">
                 <g clip-path="url(#vase-clip)">
-                    <rect x="0" y="60" width="100" height="100" fill="url(#water-grad)" />
+                    <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
                     <path fill="url(#water-light)" opacity="0.4">
                         <animate attributeName="d" dur="3.8s" repeatCount="indefinite"
-                            values="M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z;
-                                    M-50,75 C-20,85 10,65 40,75 C70,85 100,65 130,75 L130,150 L-50,150 Z;
-                                    M-20,75 C10,65 40,85 70,75 C100,65 130,85 160,75 L160,150 L-20,150 Z" />
+                            values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
+                                    M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
+                                    M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
                     </path>
                     <path fill="url(#water-light)" opacity="0.6">
                         <animate attributeName="d" dur="3.1s" repeatCount="indefinite"
-                            values="M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z;
-                                    M-20,82 C10,72 40,92 70,82 C100,72 130,92 160,82 L160,150 L-20,150 Z;
-                                    M-50,82 C-20,92 10,72 40,82 C70,92 100,72 130,82 L130,150 L-50,150 Z" />
+                            values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
+                                    M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
+                                    M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
                     </path>
                 </g>
                 <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" />
@@ -272,7 +313,7 @@
     </div>
 
     <div class="demo-panel">
-        <div class="demo-btn" onclick="triggerGoldPowderRain()">測試天降金粉</div>
+        <div class="demo-btn" onclick="triggerGoldPowderRain()">測試海量金粉</div>
     </div>
 
     <script>
@@ -335,11 +376,11 @@
         drawStars();
 
         // -------------------------
-        // 2. 天降金粉引擎 (純粹動態，無須 SVG)
+        // 2. 天降金粉引擎 (增量至 250，營造海量無相之美)
         // -------------------------
         function triggerGoldPowderRain() {
             const container = document.getElementById('gold-powder-container');
-            const totalPowder = 80; // 金粉數量
+            const totalPowder = 250; 
 
             for (let i = 0; i < totalPowder; i++) {
                 const powder = document.createElement('div');
@@ -348,9 +389,9 @@
                 // 隨機生成起點、大小與下落參數
                 const size = Math.random() * 3 + 1.5; 
                 const startX = Math.random() * window.innerWidth;
-                const drift = (Math.random() - 0.5) * 200; // 左右飄移幅度
-                const dur = Math.random() * 4 + 4; // 下落耗時 4~8秒
-                const delay = Math.random() * 2; // 錯開起步時間
+                const drift = (Math.random() - 0.5) * 250; 
+                const dur = Math.random() * 5 + 4; 
+                const delay = Math.random() * 2.5; 
 
                 powder.style.width = size + 'px';
                 powder.style.height = size + 'px';
@@ -361,7 +402,6 @@
 
                 container.appendChild(powder);
 
-                // 動畫結束後徹底拔除節點，不留痕跡
                 setTimeout(() => {
                     if (powder.parentNode) powder.remove();
                 }, (dur + delay) * 1000);
