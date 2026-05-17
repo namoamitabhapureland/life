@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>淨土法界 ‧ 三層轉經輪與活水淨瓶</title>
+    <title>淨土法界美學 ‧ 三層法輪改良與敞口金線淨瓶</title>
     <style>
         :root {
             --bg-deep: #010103;
-            --gold-light: #f3e5ab;
-            --gold-solid: #d4af37;
+            --gold-light: #f3e5ab; /* 淺金色線框 */
+            --gold-solid: #d4af37; /* 雙層金框專用 */
+            --water-cyan: rgba(139, 168, 156, 0.25); /* 琉璃清淨法水色 */
         }
         * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
         body {
@@ -32,65 +33,56 @@
     <svg id="mainStage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
         <defs>
             <filter id="fine-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feGaussianBlur stdDeviation="2.2" result="blur" />
                 <feMerge>
                     <feMergeNode in="blur" />
                     <feMergeNode in="SourceGraphic" />
                 </feMerge>
             </filter>
 
-            <linearGradient id="facet-light" x1="0%" y1="0%" x2="50%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#f3e5ab" stop-opacity="0.2"/>
-            </linearGradient>
-            <linearGradient id="facet-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#b2ebf2" stop-opacity="0.85"/>
-                <stop offset="100%" stop-color="#00838f" stop-opacity="0.4"/>
-            </linearGradient>
-            <linearGradient id="facet-dark" x1="50%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#d4af37" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#b8860b" stop-opacity="0.8"/>
+            <linearGradient id="wheel-gold-body" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#8B6508" stop-opacity="0.2"/>
+                <stop offset="30%" stop-color="var(--gold-solid)" stop-opacity="0.6"/>
+                <stop offset="50%" stop-color="#ffffff" stop-opacity="0.3"/>
+                <stop offset="70%" stop-color="var(--gold-solid)" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#8B6508" stop-opacity="0.2"/>
             </linearGradient>
 
-            <linearGradient id="wheel-gold" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#8B6508" />
-                <stop offset="20%" stop-color="#FFDF00" />
-                <stop offset="50%" stop-color="#FFF" />
-                <stop offset="80%" stop-color="#D4AF37" />
-                <stop offset="100%" stop-color="#8B6508" />
+            <linearGradient id="wheel-lid-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6" />
+                <stop offset="60%" stop-color="var(--gold-light)" stop-opacity="0.4" />
+                <stop offset="100%" stop-color="var(--gold-solid)" stop-opacity="0.2" />
             </linearGradient>
 
-            <g id="treasure-vase">
-                <polygon points="45,20 55,20 60,40 40,40" fill="url(#facet-light)" stroke="#fff" stroke-width="0.5"/>
+            <g id="open-neck-vase">
+                <path class="dynamic-water" d="M -9,3 C -13,15 -14,26 0,28 C 14,26 13,15 9,3 Z" fill="var(--water-cyan)" />
                 
-                <path class="dynamic-water" d="M 40,40 L 60,40 L 75,90 L 25,90 Z" fill="url(#facet-cyan)" opacity="0.95" stroke="#fff" stroke-width="0.5"/>
+                <g stroke="var(--gold-light)" stroke-width="1.0" fill="none" filter="url(#fine-glow)">
+                    <path d="M -7,-15 C -7,-8 -15,0 -15,15 C -15,26 -8,30 0,30 C 8,30 15,26 15,15 C 15,0 7,-8 7,-15" />
+                    <ellipse cx="0" cy="-15" rx="7" ry="1.8" />
+                    <path d="M -5,30 C -5,32 5,32 5,30" />
+                </g>
                 
-                <polygon points="50,40 60,40 75,90 50,90" fill="url(#facet-dark)" opacity="0.5"/>
-                <polygon points="25,90 75,90 60,120 40,120" fill="url(#facet-light)" stroke="#f3e5ab" stroke-width="0.5"/>
-                <polygon points="50,90 75,90 60,120 50,120" fill="url(#facet-dark)" opacity="0.7"/>
-                <polygon points="40,25 60,25" stroke="#f3e5ab" stroke-width="1"/>
+                <ellipse cx="0" cy="3" rx="8.5" ry="1.5" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.6" />
             </g>
         </defs>
 
-        <circle cx="500" cy="380" r="180" fill="rgba(212,175,55,0.05)" filter="blur(15px)" />
-        <g id="dharma-wheel-container"></g>
+        <g id="dharma-wheel-stage"></g>
 
-
-        <g id="altar-area" transform="translate(0, -20)">
-            <g filter="url(#fine-glow)">
-                <ellipse cx="500" cy="950" rx="180" ry="15" fill="#010103" opacity="0.8" filter="blur(5px)"/>
-                <path d="M 320,950 Q 500,965 680,950" fill="none" stroke="var(--gold-solid)" stroke-width="1.5" opacity="0.8"/>
-                <path d="M 340,958 Q 500,970 660,958" fill="none" stroke="var(--gold-light)" stroke-width="0.8" opacity="0.5"/>
-            </g>
-
-            <use href="#treasure-vase" x="350" y="810" transform="scale(1.1)" />
-            <use href="#treasure-vase" x="363" y="775" transform="scale(1.25)" />
-            <use href="#treasure-vase" x="468" y="810" transform="scale(1.1)" />
+        <g id="three-vases-align">
+            <ellipse cx="500" cy="910" rx="120" ry="10" fill="#010103" opacity="0.7" filter="blur(4px)"/>
+            
+            <use href="#open-neck-vase" transform="translate(435, 845) scale(1.5)" />
+            
+            <use href="#open-neck-vase" transform="translate(500, 825) scale(2.1)" />
+            
+            <use href="#open-neck-vase" transform="translate(565, 845) scale(1.5)" />
         </g>
+
     </svg>
 
     <script>
-        // --- 1. 星空背景 ---
+        // --- 1. 星空背景恆常運算 ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
@@ -99,7 +91,7 @@
         window.addEventListener('resize', resize); resize();
 
         const STAR_COLORS = ['#8ba89c', '#ffffff', '#f3e5ab'];
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 120; i++) {
             stars.push({ x: (Math.random() - 0.5) * 2000, y: (Math.random() - 0.5) * 2000, z: Math.random() * 2000, color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)], s: Math.random() * 2.5 + 0.5 });
         }
 
@@ -115,7 +107,7 @@
                 ctx.beginPath();
                 ctx.arc((width / 2) + s.x * sc, drawY, s.s * sc, 0, Math.PI * 2);
                 ctx.fillStyle = s.color;
-                ctx.globalAlpha = Math.min(1, sc * 2.5) * 0.5;
+                ctx.globalAlpha = Math.min(1, sc * 2.5) * 0.4;
                 ctx.fill();
                 ctx.globalAlpha = 1;
             });
@@ -123,112 +115,124 @@
         }
         renderStars();
 
-        // --- 2. 活水蕩漾引擎 (針對淨瓶中的水面) ---
-        // 我們直接操作 SVG 的路徑字串，模擬真實液體的正弦波起伏
+        // --- 2. 淨水微瀾引擎 (純數學路徑重構) ---
         const waterPaths = document.querySelectorAll('.dynamic-water');
-        let time = 0;
+        let waterTime = 0;
 
         function animateWater() {
-            time += 0.05;
+            waterTime += 0.04;
             waterPaths.forEach((path, index) => {
-                // 原水面座標：左上 (40,40) 右上 (60,40) 左下 (25,90) 右下 (75,90)
-                // 我們讓 Y=40 的水面產生波浪起伏
-                let waveOffsetLeft = Math.sin(time + index) * 2;
-                let waveOffsetRight = Math.cos(time + index) * 2;
-                
-                // 動態重構 Bezier 曲線以表現水的張力
-                // M 左上 Q 控制點 右上 L 右下 L 左下 Z
-                let d = `M 40,${40 + waveOffsetLeft} 
-                         Q 50,${40 + (waveOffsetLeft + waveOffsetRight)/2 + Math.sin(time*1.5)*3} 60,${40 + waveOffsetRight} 
-                         L 75,90 L 25,90 Z`;
+                let leftWave = Math.sin(waterTime + index) * 1.2;
+                let rightWave = Math.cos(waterTime + index) * 1.2;
+                // 敞口水面邊緣波浪張力動態重算
+                let d = `M -9,${3 + leftWave} 
+                         Q 0,${3 + (leftWave + rightWave)/2 + Math.sin(waterTime * 2.0)*1.5} 9,${3 + rightWave} 
+                         L 13,26 C 13,26 8,29 0,29 C -8,29 -13,26 -13,26 Z`;
                 path.setAttribute('d', d);
             });
             requestAnimationFrame(animateWater);
         }
         animateWater();
 
-        // --- 3. 核心亮點：純向量 3D 三層轉經輪 (數學投影) ---
-        const wheelContainer = document.getElementById('dharma-wheel-container');
+
+        // --- 3. 改良型轉法輪引擎 (純線條 + 雙層金框鑲嵌寶珠 + 水滴中軸頂端) ---
+        const wheelStage = document.getElementById('dharma-wheel-stage');
         
-        // 定義三層法輪的 3D 結構 (由上到下)
-        const wheels = [
-            { cy: 220, r: 35, h: 50, speed: 0.02 },  // 頂層 (小)
-            { cy: 320, r: 50, h: 70, speed: 0.015 }, // 中層 (中)
-            { cy: 440, r: 70, h: 90, speed: 0.01 }   // 底層 (大)
+        // 三層配置：位置、半徑、高度、轉速
+        const wheelLayers = [
+            { cy: 220, r: 40, h: 45, speed: 0.018 },  // 上層
+            { cy: 310, r: 58, h: 60, speed: 0.013 },  // 中層
+            { cy: 420, r: 80, h: 75, speed: 0.009 }   // 下層
         ];
 
-        // 建立法輪基礎 SVG 結構
-        let wheelHTML = '';
+        let stageHTML = '';
         
-        // 繪製中心金剛軸
-        wheelHTML += `<line x1="500" y1="150" x2="500" y2="580" stroke="var(--gold-solid)" stroke-width="6" style="filter: drop-shadow(0 0 10px #f3e5ab);"/>`;
-        wheelHTML += `<polygon points="495,150 505,150 500,120" fill="var(--gold-solid)" style="filter: drop-shadow(0 0 10px #f3e5ab);"/>`;
+        // 🌟 改良：中央軸頂端不要箭頭，重刻為完美流線的「水滴狀」摩尼寶頂
+        stageHTML += `<path d="M 500,105 C 507,122 514,136 514,142 C 514,150 508,154 500,154 C 492,154 486,150 486,142 C 486,136 493,122 500,105 Z" fill="none" stroke="var(--gold-light)" stroke-width="1.5" style="filter: drop-shadow(0 0 8px var(--gold-solid));" />`;
+        // 金剛中軸線
+        stageHTML += `<line x1="500" y1="154" x2="500" y2="540" stroke="var(--gold-light)" stroke-width="4" opacity="0.8" />`;
 
-        // 建立每個法輪的圓柱體與旋轉刻痕
-        wheels.forEach((w, index) => {
+        // 靜態外框構造
+        wheelLayers.forEach((w, idx) => {
             let rx = w.r;
-            let ry = w.r * 0.25; // 產生俯視 3D 透視感
+            let ry = w.r * 0.22; // 3D 俯視視角斜率
             let topY = w.cy;
             let botY = w.cy + w.h;
 
-            // 圓柱體背部 (暗面)
-            wheelHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 1 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 0 ${500-rx},${botY} Z" fill="#3a2a00" opacity="0.8"/>`;
+            // 輪體暗面邊緣
+            stageHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 1 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 0 ${500-rx},${botY} Z" fill="#2a1e02" opacity="0.4"/>`;
+            // 輪體金屬亮面
+            stageHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 0 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 1 ${500-rx},${botY} Z" fill="url(#wheel-gold-body)" />`;
             
-            // 圓柱體正面 (金屬光澤)
-            wheelHTML += `<path d="M ${500-rx},${topY} A ${rx} ${ry} 0 0 0 ${500+rx},${topY} L ${500+rx},${botY} A ${rx} ${ry} 0 0 1 ${500-rx},${botY} Z" fill="url(#wheel-gold)" style="filter: drop-shadow(0 0 8px rgba(212,175,55,0.4));"/>`;
+            // 🌟 改良：米色蓋子顏色修正為與下面差不多、更淺一點的淺金色橢圓上蓋
+            stageHTML += `<ellipse cx="500" cy="${topY}" rx="${rx}" ry="${ry}" fill="url(#wheel-lid-gold)" stroke="var(--gold-light)" stroke-width="1.2"/>`;
+            // 下緣裝飾邊圈
+            stageHTML += `<ellipse cx="500" cy="${botY}" rx="${rx}" ry="${ry}" fill="none" stroke="var(--gold-light)" stroke-width="1.0" opacity="0.6"/>`;
             
-            // 法輪頂蓋
-            wheelHTML += `<ellipse cx="500" cy="${topY}" rx="${rx}" ry="${ry}" fill="#f3e5ab" stroke="#d4af37" stroke-width="1.5"/>`;
-            // 法輪底蓋裝飾緣
-            wheelHTML += `<ellipse cx="500" cy="${botY}" rx="${rx}" ry="${ry}" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7"/>`;
-
-            // 產生旋轉刻文 (動態線條) 的容器
-            wheelHTML += `<g id="wheel-lines-${index}" stroke="#010103" stroke-width="2" opacity="0.6"></g>`;
+            // 旋轉符文與鑲嵌寶珠群組
+            stageHTML += `<g id="layer-gems-${idx}"></g>`;
         });
 
-        wheelContainer.innerHTML = wheelHTML;
+        wheelStage.innerHTML = stageHTML;
 
-        // 3D 旋轉引擎：利用三角函數投影到 2D 平面
-        let rotationAngle = 0;
-        function animateWheels() {
-            rotationAngle += 1; // 統一時間軸
+        // 寶珠顏色庫：紅、藍、金循環鑲嵌
+        const gemColors = ['#ff4d4d', '#4d94ff', '#ffd700'];
+        let globalTicks = 0;
+
+        function rotateDharmaWheel() {
+            globalTicks += 1;
             
-            wheels.forEach((w, index) => {
-                const lineGroup = document.getElementById(`wheel-lines-${index}`);
-                let linesHTML = '';
-                const numLines = 12; // 法輪上的梵文刻痕數量
+            wheelLayers.forEach((w, idx) => {
+                const gemGroup = document.getElementById(`layer-gems-${idx}`);
+                let dynamicHTML = '';
+                const totalLines = 10; // 每層法輪等距分佈 10 條功德線
                 
-                for(let i = 0; i < numLines; i++) {
-                    // 計算每條刻痕當前的 3D 角度
-                    let angle = (rotationAngle * w.speed) + (i * Math.PI * 2 / numLines);
-                    angle = angle % (Math.PI * 2);
+                for(let i = 0; i < totalLines; i++) {
+                    // 計算刻痕當前 3D 水平角度
+                    let theta = (globalTicks * w.speed) + (i * Math.PI * 2 / totalLines);
+                    theta = theta % (Math.PI * 2);
                     
-                    // 只繪製在「正面」的刻痕 (角度介於 0 到 PI 之間)
-                    if (angle > 0 && angle < Math.PI) {
-                        // X 軸座標投影：R * cos(θ)
-                        let x = 500 + (w.r * Math.cos(angle));
+                    // 只繪製面向行者的正半週 (0 到 PI)
+                    if (theta > 0 && theta < Math.PI) {
+                        // 3D 橫向正弦投影
+                        let xPos = 500 + (w.r * Math.cos(theta));
+                        // 縱向橢圓弧度位移
+                        let yShift = w.r * 0.22 * Math.sin(theta);
                         
-                        // Y 軸上下橢圓邊緣的位移：R_y * sin(θ)
-                        let yOffset = w.r * 0.25 * Math.sin(angle);
-                        
-                        // 計算線條粗細與透明度 (越靠近邊緣越細、越淡，表現圓柱體的曲面感)
-                        let visibility = Math.sin(angle);
-                        let strokeWidth = visibility * 3;
-                        let opacity = visibility * 0.7;
+                        let visibility = Math.sin(theta); // 越接近邊緣越細、越淡
+                        let opacity = visibility * 0.8;
 
-                        // 繪製垂直刻痕 (可以想像這是梵字或真言)
-                        linesHTML += `<path d="M ${x},${w.cy + yOffset} L ${x},${w.cy + w.h + yOffset}" stroke-width="${strokeWidth}" opacity="${opacity}" />`;
+                        // 🌟 改良：灰色實線全部修正為白色實線
+                        dynamicHTML += `<path d="M ${xPos},${w.cy + yShift} L ${xPos},${w.cy + w.h + yShift}" stroke="#ffffff" stroke-width="${visibility * 1.3}" fill="none" opacity="${opacity}" />`;
                         
-                        // 加一點點莊嚴的金點裝飾在中央
-                        linesHTML += `<circle cx="${x}" cy="${w.cy + w.h/2 + yOffset}" r="${visibility*1.5}" fill="#f3e5ab" opacity="${opacity}" stroke="none"/>`;
+                        // 計算線條正中心的 Y 軸座標，用以精確鑲嵌寶珠
+                        let midY = w.cy + (w.h / 2) + yShift;
+                        let gemColor = gemColors[i % gemColors.length];
+                        
+                        // 寶珠隨 3D 視角做等比例邊緣縮放
+                        let rOuter = visibility * 4.5;
+                        let rInner = visibility * 3.2;
+                        let rCore = visibility * 1.8;
+
+                        if (rOuter > 1.2) {
+                            // 🌟 改良：每一條白線正中間鑲嵌雙層金框寶珠 (紅/藍/金)
+                            // 第一層金框 (外圈)
+                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rOuter}" fill="none" stroke="var(--gold-solid)" stroke-width="0.6" opacity="${opacity}" />`;
+                            // 第二層金框 (內圈)
+                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rInner}" fill="none" stroke="var(--gold-light)" stroke-width="0.4" opacity="${opacity}" />`;
+                            // 核心寶珠
+                            dynamicHTML += `<circle cx="${xPos}" cy="${midY}" r="${rCore}" fill="${gemColor}" stroke="none" opacity="${opacity}" style="filter: drop-shadow(0 0 3px ${gemColor});" />`;
+                        }
                     }
                 }
-                lineGroup.innerHTML = linesHTML;
+                gemGroup.innerHTML = dynamicHTML;
             });
-            requestAnimationFrame(animateWheels);
+            
+            requestAnimationFrame(rotateDharmaWheel);
         }
-        animateWheels();
 
+        // 啟動轉法輪
+        rotateDharmaWheel();
     </script>
 </body>
 </html>
