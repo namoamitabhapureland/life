@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>琉璃淨水供花 ． 奇蹟綻放與海量金粉</title>
+    <title>琉璃淨水供花 ． 雙重奇蹟與完美景深</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -17,20 +17,15 @@
             font-family: "PingFang TC", "Microsoft JhengHei", serif;
         }
 
-        #bgCanvas { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 0; 
-        }
+        #bgCanvas { position: fixed; inset: 0; z-index: 0; }
 
-        /* 壇城佈局：重建絕對的透視感與景深 */
+        /* 壇城佈局：利用絕對的 Y軸偏移來建立正確的 3D 透視感 */
         .altar {
             position: relative;
             z-index: 10;
             display: flex;
-            align-items: flex-end; /* 以底部為對齊基準 */
+            align-items: center; /* 改為置中對齊，再個別調整高低 */
             justify-content: center;
-            transform: translateY(20px);
         }
 
         .vase-container {
@@ -38,71 +33,45 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.15));
         }
 
-        /* 兩側水瓶：縮小尺寸，並利用 margin-bottom 將其向上推（視覺上往後退） */
+        /* 兩側淨水小瓶：尺寸縮小，並向上推移（視覺上退後） */
         .side-vase { 
-            width: 110px; 
-            height: 165px; 
+            width: 80px; 
+            height: 120px; 
             z-index: 5; 
-            margin-bottom: 50px; 
-            opacity: 0.9;
+            transform: translateY(-40px); /* 往上/往後 */
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.15));
+            opacity: 0.95;
         }
 
-        /* 中央大瓶：放大尺寸，利用負 margin 微微疊加在水瓶前方 */
+        /* 中央供花大瓶：尺寸放大，向下推移（視覺上靠前），並設定最高層級 */
         .center-vase { 
-            width: 250px; 
-            height: 375px; 
-            z-index: 10; 
-            margin: 0 -20px; 
-            filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.3)); 
+            width: 260px; 
+            height: 390px; 
+            z-index: 20; /* 絕對在最上層 */
+            transform: translateY(40px); /* 往下/往前 */
+            margin: 0 -15px; /* 微幅疊加遮擋兩側，強化立體感 */
+            filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
         }
         
         .svg-content { width: 100%; height: 100%; overflow: visible; }
 
-        /* 示範用按鈕 */
-        .demo-panel {
-            position: absolute;
-            bottom: 40px;
-            z-index: 100;
-            display: flex;
-            gap: 20px;
-        }
+        .demo-panel { position: absolute; bottom: 40px; z-index: 100; display: flex; gap: 20px; }
         .demo-btn {
-            color: #f3e5ab;
-            font-size: 0.9rem;
-            letter-spacing: 4px;
-            cursor: pointer;
-            padding: 12px 24px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212,175,55,0.5);
-            border-radius: 25px;
-            backdrop-filter: blur(8px);
-            transition: all 0.4s;
+            color: #f3e5ab; font-size: 0.9rem; letter-spacing: 4px; cursor: pointer;
+            padding: 12px 24px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.5); border-radius: 25px;
+            backdrop-filter: blur(8px); transition: all 0.4s;
         }
-        .demo-btn:hover {
-            background: rgba(212,175,55,0.2);
-            box-shadow: 0 0 15px rgba(212,175,55,0.4);
-            color: #fff;
-        }
+        .demo-btn:hover { background: rgba(212,175,55,0.2); box-shadow: 0 0 15px rgba(212,175,55,0.4); color: #fff; }
 
-        /* 天降金粉樣式 */
-        #gold-powder-container {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 50;
-            overflow: hidden;
-        }
+        #gold-powder-container { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
         .gold-powder {
-            position: absolute;
-            top: -10px;
+            position: absolute; top: -10px;
             background: radial-gradient(circle, #fff 0%, #d4af37 50%, transparent 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 10px #d4af37, 0 0 3px #fff;
-            opacity: 0;
-            animation: powder-fall linear forwards;
+            border-radius: 50%; box-shadow: 0 0 10px #d4af37, 0 0 3px #fff;
+            opacity: 0; animation: powder-fall linear forwards;
         }
         @keyframes powder-fall {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
@@ -115,7 +84,6 @@
 <body>
 
     <canvas id="bgCanvas"></canvas>
-
     <div id="gold-powder-container"></div>
 
     <div class="altar">
@@ -123,38 +91,21 @@
         <div class="vase-container side-vase">
             <svg class="svg-content" viewBox="0 0 100 150">
                 <defs>
-                    <clipPath id="vase-clip">
-                        <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" />
-                    </clipPath>
+                    <clipPath id="vase-clip"><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" /></clipPath>
                     <linearGradient id="glass-glare" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
-                        <stop offset="40%" stop-color="transparent"/>
-                        <stop offset="100%" stop-color="rgba(0,0,0,0.5)"/>
+                        <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="40%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(0,0,0,0.5)"/>
                     </linearGradient>
                     <linearGradient id="water-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(0, 229, 255, 0.6)"/>
-                        <stop offset="100%" stop-color="rgba(0, 77, 64, 0.9)"/>
+                        <stop offset="0%" stop-color="rgba(0, 229, 255, 0.6)"/><stop offset="100%" stop-color="rgba(0, 77, 64, 0.9)"/>
                     </linearGradient>
                     <linearGradient id="water-light" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(224, 247, 250, 0.8)"/>
-                        <stop offset="100%" stop-color="rgba(0, 131, 143, 0.4)"/>
+                        <stop offset="0%" stop-color="rgba(224, 247, 250, 0.8)"/><stop offset="100%" stop-color="rgba(0, 131, 143, 0.4)"/>
                     </linearGradient>
                 </defs>
-
                 <g clip-path="url(#vase-clip)">
                     <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
-                    <path fill="url(#water-light)" opacity="0.4">
-                        <animate attributeName="d" dur="3.5s" repeatCount="indefinite"
-                            values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
-                                    M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
-                                    M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
-                    </path>
-                    <path fill="url(#water-light)" opacity="0.6">
-                        <animate attributeName="d" dur="2.8s" repeatCount="indefinite"
-                            values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
-                                    M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
-                                    M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
-                    </path>
+                    <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                    <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
                 </g>
                 <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" />
                 <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
@@ -171,22 +122,17 @@
                         <stop offset="0%" stop-color="#ffffff"/>
                         <stop offset="60%" stop-color="#fce4ec"/>
                         <stop offset="100%" stop-color="#c2185b">
-                            <animate attributeName="stop-color" 
-                                     values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" 
-                                     dur="15s" repeatCount="indefinite" />
+                            <animate attributeName="stop-color" values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" dur="15s" repeatCount="indefinite" />
                         </stop>
                     </linearGradient>
                     <linearGradient id="petal-light" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#ffffff"/>
                         <stop offset="100%" stop-color="#f3e5ab">
-                            <animate attributeName="stop-color" 
-                                     values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" 
-                                     dur="15s" repeatCount="indefinite" />
+                            <animate attributeName="stop-color" values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" dur="15s" repeatCount="indefinite" />
                         </stop>
                     </linearGradient>
                     <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(212,175,55,0.8)"/>
-                        <stop offset="100%" stop-color="rgba(139,168,156,0.3)"/>
+                        <stop offset="0%" stop-color="rgba(212,175,55,0.8)"/><stop offset="100%" stop-color="rgba(139,168,156,0.3)"/>
                     </linearGradient>
 
                     <path id="petal" d="M 0,0 C 12,-15 12,-40 0,-60 C -12,-40 -12,-15 0,0 Z" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
@@ -215,18 +161,8 @@
                 <g transform="translate(50, 100)">
                     <g clip-path="url(#vase-clip)">
                         <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
-                        <path fill="url(#water-light)" opacity="0.4">
-                            <animate attributeName="d" dur="3.5s" repeatCount="indefinite"
-                                values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
-                                        M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
-                                        M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
-                        </path>
-                        <path fill="url(#water-light)" opacity="0.6">
-                            <animate attributeName="d" dur="2.8s" repeatCount="indefinite"
-                                values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
-                                        M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
-                                        M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
-                        </path>
+                        <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                        <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
                         <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6">
                             <path d="M50,25 Q45,70 50,110" />
                             <path d="M50,25 Q55,60 45,105" stroke-width="1.5" />
@@ -246,19 +182,26 @@
 
                 <g opacity="0">
                     <animate attributeName="opacity" values="0; 1" dur="0.5s" begin="5s" fill="freeze" />
-                    
                     <path d="M100,125 Q80,70 65,35" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120">
-                        <animate attributeName="stroke-dashoffset" values="120; 0" dur="2.5s" begin="5s" fill="freeze" />
+                        <animate attributeName="stroke-dashoffset" values="120; 0" dur="2s" begin="5s" fill="freeze" />
                     </path>
-                    
                     <g transform="translate(65, 35) rotate(-35)">
                         <g transform="scale(0)">
-                            <animateTransform attributeName="transform" type="scale" values="0; 1" dur="1.5s" begin="7s" fill="freeze" />
-                            
-                            <g>
-                                <animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" begin="8.5s" repeatCount="indefinite" />
-                                <use href="#lotus-bud"/>
-                            </g>
+                            <animateTransform attributeName="transform" type="scale" values="0; 1" dur="1.5s" begin="6.5s" fill="freeze" />
+                            <g><animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" begin="8s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
+                        </g>
+                    </g>
+                </g>
+
+                <g opacity="0">
+                    <animate attributeName="opacity" values="0; 1" dur="0.5s" begin="6s" fill="freeze" />
+                    <path d="M100,125 Q125,95 135,75" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="100" stroke-dashoffset="100">
+                        <animate attributeName="stroke-dashoffset" values="100; 0" dur="2s" begin="6s" fill="freeze" />
+                    </path>
+                    <g transform="translate(135, 75) rotate(45)">
+                        <g transform="scale(0)">
+                            <animateTransform attributeName="transform" type="scale" values="0; 0.8" dur="1.5s" begin="7.5s" fill="freeze" />
+                            <g><animateTransform attributeName="transform" type="rotate" values="0; -3; 0; 3; 0" dur="4s" begin="9s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
                         </g>
                     </g>
                 </g>
@@ -276,28 +219,16 @@
                 </g>
 
                 <g transform="translate(55, 75) scale(0.8)">
-                    <g>
-                        <animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" />
-                        <use href="#lotus-bud"/>
-                    </g>
+                    <g><animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
                 </g>
                 <g transform="translate(145, 60) scale(0.85)">
-                    <g>
-                        <animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" />
-                        <use href="#lotus-bloom"/>
-                    </g>
+                    <g><animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g>
                 </g>
                 <g transform="translate(115, 85) scale(0.65)">
-                    <g>
-                        <animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" />
-                        <use href="#lotus-bud"/>
-                    </g>
+                    <g><animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g>
                 </g>
                 <g transform="translate(100, 50) scale(1.1)">
-                    <g>
-                        <animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" />
-                        <use href="#lotus-bloom"/>
-                    </g>
+                    <g><animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g>
                 </g>
             </svg>
         </div>
@@ -306,18 +237,8 @@
             <svg class="svg-content" viewBox="0 0 100 150">
                 <g clip-path="url(#vase-clip)">
                     <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
-                    <path fill="url(#water-light)" opacity="0.4">
-                        <animate attributeName="d" dur="3.8s" repeatCount="indefinite"
-                            values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z;
-                                    M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z;
-                                    M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" />
-                    </path>
-                    <path fill="url(#water-light)" opacity="0.6">
-                        <animate attributeName="d" dur="3.1s" repeatCount="indefinite"
-                            values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z;
-                                    M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z;
-                                    M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" />
-                    </path>
+                    <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.8s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                    <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="3.1s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
                 </g>
                 <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" />
                 <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
