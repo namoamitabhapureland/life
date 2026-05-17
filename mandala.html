@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>彌陀淨土 ． 大乘五供 (絕對水平版)</title>
+    <title>彌陀淨土 ． 大乘五供 (完美水平視角版)</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -19,15 +19,15 @@
 
         #bgCanvas { position: fixed; inset: 0; z-index: 0; }
 
-        /* 隱形供桌佈局：絕對底部對齊，沒有任何上下位移，呈現完美水平線 */
+        /* 隱形供桌佈局：絕對底部對齊 */
         .altar {
             position: relative;
             z-index: 10;
             display: flex;
-            align-items: flex-end; /* 強制所有供品底部貼齊同一條水平線 */
+            align-items: flex-end; 
             justify-content: center;
             gap: 15px; 
-            transform: translateY(40px); /* 整體稍微往下移一點，讓視覺居中 */
+            transform: translateY(20px); 
             width: 100%;
             padding: 0 20px;
         }
@@ -57,10 +57,11 @@
 
         /* 3. 核心：中央供花大瓶 */
         .center-vase { 
-            width: 260px; 
-            height: 390px; 
+            width: 280px; /* 依照要求稍微放大 */
+            height: 420px; 
             z-index: 20; 
-            margin: 0 -10px; 
+            /* 利用負 margin-bottom 吃掉 SVG 底部的透明留白，強制視覺下移對齊果盤腳上緣 */
+            margin: 0 -10px -70px -10px; 
             filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
         }
         
@@ -135,11 +136,9 @@
             <g id="fruit-plate-model">
                 <path d="M40,140 Q50,110 50,90 Q50,110 60,140 Z" fill="#d4af37" opacity="0.8"/>
                 <ellipse cx="50" cy="140" rx="30" ry="6" fill="#d4af37" />
-                
                 <ellipse cx="50" cy="90" rx="45" ry="12" fill="rgba(255,255,255,0.1)" stroke="#d4af37" stroke-width="2"/>
                 <ellipse cx="50" cy="90" rx="45" ry="12" fill="url(#glass-glare)"/>
                 <ellipse cx="50" cy="90" rx="20" ry="4" fill="#d4af37" />
-
                 <circle cx="50" cy="65" r="22" fill="url(#fruit-green)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
                 <path d="M50,43 Q55,35 60,38" fill="none" stroke="#5a7a6c" stroke-width="2" stroke-linecap="round"/>
                 <circle cx="32" cy="80" r="22" fill="url(#fruit-yellow)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
