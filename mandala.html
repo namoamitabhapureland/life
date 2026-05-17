@@ -131,7 +131,14 @@
         .water-cup { width: 75px; height: 110px; z-index: 5; }
         .fruit-plate { width: 110px; height: 160px; z-index: 10; }
         /* 核心：負 margin-bottom 吃掉透明空間，達成視覺絕對水平 */
-        .center-vase { width: 280px; height: 420px; z-index: 20; margin: 0 -10px -70px -10px; filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); }
+.center-vase { 
+    width: 280px; 
+    height: 420px; 
+    z-index: 20; 
+    margin: 0 -10px -160px -10px;  /* 把 -70px 改成 -160px 讓它大幅下降 */
+    filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
+}
+
         
         /* 天降金粉動畫 (備用) */
         @keyframes powder-fall {
