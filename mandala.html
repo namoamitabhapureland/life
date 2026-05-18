@@ -1,3 +1,6 @@
+對然後我們由最原始的代碼來更改才能不會錯一步步給我代碼我自己改
+我給你最原始的沒有改過的
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -250,38 +253,37 @@
 .mandala-glow-effect {
     animation: mandala-divine-glow 8s ease-in-out infinite alternate;
 }
-     /* ================= ✨ 第二彈框：大乘五供與金粉專屬法界 ================= */
+    /* ================= ✨ 大乘五供與金粉專屬樣式 ================= */
+        /* 1. 主畫面：蓮花座下的五供（放大1.2倍，下沉-120px完美對齊） */
+        .altar {
+            position: absolute; bottom: 140px; left: 0; width: 100%; z-index: 25; 
+            display: none; opacity: 0; transition: opacity 3s ease-in-out; 
+            align-items: flex-end; justify-content: center; gap: 15px; padding: 0 20px; pointer-events: none; 
+        }
+        .altar .vessel-container { position: relative; display: flex; justify-content: center; align-items: flex-end; filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.15)); }
+        .altar .water-cup { width: 75px; height: 110px; z-index: 5; }
+        .altar .fruit-plate { width: 110px; height: 160px; z-index: 10; }
+        .altar .center-vase { 
+            width: 280px; height: 420px; z-index: 20; margin: 0 -10px -120px -10px; 
+            transform: scale(1.2); transform-origin: center bottom; filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
+        }
+
+        /* 2. 第二彈框：十日圓滿觀相法界（維持物理佈局） */
         #offerings-modal .modal-box {
             width: 95%; max-width: 500px; max-height: 90vh;
             background: linear-gradient(135deg, #0a0a0f, #020205); 
-            border: 1px solid var(--gold-solid);
-            box-shadow: 0 0 60px rgba(212,175,55,0.25);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 40px 20px 30px 20px;
+            border: 1px solid var(--gold-solid); box-shadow: 0 0 60px rgba(212,175,55,0.25);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px 30px 20px;
         }
-
         .modal-altar-table {
-            display: flex; align-items: flex-end; justify-content: center; gap: 15px;
-            width: 100%; height: 380px; /* 加高容器，給蓮花空間 */
-            margin-bottom: 25px; pointer-events: none;
+            display: flex; align-items: flex-end; justify-content: center; gap: 15px; width: 100%; height: 380px; margin-bottom: 25px; pointer-events: none;
         }
-
-        .modal-altar-table .vessel-container { 
-            position: relative; display: flex; justify-content: center; align-items: flex-end; 
-            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.15)); 
-        }
-
-        /* 兩側供品：維持原創物理尺寸不放大 */
+        .modal-altar-table .vessel-container { position: relative; display: flex; justify-content: center; align-items: flex-end; filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.15)); }
         .modal-altar-table .water-cup { width: 75px; height: 110px; z-index: 5; }
         .modal-altar-table .fruit-plate { width: 110px; height: 160px; z-index: 10; }
-        
-        /* 中心寶瓶：獨立放大 20% (1.2倍)，下沉 -120px */
         .modal-altar-table .center-vase { 
-            width: 280px; height: 420px; z-index: 20; 
-            margin: 0 -10px -120px -10px; 
-            transform: scale(1.2); 
-            transform-origin: center bottom; 
-            filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
+            width: 280px; height: 420px; z-index: 20; margin: 0 -10px -120px -10px; 
+            transform: scale(1.2); transform-origin: center bottom; filter: drop-shadow(0 0 45px rgba(212, 175, 55, 0.35)); 
         }
 
         @keyframes powder-fall {
@@ -297,9 +299,6 @@
     </style>
 </head>
 <body>
-    <div class="nav-btn" style="border-color: #d4af37; color: #d4af37; font-weight: bold;" onclick="triggerOfferingsModal()">
-    測試：強制開啟五供法界
-</div>
         <div class="nav-top">
         <div class="nav-btn" onclick="returnToMainHall()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> 返回道場
@@ -716,55 +715,42 @@
             </svg>
         </div>
     </div>
-<div class="modal-overlay" id="offerings-modal">
-        <div class="modal-box">
-            <div style="color: var(--gold-light); font-size: 1.1rem; letter-spacing: 4px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(212,175,55,0.6); font-weight: bold;">
-                【 十日圓滿 ‧ 廣修供養 】
-            </div>
-            
-            <div class="modal-altar-table">
-                <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
-                <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
-                
-                <div class="vessel-container center-vase">
-                    <svg class="svg-content" viewBox="0 -80 200 380" style="overflow: visible;">
-                        <defs><clipPath id="vase-clip"><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" /></clipPath></defs>
-                        <g transform="translate(50, 100)"><g clip-path="url(#vase-clip)">
-                            <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
-                            <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
-                            <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
-                            <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6"><path d="M50,25 Q45,70 50,110" /><path d="M50,25 Q55,60 45,105" stroke-width="1.5" /><path d="M50,25 Q40,50 55,100" stroke-width="1.5" /><path d="M50,25 Q60,40 50,85" stroke-width="1.5" /></g>
-                        </g></g>
-                        <g transform="translate(50, 100)">
-                            <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" /><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
-                            <ellipse cx="50" cy="95" rx="22" ry="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" pointer-events="none"/><path d="M45,25 L55,25 L58,50 L72,95 L60,125 L40,125 L28,95 L42,50 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" pointer-events="none"/><path d="M40,125 Q50,135 60,125" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round" pointer-events="none"/>
-                        </g>
-                        <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="5s" fill="freeze" />
-                            <path d="M100,125 Q80,70 65,35" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"><animate attributeName="stroke-dashoffset" values="120; 0" dur="2s" begin="5s" fill="freeze" /></path>
-                            <g transform="translate(65, 35) rotate(-35)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 1" dur="1.5s" begin="6.5s" fill="freeze" /><g><animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" begin="8s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
-                        </g>
-                        <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="6s" fill="freeze" />
-                            <path d="M100,125 Q125,95 135,75" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="100" stroke-dashoffset="100"><animate attributeName="stroke-dashoffset" values="100; 0" dur="2s" begin="6s" fill="freeze" /></path>
-                            <g transform="translate(135, 75) rotate(45)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 0.8" dur="1.5s" begin="7.5s" fill="freeze" /><g><animateTransform attributeName="transform" type="rotate" values="0; -3; 0; 3; 0" dur="4s" begin="9s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
-                        </g>
-                        <g stroke="#8ba89c" stroke-width="2" fill="none"><path d="M100,125 Q90,90 100,50"/> <path d="M100,125 Q130,90 145,60"/> <path d="M100,125 Q70,95 55,75"/> <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> </g>
-                        <g fill="url(#leaf-grad)" stroke="rgba(212,175,55,0.5)" stroke-width="0.5"><path d="M100,110 Q140,115 160,80 Q130,85 100,110 Z"/><path d="M98,115 Q60,120 40,90 Q70,95 98,115 Z"/><path d="M102,90 Q135,70 140,30 Q120,55 102,90 Z" opacity="0.7"/><path d="M95,85 Q65,65 55,35 Q75,55 95,85 Z" opacity="0.7"/></g>
-                        <g transform="translate(55, 75) scale(0.8)"><g><animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
-                        <g transform="translate(145, 60) scale(0.85)"><g><animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
-                        <g transform="translate(115, 85) scale(0.65)"><g><animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
-                        <g transform="translate(100, 50) scale(1.1)"><g><animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
-                    </svg>
-                </div>
-                
-                <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
-                <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
-            </div>
-            
-            <div style="color: #a0a0a0; font-size: 0.85rem; line-height: 1.6; letter-spacing: 1px; margin-bottom: 25px; text-align: center;">
-                願以此清淨供養資糧，迴向法界眾生，<br>同生安樂國，得不退轉。
-            </div>
-            <button class="m-btn-prime" onclick="closeOfferingsModal()">合十收攝</button>
+<div class="altar" id="altar-offerings">
+        <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
+        <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
+        
+        <div class="vessel-container center-vase">
+            <svg class="svg-content" viewBox="0 -80 200 380" style="overflow: visible;">
+                <defs><clipPath id="vase-clip"><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" /></clipPath></defs>
+                <g transform="translate(50, 100)"><g clip-path="url(#vase-clip)">
+                    <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
+                    <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                    <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
+                    <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6"><path d="M50,25 Q45,70 50,110" /><path d="M50,25 Q55,60 45,105" stroke-width="1.5" /><path d="M50,25 Q40,50 55,100" stroke-width="1.5" /><path d="M50,25 Q60,40 50,85" stroke-width="1.5" /></g>
+                </g></g>
+                <g transform="translate(50, 100)">
+                    <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" /><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
+                    <ellipse cx="50" cy="95" rx="22" ry="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" pointer-events="none"/><path d="M45,25 L55,25 L58,50 L72,95 L60,125 L40,125 L28,95 L42,50 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round" pointer-events="none"/><path d="M40,125 Q50,135 60,125" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round" pointer-events="none"/>
+                </g>
+                <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="5s" fill="freeze" />
+                    <path d="M100,125 Q80,70 65,35" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"><animate attributeName="stroke-dashoffset" values="120; 0" dur="2s" begin="5s" fill="freeze" /></path>
+                    <g transform="translate(65, 35) rotate(-35)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 1" dur="1.5s" begin="6.5s" fill="freeze" /><g><animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" begin="8s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
+                </g>
+                <g opacity="0"><animate attributeName="opacity" values="0; 1" dur="0.5s" begin="6s" fill="freeze" />
+                    <path d="M100,125 Q125,95 135,75" stroke="#8ba89c" stroke-width="1.5" fill="none" stroke-dasharray="100" stroke-dashoffset="100"><animate attributeName="stroke-dashoffset" values="100; 0" dur="2s" begin="6s" fill="freeze" /></path>
+                    <g transform="translate(135, 75) rotate(45)"><g transform="scale(0)"><animateTransform attributeName="transform" type="scale" values="0; 0.8" dur="1.5s" begin="7.5s" fill="freeze" /><g><animateTransform attributeName="transform" type="rotate" values="0; -3; 0; 3; 0" dur="4s" begin="9s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
+                </g>
+                <g stroke="#8ba89c" stroke-width="2" fill="none"><path d="M100,125 Q90,90 100,50"/> <path d="M100,125 Q130,90 145,60"/> <path d="M100,125 Q70,95 55,75"/> <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> </g>
+                <g fill="url(#leaf-grad)" stroke="rgba(212,175,55,0.5)" stroke-width="0.5"><path d="M100,110 Q140,115 160,80 Q130,85 100,110 Z"/><path d="M98,115 Q60,120 40,90 Q70,95 98,115 Z"/><path d="M102,90 Q135,70 140,30 Q120,55 102,90 Z" opacity="0.7"/><path d="M95,85 Q65,65 55,35 Q75,55 95,85 Z" opacity="0.7"/></g>
+                <g transform="translate(55, 75) scale(0.8)"><g><animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                <g transform="translate(145, 60) scale(0.85)"><g><animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+                <g transform="translate(115, 85) scale(0.65)"><g><animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                <g transform="translate(100, 50) scale(1.1)"><g><animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+            </svg>
         </div>
+        
+        <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
+        <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
     </div>
     <div class="ritual-container">
         <div id="blessing-text"></div>
@@ -790,7 +776,51 @@
         </div>
     </div>
 
-           <div class="modal-overlay" id="modal">
+    <div class="modal-overlay" id="offerings-modal">
+        <div class="modal-box">
+            <div style="color: var(--gold-light); font-size: 1.1rem; letter-spacing: 4px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(212,175,55,0.6); font-weight: bold;">
+                【 十日圓滿 ‧ 廣修供養 】
+            </div>
+            <div class="modal-altar-table">
+                <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
+                <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
+                <div class="vessel-container center-vase">
+                    <svg class="svg-content" viewBox="0 -80 200 380" style="overflow: visible;">
+                        <defs><clipPath id="vase-clip-modal"><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" /></clipPath></defs>
+                        <g transform="translate(50, 100)"><g clip-path="url(#vase-clip-modal)">
+                            <rect x="0" y="70" width="100" height="90" fill="url(#water-grad)" />
+                            <path fill="url(#water-light)" opacity="0.4"><animate attributeName="d" dur="3.5s" repeatCount="indefinite" values="M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z; M-50,85 C-20,95 10,75 40,85 C70,95 100,75 130,85 L130,150 L-50,150 Z; M-20,85 C10,75 40,95 70,85 C100,75 130,95 160,85 L160,150 L-20,150 Z" /></path>
+                            <path fill="url(#water-light)" opacity="0.6"><animate attributeName="d" dur="2.8s" repeatCount="indefinite" values="M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z; M-20,92 C10,82 40,102 70,92 C100,82 130,102 160,92 L160,150 L-20,150 Z; M-50,92 C-20,102 10,82 40,92 C70,102 100,82 130,92 L130,150 L-50,150 Z" /></path>
+                            <g stroke="#5a7a6c" stroke-width="2" fill="none" opacity="0.6"><path d="M50,25 Q45,70 50,110" /><path d="M50,25 Q55,60 45,105" stroke-width="1.5" /></g>
+                        </g></g>
+                        <g transform="translate(50, 100)">
+                            <path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="rgba(255,255,255,0.02)" /><path d="M45,25 L55,25 L58,50 L72,95 L60,125 Q50,135 40,125 L28,95 L42,50 Z" fill="url(#glass-glare)" pointer-events="none"/>
+                            <ellipse cx="50" cy="95" rx="22" ry="6" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/><path d="M45,25 L55,25 L58,50 L72,95 L60,125 L40,125 L28,95 L42,50 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linejoin="round"/><path d="M40,125 Q50,135 60,125" fill="none" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round"/>
+                        </g>
+                        <g opacity="1">
+                            <path d="M100,125 Q80,70 65,35" stroke="#8ba89c" stroke-width="1.5" fill="none"/>
+                            <g transform="translate(65, 35) rotate(-35)"><g transform="scale(1)"><g><animateTransform attributeName="transform" type="rotate" values="0; 4; 0; -4; 0" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
+                        </g>
+                        <g opacity="1">
+                            <path d="M100,125 Q125,95 135,75" stroke="#8ba89c" stroke-width="1.5" fill="none"/>
+                            <g transform="translate(135, 75) rotate(45)"><g transform="scale(0.8)"><g><animateTransform attributeName="transform" type="rotate" values="0; -3; 0; 3; 0" dur="4s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g></g>
+                        </g>
+                        <g stroke="#8ba89c" stroke-width="2" fill="none"><path d="M100,125 Q90,90 100,50"/> <path d="M100,125 Q130,90 145,60"/> <path d="M100,125 Q70,95 55,75"/> <path d="M100,125 Q95,100 115,85" stroke-width="1.5"/> </g>
+                        <g fill="url(#leaf-grad)" stroke="rgba(212,175,55,0.5)" stroke-width="0.5"><path d="M100,110 Q140,115 160,80 Q130,85 100,110 Z"/><path d="M98,115 Q60,120 40,90 Q70,95 98,115 Z"/><path d="M102,90 Q135,70 140,30 Q120,55 102,90 Z" opacity="0.7"/><path d="M95,85 Q65,65 55,35 Q75,55 95,85 Z" opacity="0.7"/></g>
+                        <g transform="translate(55, 75) scale(0.8)"><g><animateTransform attributeName="transform" type="rotate" values="-20; -15; -20; -25; -20" dur="5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                        <g transform="translate(145, 60) scale(0.85)"><g><animateTransform attributeName="transform" type="rotate" values="15; 18; 15; 12; 15" dur="7s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+                        <g transform="translate(115, 85) scale(0.65)"><g><animateTransform attributeName="transform" type="rotate" values="35; 38; 35; 32; 35" dur="4.5s" repeatCount="indefinite" /><use href="#lotus-bud"/></g></g>
+                        <g transform="translate(100, 50) scale(1.1)"><g><animateTransform attributeName="transform" type="rotate" values="0; 3; 0; -3; 0" dur="6s" repeatCount="indefinite" /><use href="#lotus-bloom"/></g></g>
+                    </svg>
+                </div>
+                <div class="vessel-container fruit-plate"><svg class="svg-content" viewBox="0 0 100 150"><use href="#fruit-plate-model" /></svg></div>
+                <div class="vessel-container water-cup"><svg class="svg-content" viewBox="0 0 100 150"><use href="#water-cup-model" /></svg></div>
+            </div>
+            <div style="color: #a0a0a0; font-size: 0.85rem; line-height: 1.6; letter-spacing: 1px; margin-bottom: 25px; text-align: center;">願以此清淨供養資糧，迴向法界眾生，<br>同生安樂國，得不退轉。</div>
+            <button class="m-btn-prime" onclick="closeOfferingsModal()">合十收攝</button>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal">
         <div class="modal-box" id="modal-box">
             <div class="m-title" id="m-title"></div>
             <div class="m-divider" id="m-div"></div>
@@ -834,13 +864,10 @@
         
     function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
 
-        let offeringsGoldRainInterval = null;
-
-    // ✨ 十日圓滿：關閉第一彈框，並立刻觸發五供彈框
+// 🌟 1. 關閉第一彈框，喚醒第二觀相彈框
     function closeMilestone() {
         const modal = document.getElementById('milestone-modal');
         if (!modal) return;
-        
         modal.classList.remove('show');
         
         setTimeout(() => { 
@@ -848,43 +875,54 @@
             const bar = document.getElementById('streak-bar');
             if (bar) bar.style.width = '0%';
             
-            triggerOfferingsModal(); // 喚醒第二彈框
+            triggerOfferingsModal(); 
         }, 500);
     }
 
-    // ✨ 開啟五供彈框並觸發不間斷金粉
+    // 🌟 2. 開啟第二彈框 (靜態觀相)
     function triggerOfferingsModal() {
         const offeringsModal = document.getElementById('offerings-modal');
         if (!offeringsModal) return;
-        
         offeringsModal.style.display = 'flex';
         void offeringsModal.offsetWidth; 
         offeringsModal.classList.add('show');
-        
-        if (typeof spawnFlowerRain === 'function') {
-            spawnFlowerRain(80); 
-            offeringsGoldRainInterval = setInterval(() => {
-                spawnFlowerRain(50);
-            }, 2000);
-        }
     }
 
-    // ✨ 關閉五供彈框，打掃金粉
+    // 🌟 3. 關閉第二彈框，觸發主畫面蓮花座下的真實供養
     function closeOfferingsModal() {
         const offeringsModal = document.getElementById('offerings-modal');
         if (!offeringsModal) return;
-        
         offeringsModal.classList.remove('show');
-        if (offeringsGoldRainInterval) {
-            clearInterval(offeringsGoldRainInterval);
-            offeringsGoldRainInterval = null;
-        }
         
         setTimeout(() => { 
             offeringsModal.style.display = 'none'; 
-            const container = document.getElementById('gold-powder-container');
-            if (container) container.innerHTML = '';
+            startMainAltarOffering();
         }, 500);
+    }
+
+    // 🌟 4. 主畫面：降下金粉，且五供伴隨 5 秒動畫生長，駐留 60 秒
+    function startMainAltarOffering() {
+        if (typeof spawnFlowerRain === 'function') spawnFlowerRain(250); 
+        
+        const altar = document.getElementById('altar-offerings');
+        if (altar) {
+            altar.style.display = 'flex'; 
+            
+            // 將時間切換放入 50 毫秒緩衝區，確保渲染完成不當機
+            setTimeout(() => { 
+                altar.style.opacity = '1'; 
+                const altarSvg = document.querySelector('#altar-offerings .center-vase svg');
+                if(altarSvg && typeof altarSvg.setCurrentTime === 'function') {
+                    altarSvg.setCurrentTime(5); // 跳至第 5 秒完美接續生長動畫
+                }
+            }, 50);
+            
+            // 駐留 60 秒後收攝
+            setTimeout(() => {
+                altar.style.opacity = '0';
+                setTimeout(() => { altar.style.display = 'none'; }, 3000); 
+            }, 60000); 
+        }
     }
     // ✨ 海量金粉引擎 (純 CSS，極度輕量自動銷毀)
     function spawnFlowerRain(totalFlowers = 250) {
@@ -976,15 +1014,15 @@ document.getElementById('milestone-name-display').innerText = currentName;
             }
             saveDB();
         }
-        
        // --- 一般日（或當日重複開啟）的 UI 更新 ---
         document.getElementById('streak-text').innerText = `修持：第 ${db.bowData.streakCount || 1} 日`;
         const bar = document.getElementById('streak-bar');
         if (bar) {
+            // 如果當前天數是 10 的倍數（且已領過），能量棒保持 100% 直到關閉彈框或下一天
             if (db.bowData.streakCount % 10 === 0 && db.bowData.streakCount > 0) {
                 bar.style.width = '100%';
                 
-                // 🌟 當天重複進入道場：直接觸發五供彈框！
+                // 🌟 當天重複進入道場：直接觸發第二個觀相彈框！
                 setTimeout(() => {
                     triggerOfferingsModal();
                 }, 600);
@@ -993,7 +1031,7 @@ document.getElementById('milestone-name-display').innerText = currentName;
                 bar.style.width = ((db.bowData.streakCount % 10) * 10) + '%';
             }
         }
-}
+    }
 
 
     // 模態框操作函數
