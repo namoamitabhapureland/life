@@ -26,30 +26,40 @@
         #starCanvas { z-index: 1; pointer-events: none; transition: filter 2s ease; }
         #waterCanvas { z-index: 2; mix-blend-mode: screen; opacity: 0.6; pointer-events: none; transition: opacity 2s ease; }
 
-                         /* 左上導航列 (升級為橫向 Flex 佈局，限制最大寬度防止與右側碰撞，✨新增 flex-wrap 允許空間不夠時往下排) */
-        .nav-top { position: absolute; top: max(20px, env(safe-area-inset-top)); left: 20px; z-index: 1000; display: flex; flex-wrap: wrap; gap: 10px; max-width: 46vw; }
+                              /* ================= 頂部導航與資訊列 (徹底修復擠壓跑版問題) ================= */
+        /* 1. 左上導航：移除 max-width，強制同行不換行，微調間距完美適配手機 */
+        .nav-top { position: absolute; top: max(20px, env(safe-area-inset-top)); left: 15px; z-index: 1000; display: flex; flex-wrap: nowrap; gap: 6px; }
         
-        /* ✨新增 flex-shrink: 0，保護按鈕框體在手機上絕對不被擠扁 */
-        .nav-btn { color: var(--gold-light); display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.2); backdrop-filter: blur(5px); font-size: 0.8rem; letter-spacing: 1px; transition: 0.4s; opacity: 0.7; white-space: nowrap; flex-shrink: 0; }
+        .nav-btn { 
+            color: var(--gold-light); display: flex; align-items: center; gap: 6px; 
+            cursor: pointer; background: rgba(0,0,0,0.3); padding: 6px 12px; 
+            border-radius: 20px; border: 1px solid rgba(212,175,55,0.2); 
+            backdrop-filter: blur(5px); font-size: 0.75rem; letter-spacing: 1px; 
+            transition: 0.4s; opacity: 0.7; white-space: nowrap; flex-shrink: 0; 
+        }
         .nav-btn:hover { opacity: 1; border-color: var(--gold-solid); }
 
-        /* ✨ 華藏月相專屬：放大至 26px 高清規格，加強防擠壓 */
+        /* 2. 華藏月相專屬：高清 SVG 參數與流光底層化 (確保不被遮擋、不變形) */
         .lunar-icon { width: 26px; height: 26px; min-width: 26px; flex-shrink: 0; animation: slowSpin 20s linear infinite; filter: drop-shadow(0 0 6px rgba(243,229,171,0.6)); display: block; }
         @keyframes slowSpin { 100% { transform: rotate(360deg); } }
 
-        /* ✨ 華藏月相專屬：拂塵流光 UX 引導 (加入 isolation 與 z-index:-1 修復掃光遮擋圖示的問題) */
         .lunar-sweep-btn { position: relative; overflow: hidden; isolation: isolate; }
-        .lunar-sweep-btn::after { content: ''; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(243,229,171,0.4) 50%, rgba(255,255,255,0) 100%); transform: rotate(30deg); animation: sweep-light 8s cubic-bezier(0.4, 0, 0.2, 1) infinite; z-index: -1; pointer-events: none; }
+        .lunar-sweep-btn::after {
+            content: ''; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(243,229,171,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg); animation: sweep-light 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            z-index: -1; pointer-events: none;
+        }
         @keyframes sweep-light { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
 
-        /* 右上修持資訊列 (限制最大寬度，與左側按鈕平分秋色) */
-        .info-top { position: absolute; top: max(20px, env(safe-area-inset-top)); right: 20px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: 46vw; }
-        .info-row { display: flex; gap: 10px; align-items: center; }
+        /* 3. 右上資訊列：移除 max-width，保護修持天數不被切斷 */
+        .info-top { position: absolute; top: max(20px, env(safe-area-inset-top)); right: 15px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .info-row { display: flex; gap: 8px; align-items: center; }
         
-        /* 核心優化：強制不換行，使用等寬數字與動態字級，徹底防堵萬日阿拉伯數字與英文版溢出撞擊 */
-        .streak-text { font-size: clamp(0.68rem, 2vw, 0.75rem); color: var(--gold-light); letter-spacing: 1px; opacity: 0.9; text-shadow: 0 0 5px rgba(212,175,55,0.5); white-space: nowrap; font-family: "PingFang TC", "Helvetica Neue", monospace; font-variant-numeric: tabular-nums; }
-        .info-icon { cursor: pointer; opacity: 0.8; display: flex; align-items: center; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(212,175,55,0.5)); }
+        .streak-text { font-size: clamp(0.65rem, 2vw, 0.75rem); color: var(--gold-light); letter-spacing: 1px; opacity: 0.9; text-shadow: 0 0 5px rgba(212,175,55,0.5); white-space: nowrap; font-family: "PingFang TC", "Helvetica Neue", monospace; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+        .info-icon { cursor: pointer; opacity: 0.8; display: flex; align-items: center; transition: 0.3s; filter: drop-shadow(0 0 5px rgba(212,175,55,0.5)); flex-shrink: 0; }
         .info-icon:hover { opacity: 1; filter: drop-shadow(0 0 10px var(--gold-solid)); }
+        /* ======================================================================= */
 
                /* 佛尊主體層 */
         #buddha-scene {
@@ -299,27 +309,7 @@
         }
         .svg-content { width: 100%; height: 100%; overflow: visible; }
         /* ========================================================== */
-              /* 華藏月相專屬：放大至 26px，優化視窗比，確保線條高清不模糊，並加強防擠壓 */
-        .lunar-icon { 
-            width: 26px; height: 26px; min-width: 26px; flex-shrink: 0; 
-            animation: slowSpin 20s linear infinite; 
-            filter: drop-shadow(0 0 6px rgba(243,229,171,0.6)); 
-            display: block; 
-        }
-        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
-
-        /* ✨ 華藏月相專屬：拂塵流光 UX 引導 (修復遮擋圖示的問題) */
-        .lunar-sweep-btn { position: relative; overflow: hidden; isolation: isolate; }
-        .lunar-sweep-btn::after {
-            content: ''; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(243,229,171,0.4) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg);
-            animation: sweep-light 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            z-index: -1; 
-            pointer-events: none;
-        }
-        @keyframes sweep-light { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
-
+             
 
         /* ✨ 寶幡專屬動態 (搖曳、呼吸、琉璃光) */
         .banner-breath { animation: b-pulse 6s ease-in-out infinite alternate; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); }
