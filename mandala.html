@@ -30,20 +30,6 @@
         .nav-top { position: absolute; top: max(20px, env(safe-area-inset-top)); left: 20px; z-index: 1000; display: flex; gap: 10px; max-width: 46vw; }
         .nav-btn { color: var(--gold-light); display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(212,175,55,0.2); backdrop-filter: blur(5px); font-size: 0.8rem; letter-spacing: 1px; transition: 0.4s; opacity: 0.7; white-space: nowrap; }
         .nav-btn:hover { opacity: 1; border-color: var(--gold-solid); }
-        /* ✨ 華藏月相專屬：拂塵流光 UX 引導 */
-        .lunar-sweep-btn { position: relative; overflow: hidden; }
-        .lunar-sweep-btn::after {
-            content: ''; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(243,229,171,0.5) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg);
-            /* 10秒循環一次，只有前 1.5 秒有光掃過，其餘 8.5 秒保持靜謐 */
-            animation: sweep-light 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes sweep-light {
-            0% { left: -100%; }
-            15% { left: 200%; } 
-            100% { left: 200%; }
-        }
 
         /* 華藏月相專屬：校準為 22px 高清規格，完美容納新版幾何星相細節 */
         .lunar-icon { width: 22px; height: 22px; animation: slowSpin 20s linear infinite; filter: drop-shadow(0 0 4px rgba(243,229,171,0.3)); display: block; }
@@ -87,7 +73,7 @@
             animation: flash-fade 2.5s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
         }
         @keyframes flash-fade { 0% { opacity: 1; transform: scale(0.8); } 100% { opacity: 0; transform: scale(1.5); } }
-        .gold-ray {
+               .gold-ray {
             position: absolute; width: 3px; height: 100vh;
             background: linear-gradient(to top, transparent, #FFD700, #FFFFFF, #FFD700, transparent);
             box-shadow: 0 0 20px #FFD700, 0 0 10px #FFFFFF;
@@ -264,7 +250,8 @@
 .mandala-glow-effect {
     animation: mandala-divine-glow 8s ease-in-out infinite alternate;
 }
-    /* ================= ✨ 大乘五供與金粉專屬樣式 ================= */
+
+        /* ================= ✨ 大乘五供與金粉專屬樣式 ================= */
         /* 1. 主畫面：蓮花座下的五供（放大1.2倍，下沉-120px完美對齊） */
         .altar {
             position: absolute; bottom: 140px; left: 0; width: 100%; z-index: 25; 
@@ -305,27 +292,33 @@
         }
         .svg-content { width: 100%; height: 100%; overflow: visible; }
         /* ========================================================== */
+        /* ✨ 華藏月相專屬：拂塵流光 UX 引導 */
+        .lunar-sweep-btn { position: relative; overflow: hidden; }
+        .lunar-sweep-btn::after {
+            content: ''; position: absolute; top: -50%; left: -150%; width: 50%; height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(243,229,171,0.5) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: sweep-light 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes sweep-light { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
 
-        /* ================= ✨ 寶幡專屬動態 (搖曳、呼吸、琉璃光) ================= */
+        /* ✨ 寶幡專屬動態 (搖曳、呼吸、琉璃光) */
         .banner-breath { animation: b-pulse 6s ease-in-out infinite alternate; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); }
         @keyframes b-pulse { 0% { filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); } 100% { filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.7)); } }
-        
         .sway-base { transform-origin: 150px 20px; animation: gentle-sway 8s ease-in-out infinite alternate; }
         @keyframes gentle-sway { 0% { transform: rotate(-2.5deg); } 100% { transform: rotate(2.5deg); } }
-        
         .ribbon-left { transform-origin: top center; animation: flutter 5s ease-in-out infinite alternate; }
         .ribbon-right { transform-origin: top center; animation: flutter 6s ease-in-out infinite alternate-reverse; }
         .ribbon-inner { transform-origin: top center; animation: flutter-y 7s ease-in-out infinite alternate; }
         @keyframes flutter { 0% { transform: skewX(-2deg) scaleY(0.98); } 100% { transform: skewX(2deg) scaleY(1.02); } }
         @keyframes flutter-y { 0% { transform: scaleY(0.97); } 100% { transform: scaleY(1.03); } }
-        
         .glow-core { animation: core-pulse 4s ease-in-out infinite alternate; }
         @keyframes core-pulse { 0% { opacity: 0.7; filter: drop-shadow(0 0 8px #d4af37); } 100% { opacity: 1; filter: drop-shadow(0 0 18px #FFF); } }
         .glow-glass { animation: glass-pulse 5s ease-in-out infinite alternate; }
         @keyframes glass-pulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
         .glow-chakra { animation: chakra-pulse 5s ease-in-out infinite alternate; }
         @keyframes chakra-pulse { 0% { opacity: 0.6; stroke-width: 0.8; filter: drop-shadow(0 0 5px #fff); } 100% { opacity: 1; stroke-width: 1.5; filter: drop-shadow(0 0 12px #f3e5ab); } }
-        /* ========================================================== */
+
 
     </style>
 </head>
@@ -336,7 +329,6 @@
         </div>
         
 <div class="nav-btn lunar-sweep-btn" onclick="location.href='lunar.html'">
-
             <svg viewBox="0 0 64 64" class="lunar-icon">
                 <defs>
                     <radialGradient id="iconGlowBeauty" cx="50%" cy="50%" r="50%">
@@ -423,20 +415,8 @@
                 <circle cx="50" cy="65" r="22" fill="url(#fruit-green)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><path d="M50,43 Q55,35 60,38" fill="none" stroke="#5a7a6c" stroke-width="2" stroke-linecap="round"/>
                 <circle cx="32" cy="80" r="22" fill="url(#fruit-yellow)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><circle cx="68" cy="80" r="22" fill="url(#fruit-pink)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
             </g>
-             <linearGradient id="petal-main" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="60%" stop-color="#fce4ec"/>
-                <stop offset="100%" stop-color="#c2185b">
-                    <animate attributeName="stop-color" values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" dur="5s" repeatCount="indefinite" />
-                </stop>
-            </linearGradient>
-            <linearGradient id="petal-light" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="100%" stop-color="#f3e5ab">
-                    <animate attributeName="stop-color" values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" dur="5s" repeatCount="indefinite" />
-                </stop>
-            </linearGradient>
-
+            <linearGradient id="petal-main" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#fce4ec"/><stop offset="100%" stop-color="#c2185b"><animate attributeName="stop-color" values="#c2185b; #9c27b0; #f3e5ab; #d81b60; #c2185b" dur="15s" repeatCount="indefinite" /></stop></linearGradient>
+            <linearGradient id="petal-light" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#f3e5ab"><animate attributeName="stop-color" values="#f3e5ab; #ce93d8; #ffe082; #f48fb1; #f3e5ab" dur="15s" repeatCount="indefinite" /></stop></linearGradient>
             <linearGradient id="leaf-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(212,175,55,0.8)"/><stop offset="100%" stop-color="rgba(139,168,156,0.3)"/></linearGradient>
             <path id="petal" d="M 0,0 C 12,-15 12,-40 0,-60 C -12,-40 -12,-15 0,0 Z" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/><path id="petal-s" d="M 0,0 C 8,-10 8,-30 0,-45 C -8,-30 -8,-10 0,0 Z" stroke="rgba(255,255,255,0.5)" stroke-width="0.5"/>
             <g id="lotus-bloom">
@@ -941,6 +921,7 @@
 
 <script>
 
+
     // 🌟 1. 寫死中文版專屬資料庫真金鑰匙，拒絕任何誤判風險 🌟
     const STORAGE_KEY = 'PX_V15.0'; // 🛑 中文版專屬金鑰
     
@@ -974,7 +955,7 @@
         
     function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
 
-// 🌟 1. 關閉第一彈框，喚醒第二觀相彈框
+    // 🌟 1. 關閉第一彈框，喚醒第二觀相彈框
     function closeMilestone() {
         const modal = document.getElementById('milestone-modal');
         if (!modal) return;
@@ -1034,6 +1015,8 @@
             }, 60000); 
         }
     }
+
+
     // ✨ 海量金粉引擎 (純 CSS，極度輕量自動銷毀)
     function spawnFlowerRain(totalFlowers = 250) {
         let container = document.getElementById('gold-powder-container');
@@ -1109,7 +1092,7 @@ document.getElementById('milestone-name-display').innerText = currentName;
                     
                     setTimeout(() => {
                         document.getElementById('milestone-title').innerText = `【 ${title} 】`;
-document.getElementById('milestone-text').innerHTML = `<span style="color:var(--gold-light); font-size: 0.95rem;">「懸繒然燈，散華燒香」</span><br>圓滿 ${db.bowData.streakCount} 日清淨觀相，懸掛莊嚴寶幡。<br>獲 <b style='color:var(--gold-solid)'>+100</b> 資糧匯入主系統。`;
+                        document.getElementById('milestone-text').innerHTML = `<span style="color:var(--gold-light); font-size: 0.95rem;">「懸繒然燈，散華燒香」</span><br>圓滿 ${db.bowData.streakCount} 日清淨觀相，懸掛莊嚴寶幡。<br>獲 <b style='color:var(--gold-solid)'>+100</b> 資糧匯入主系統。`;
 
                         
                         const modal = document.getElementById('milestone-modal');
@@ -1125,7 +1108,7 @@ document.getElementById('milestone-text').innerHTML = `<span style="color:var(--
             }
             saveDB();
         }
-       // --- 一般日（或當日重複開啟）的 UI 更新 ---
+                // --- 一般日（或當日重複開啟）的 UI 更新 ---
         document.getElementById('streak-text').innerText = `修持：第 ${db.bowData.streakCount || 1} 日`;
         const bar = document.getElementById('streak-bar');
         if (bar) {
