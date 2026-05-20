@@ -1,452 +1,978 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">
-    <title>佛教八寶．卡牌契印</title>
-    <style>
-        :root {
-            --gold: #f3e5ab;
-            --solid-gold: #d4af37;
-            --bg-deep: #020203;
-        }
-
-        body {
-            margin: 0; padding: 0;
-            height: 100vh; height: 100dvh;
-            overflow: hidden;
-            background: radial-gradient(circle at 50% 50%, #111518 0%, var(--bg-deep) 100%);
-            color: #fff; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        canvas { 
-            position: absolute; inset: 0; 
-            width: 100%; height: 100%; 
-            z-index: 1; pointer-events: none; 
-        }
-
-        /* 左上角歸返按鈕 */
-        .top-nav-btn {
-            position: absolute; top: 20px; left: 20px;
-            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(212,175,55,0.3); color: var(--gold); 
-            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; 
-            display: flex; align-items: center; gap: 6px; z-index: 1000; cursor: pointer; 
-            backdrop-filter: blur(5px); transition: opacity 0.8s, transform 0.3s;
-        }
-        .top-nav-btn:active { 
-            transform: scale(0.95); 
-            background: rgba(212,175,55,0.2); 
-        }
-
-        /* 卡牌容器佈局 */
-        #deck-container {
-            position: absolute;
-            bottom: 5%; 
-            width: 100%; height: 480px; /* 增加高度以適應放大的插圖 */
-            display: flex; justify-content: center; align-items: flex-end;
-            padding-bottom: 30px;
-            z-index: 10;
-            perspective: 1500px;
-        }
-
-        .card {
-            position: absolute;
-            width: 250px; height: 430px; /* 拉高拉寬，適應新插圖 */
-            transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1.1);
-            cursor: pointer;
-        }
-
-        .card-inner {
-            position: relative;
-            width: 100%; height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card.is-flipped .card-inner { 
-            transform: rotateY(180deg); 
-        }
-
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden;
-            border-radius: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            display: flex; flex-direction: column; align-items: center;
-            overflow: hidden;
-        }
-
-        /* --- 卡牌背面 --- */
-        .card-back {
-            background: linear-gradient(145deg, #0a0c0e, #010101);
-            justify-content: center;
-        }
-        .totem-prajna { 
-            width: 90px; height: 90px; 
-            fill: none; stroke-width: 1; opacity: 0.5; 
-        }
-
-        /* --- 卡牌正面 --- */
-        .card-front {
-            background: linear-gradient(135deg, rgba(15,15,12,0.95), rgba(2,2,0,1));
-            transform: rotateY(180deg);
-            padding: 25px 15px; 
-            justify-content: space-between;
-        }
-
-        /* 插圖容器 */
-        .icon-container { 
-            width: 200px; height: 200px; /* 放大的插圖容器 */
-            display: flex; align-items: center; justify-content: center; 
-            margin: 20px 0;
-            position: relative;
-        }
-        
-        /* 動畫和發光效果 */
-        .lotus-spin { 
-            animation: slow-spin 50s linear infinite; 
-        }
-        @keyframes slow-spin { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
-
-        /* 細線條和光影效果 */
-        .draw-petal { 
-            stroke-dasharray: 1000; stroke-dashoffset: 1000; fill-opacity: 0; 
-            animation: dash-draw 3s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.5s, color-fade 2.5s ease forwards 2.5s; 
-        }
-        @keyframes dash-draw { to { stroke-dashoffset: 0; } }
-        @keyframes color-fade { to { fill-opacity: 0.8; } }
-
-        .cert-header { 
-            color: var(--gold); font-size: 0.9rem; letter-spacing: 5px; 
-            font-weight: bold; text-transform: uppercase; 
-        }
-        .cert-user { 
-            color: var(--gold); font-size: 1.4rem; font-weight: bold; 
-            letter-spacing: 4px; margin: 8px 0; text-shadow: 0 0 10px rgba(212,175,55,0.4); 
-        }
-        .cert-desc { 
-            color: #ccc; font-size: 0.8rem; line-height: 1.8; 
-            text-align: center; padding: 0 5px; 
-        }
-        .cert-desc b { 
-            color: var(--solid-gold); 
-        }
-
-        .btn-confirm {
-            margin-top: 15px; width: 100%; padding: 12px 0; border-radius: 30px;
-            border: 1px solid var(--solid-gold); 
-            background: linear-gradient(to right, rgba(212,175,55,0.1), rgba(212,175,55,0.2));
-            color: var(--gold); font-size: 0.9rem; font-weight: bold; 
-            cursor: pointer; transition: 0.3s;
-        }
-
-        /* 扇形陣列座標 */
-        .card-0 { transform: rotateZ(-12deg) translateX(-180px) translateY(35px); z-index: 5; }
-        .card-1 { transform: rotateZ(-9deg) translateX(-120px) translateY(18px); z-index: 6; }
-        .card-2 { transform: rotateZ(-6deg) translateX(-60px) translateY(8px); z-index: 7; }
-        .card-3 { transform: rotateZ(0deg) translateX(0px) translateY(0px); z-index: 8; }
-        .card-4 { transform: rotateZ(6deg) translateX(60px) translateY(8px); z-index: 7; }
-        .card-5 { transform: rotateZ(9deg) translateX(120px) translateY(18px); z-index: 6; }
-        .card-6 { transform: rotateZ(12deg) translateX(180px) translateY(35px); z-index: 5; }
-        .card-7 { transform: rotateZ(15deg) translateX(240px) translateY(60px); z-index: 4; }
-
-        /* 聚焦狀態 */
-        .card.is-active {
-            transform: scale(1.1) rotateZ(0deg) translateX(0px) translateY(-100px) !important;
-            z-index: 100 !important;
-        }
-
-        #page-curtain { 
-            position: fixed; inset: 0; background: #000; 
-            z-index: 999999; pointer-events: none; transition: opacity 1s; opacity: 1; 
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>佛教八寶</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#07050e;
+  min-height:100vh;
+  padding:60px 32px 72px;
+  font-family:'Noto Serif SC','Palatino Linotype',serif;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(120,80,20,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(60,30,80,.12) 0%, transparent 65%);
+}
+header{text-align:center;margin-bottom:58px}
+h1{
+  font-size:26px;
+  font-weight:300;
+  letter-spacing:.7em;
+  color:transparent;
+  background:linear-gradient(160deg,#b8902a 0%,#f0dfa0 42%,#e8c870 58%,#a87820 100%);
+  -webkit-background-clip:text;background-clip:text;
+  margin-bottom:10px;
+}
+.sub{
+  font-size:10.5px;letter-spacing:.32em;
+  color:rgba(190,148,52,.3);text-transform:uppercase;
+  font-weight:300;
+}
+.rule{width:160px;height:.8px;background:linear-gradient(90deg,transparent,rgba(190,150,40,.45),transparent);margin:18px auto 0}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:38px 30px;
+  max-width:1060px;
+  margin:0 auto;
+}
+.cell{display:flex;flex-direction:column;align-items:center;gap:13px}
+.disc{
+  width:222px;height:222px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 60px rgba(0,0,0,.7),0 0 2px 1px rgba(160,120,30,.1);
+}
+.disc::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid rgba(180,138,38,.5);
+  box-shadow:inset 0 0 0 4px rgba(130,95,20,.12);
+  pointer-events:none;z-index:2;
+}
+.disc::after{
+  content:'';position:absolute;inset:6px;border-radius:50%;
+  border:.6px solid rgba(200,158,48,.15);
+  pointer-events:none;z-index:2;
+}
+.disc svg{width:184px;height:184px;position:relative;z-index:1}
+.zh{color:#c09830;font-size:14.5px;letter-spacing:.35em;font-weight:400}
+.en{color:rgba(168,126,35,.35);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;margin-top:-5px}
+@media(max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
-<body onclick="resetAllCards(event)">
+<body>
+<header>
+  <h1>佛 教 八 寶</h1>
+  <p class="sub">Ashtamangala · Eight Auspicious Symbols</p>
+  <div class="rule"></div>
+</header>
+<div class="grid">
+<!-- ══════════════════════════════════════════════
+     1. 法輪  Dharma Wheel
+     Warm burnished gold, tri-ring rim, lotus hub
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 38%,#1e1604 0%,#100c02 55%,#080601 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="w-hub" cx="42%" cy="38%" r="64%">
+    <stop offset="0%" stop-color="#fef8e4"/>
+    <stop offset="28%" stop-color="#f0d264"/>
+    <stop offset="65%" stop-color="#c89030"/>
+    <stop offset="100%" stop-color="#8a6018"/>
+  </radialGradient>
+  <radialGradient id="w-pet" cx="50%" cy="82%" r="82%">
+    <stop offset="0%" stop-color="#fffae8"/>
+    <stop offset="42%" stop-color="#f4d060"/>
+    <stop offset="100%" stop-color="#a87820"/>
+  </radialGradient>
+  <linearGradient id="w-spk" x1="0%" y1="100%" x2="0%" y2="0%">
+    <stop offset="0%" stop-color="#f8f0d0"/>
+    <stop offset="38%" stop-color="#e8c86a"/>
+    <stop offset="100%" stop-color="#a07820"/>
+  </linearGradient>
+  <filter id="w-glow">
+    <feGaussianBlur stdDeviation="2.8" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="w-sm">
+    <feGaussianBlur stdDeviation="1.2" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- One spoke template -->
+  <path id="w-s" d="M -2.8,-27 C -3,-42 -1.8,-60 -1,-78 C 1,-78 3,-60 3,-42 2.8,-27 Z"/>
+  <!-- Hub petal -->
+  <path id="w-hp" d="M 0,-16 C -7,-21 -7,-28 0,-33 C 7,-28 7,-21 0,-16"/>
+</defs>
+<!-- Outer decoration ring -->
+<circle r="87" fill="none" stroke="#6a4c10" stroke-width=".7" opacity=".35"/>
+<!-- 24 tick marks -->
+<g stroke="#c0900a" stroke-width="1.1" opacity=".45">
+  <line y1="-82" y2="-87"/><line y1="-82" y2="-87" transform="rotate(15)"/>
+  <line y1="-82" y2="-87" transform="rotate(30)"/><line y1="-82" y2="-87" transform="rotate(45)"/>
+  <line y1="-82" y2="-87" transform="rotate(60)"/><line y1="-82" y2="-87" transform="rotate(75)"/>
+  <line y1="-82" y2="-87" transform="rotate(90)"/><line y1="-82" y2="-87" transform="rotate(105)"/>
+  <line y1="-82" y2="-87" transform="rotate(120)"/><line y1="-82" y2="-87" transform="rotate(135)"/>
+  <line y1="-82" y2="-87" transform="rotate(150)"/><line y1="-82" y2="-87" transform="rotate(165)"/>
+  <line y1="-82" y2="-87" transform="rotate(180)"/><line y1="-82" y2="-87" transform="rotate(195)"/>
+  <line y1="-82" y2="-87" transform="rotate(210)"/><line y1="-82" y2="-87" transform="rotate(225)"/>
+  <line y1="-82" y2="-87" transform="rotate(240)"/><line y1="-82" y2="-87" transform="rotate(255)"/>
+  <line y1="-82" y2="-87" transform="rotate(270)"/><line y1="-82" y2="-87" transform="rotate(285)"/>
+  <line y1="-82" y2="-87" transform="rotate(300)"/><line y1="-82" y2="-87" transform="rotate(315)"/>
+  <line y1="-82" y2="-87" transform="rotate(330)"/><line y1="-82" y2="-87" transform="rotate(345)"/>
+</g>
+<!-- Triple rim -->
+<circle r="80" fill="none" stroke="#b89030" stroke-width="5.5"/>
+<circle r="84" fill="none" stroke="rgba(240,200,80,.22)" stroke-width="1"/>
+<circle r="76" fill="none" stroke="rgba(200,160,40,.3)" stroke-width=".8"/>
+<!-- 8 between-spoke arc-petal ornaments (at 22.5° offsets, radius 63) -->
+<g fill="rgba(220,175,45,.12)" stroke="#c0940a" stroke-width=".8" opacity=".8">
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(0)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(45)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(90)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(135)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(180)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(225)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(270)"/>
+  <path d="M 45.8,-26.4 C 53,-18 53,18 45.8,26.4 C 56,14 63,0 56,-14Z" transform="rotate(315)"/>
+</g>
+<!-- Mid ring -->
+<circle r="54" fill="none" stroke="#9a7018" stroke-width=".9" opacity=".38"/>
+<!-- 8 main spokes (tapered, gold gradient) -->
+<g fill="url(#w-spk)" stroke="none">
+  <use href="#w-s"/><use href="#w-s" transform="rotate(45)"/>
+  <use href="#w-s" transform="rotate(90)"/><use href="#w-s" transform="rotate(135)"/>
+  <use href="#w-s" transform="rotate(180)"/><use href="#w-s" transform="rotate(225)"/>
+  <use href="#w-s" transform="rotate(270)"/><use href="#w-s" transform="rotate(315)"/>
+</g>
+<!-- Spoke center highlight -->
+<g stroke="rgba(255,248,220,.4)" stroke-width=".6" fill="none">
+  <line y1="-28" y2="-77"/><line y1="-28" y2="-77" transform="rotate(45)"/>
+  <line y1="-28" y2="-77" transform="rotate(90)"/><line y1="-28" y2="-77" transform="rotate(135)"/>
+  <line y1="-28" y2="-77" transform="rotate(180)"/><line y1="-28" y2="-77" transform="rotate(225)"/>
+  <line y1="-28" y2="-77" transform="rotate(270)"/><line y1="-28" y2="-77" transform="rotate(315)"/>
+</g>
+<!-- 8 thin diagonal spokes between main -->
+<g stroke="rgba(200,158,38,.22)" stroke-width=".9" fill="none">
+  <line y1="-30" y2="-78" transform="rotate(22.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(67.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(112.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(157.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(202.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(247.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(292.5)"/>
+  <line y1="-30" y2="-78" transform="rotate(337.5)"/>
+</g>
+<!-- Hub outer band -->
+<circle r="29" fill="none" stroke="#b89020" stroke-width="2.2"/>
+<!-- 8 hub jewel dots -->
+<g fill="#f4d060" filter="url(#w-sm)">
+  <circle cy="-29" r="2.2"/>
+  <circle cy="-29" r="2.2" transform="rotate(45)"/>
+  <circle cy="-29" r="2.2" transform="rotate(90)"/>
+  <circle cy="-29" r="2.2" transform="rotate(135)"/>
+  <circle cy="-29" r="2.2" transform="rotate(180)"/>
+  <circle cy="-29" r="2.2" transform="rotate(225)"/>
+  <circle cy="-29" r="2.2" transform="rotate(270)"/>
+  <circle cy="-29" r="2.2" transform="rotate(315)"/>
+</g>
+<!-- 8 hub lotus petals -->
+<g fill="url(#w-pet)" stroke="#9a7014" stroke-width=".8">
+  <use href="#w-hp"/><use href="#w-hp" transform="rotate(45)"/>
+  <use href="#w-hp" transform="rotate(90)"/><use href="#w-hp" transform="rotate(135)"/>
+  <use href="#w-hp" transform="rotate(180)"/><use href="#w-hp" transform="rotate(225)"/>
+  <use href="#w-hp" transform="rotate(270)"/><use href="#w-hp" transform="rotate(315)"/>
+</g>
+<!-- Petal highlight veins -->
+<g stroke="rgba(255,245,200,.45)" stroke-width=".5" fill="none">
+  <line y1="-17" y2="-31"/><line y1="-17" y2="-31" transform="rotate(45)"/>
+  <line y1="-17" y2="-31" transform="rotate(90)"/><line y1="-17" y2="-31" transform="rotate(135)"/>
+  <line y1="-17" y2="-31" transform="rotate(180)"/><line y1="-17" y2="-31" transform="rotate(225)"/>
+  <line y1="-17" y2="-31" transform="rotate(270)"/><line y1="-17" y2="-31" transform="rotate(315)"/>
+</g>
+<!-- Hub center disc -->
+<circle r="15" fill="url(#w-hub)" stroke="#9a7010" stroke-width="1.5"/>
+<circle r="10" fill="none" stroke="rgba(240,200,70,.4)" stroke-width=".8"/>
+<!-- Center gem -->
+<circle r="5.5" fill="white" opacity=".82" filter="url(#w-glow)"/>
+<circle r="2.8" fill="#fef8e4"/>
+</svg>
+</div>
+<span class="zh">法 輪</span><span class="en">Dharma Wheel</span>
+</div>
+<!-- ══════════════════════════════════════════════
+     2. 法螺  Conch Shell
+     Pearl ivory, azure interior, crimson ribbon
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 38%,#0c1220 0%,#060810 55%,#030508 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="sc-b" cx="32%" cy="28%" r="68%">
+    <stop offset="0%" stop-color="#fdfaf0"/>
+    <stop offset="35%" stop-color="#f0e8cc"/>
+    <stop offset="70%" stop-color="#d8c888"/>
+    <stop offset="100%" stop-color="#b0a050"/>
+  </radialGradient>
+  <radialGradient id="sc-ap" cx="42%" cy="38%" r="60%">
+    <stop offset="0%" stop-color="#fffee8"/>
+    <stop offset="55%" stop-color="#e8d880"/>
+    <stop offset="100%" stop-color="#c0aa48"/>
+  </radialGradient>
+  <radialGradient id="sc-mouth" cx="38%" cy="38%" r="62%">
+    <stop offset="0%" stop-color="#9cc0e8"/>
+    <stop offset="45%" stop-color="#4878c0"/>
+    <stop offset="100%" stop-color="#1c3e90"/>
+  </radialGradient>
+  <filter id="sc-glow">
+    <feGaussianBlur stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<!-- Shadow base -->
+<path d="M 6,68 C -26,66 -62,40 -68,4 C -74,-34 -54,-72 -18,-80
+         C 16,-86 54,-70 68,-40 C 80,-12 66,26 42,50 C 28,62 14,68 6,68 Z"
+      fill="rgba(0,0,0,.4)" transform="translate(4,4)"/>
+<!-- Main shell body -->
+<path d="M 6,68 C -26,66 -62,40 -68,4 C -74,-34 -54,-72 -18,-80
+         C 16,-86 54,-70 68,-40 C 80,-12 66,26 42,50 C 28,62 14,68 6,68 Z"
+      fill="url(#sc-b)" stroke="#a09040" stroke-width="1.4"/>
+<!-- Shadow-side shading -->
+<path d="M 6,68 C 14,68 28,62 42,50 C 66,26 80,-12 68,-40 C 60,-62 38,-76 14,-80"
+      fill="rgba(100,80,20,.14)"/>
+<!-- Spiral whorl lines (surface texture) -->
+<g fill="none" stroke="#b8a448" stroke-linecap="round" opacity=".65">
+  <path d="M -55,-5 C -38,-20 4,-16 26,-2" stroke-width="2.2"/>
+  <path d="M -62,22 C -42,8 6,12 30,28" stroke-width="2"/>
+  <path d="M -58,46 C -38,34 8,38 26,52" stroke-width="1.6"/>
+  <path d="M -44,-30 C -28,-44 8,-38 24,-24" stroke-width="1.9"/>
+  <path d="M -24,-54 C -10,-64 18,-58 28,-44" stroke-width="1.5"/>
+  <path d="M -2,-68 C 10,-76 28,-68 32,-56" stroke-width="1.2"/>
+</g>
+<!-- Whorl highlight threads (lighter) -->
+<g fill="none" stroke="rgba(255,250,220,.3)" stroke-linecap="round">
+  <path d="M -55,-5 C -38,-20 4,-16 26,-2" stroke-width=".8"/>
+  <path d="M -62,22 C -42,8 6,12 30,28" stroke-width=".7"/>
+  <path d="M -44,-30 C -28,-44 8,-38 24,-24" stroke-width=".7"/>
+</g>
+<!-- Aperture (mouth) with depth -->
+<path d="M -8,64 C -28,58 -34,44 -28,36 C -22,28 -4,24 8,28 C 20,32 26,44 20,58 C 14,66 4,66 -8,64 Z"
+      fill="url(#sc-mouth)" stroke="#2858a8" stroke-width="1.2"/>
+<!-- Aperture highlight rim -->
+<path d="M -8,64 C -28,58 -34,44 -28,36 C -22,28 -4,24 8,28 C 20,32 26,44 20,58 C 14,66 4,66 -8,64 Z"
+      fill="none" stroke="rgba(160,200,255,.4)" stroke-width=".7"/>
+<!-- Aperture inner dark -->
+<path d="M -6,60 C -22,54 -28,42 -22,36 C -16,30 -2,28 8,32 C 18,36 22,48 16,58 C 10,64 2,62 -6,60 Z"
+      fill="rgba(10,20,60,.5)"/>
+<!-- Columella spiral suggestion -->
+<path d="M 2,50 C -8,46 -12,36 -8,30 C -2,26 6,28 8,36 C 10,42 6,48 2,50 Z"
+      fill="rgba(60,100,180,.3)" stroke="rgba(120,170,240,.4)" stroke-width=".6"/>
+<!-- Apex tip -->
+<ellipse cx="55" cy="-60" rx="8.5" ry="13" fill="url(#sc-ap)" stroke="#c0a840" stroke-width="1.2" transform="rotate(26,55,-60)"/>
+<ellipse cx="57" cy="-65" rx="4.5" ry="7" fill="rgba(255,252,230,.7)" transform="rotate(26,57,-65)"/>
+<!-- Apex highlight -->
+<path d="M 50,-68 C 54,-72 60,-70 62,-66" fill="none" stroke="rgba(255,250,220,.5)" stroke-width=".9" stroke-linecap="round"/>
+<!-- Silk ribbon loops -->
+<path d="M -66,6 C -80,-8 -84,-32 -74,-54 C -68,-66 -56,-70 -50,-62 C -46,-56 -50,-44 -52,-38"
+      fill="none" stroke="#8a2838" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M -66,6 C -76,22 -72,46 -58,56 C -48,62 -36,58 -34,48 C -32,40 -38,32 -40,26"
+      fill="none" stroke="#a83040" stroke-width="4" stroke-linecap="round"/>
+<!-- Ribbon highlight -->
+<path d="M -72,0 C -78,-12 -78,-28 -70,-46"
+      fill="none" stroke="rgba(220,100,120,.4)" stroke-width="1.2" stroke-linecap="round"/>
+<!-- Gold ribbon knot -->
+<circle cx="-66" cy="6" r="4.5" fill="#c0a038" stroke="#e8d060" stroke-width="1" filter="url(#sc-glow)"/>
+</svg>
+</div>
+<span class="zh">法 螺</span><span class="en">Conch Shell</span>
+</div>
+<!-- ══════════════════════════════════════════════
+     3. 寶傘  Precious Parasol
+     Deep crimson, antique gold, silk scallops
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 32%,#1c0606 0%,#0e0303 55%,#070201 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="um-d" cx="50%" cy="22%" r="78%">
+    <stop offset="0%" stop-color="#c43030"/>
+    <stop offset="48%" stop-color="#9a1818"/>
+    <stop offset="100%" stop-color="#5a0808"/>
+  </radialGradient>
+  <radialGradient id="um-d2" cx="50%" cy="22%" r="78%">
+    <stop offset="0%" stop-color="#e04040"/>
+    <stop offset="55%" stop-color="#b82020"/>
+    <stop offset="100%" stop-color="#780a0a"/>
+  </radialGradient>
+  <linearGradient id="um-pole" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#907010"/><stop offset="35%" stop-color="#e8c860"/>
+    <stop offset="65%" stop-color="#e8c860"/><stop offset="100%" stop-color="#907010"/>
+  </linearGradient>
+  <linearGradient id="um-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#a06818"/><stop offset="45%" stop-color="#f0d060"/>
+    <stop offset="100%" stop-color="#a06818"/>
+  </linearGradient>
+  <filter id="um-glow">
+    <feGaussianBlur stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<!-- Pole -->
+<rect x="-2.5" y="-86" width="5" height="155" rx="2.5" fill="url(#um-pole)"/>
+<rect x="-1" y="-86" width="2" height="155" fill="rgba(255,248,180,.3)" rx="1"/>
+<!-- Finial jewel assembly -->
+<ellipse cx="0" cy="-80" rx="5.5" ry="8" fill="#e8c858" stroke="#a07818" stroke-width="1.2"/>
+<circle cx="0" cy="-88" r="7" fill="#d4aa38" stroke="#987010" stroke-width="1.5" filter="url(#um-glow)"/>
+<circle cx="0" cy="-88" r="4" fill="rgba(255,250,220,.7)"/>
+<!-- Finial secondary bead -->
+<circle cx="0" cy="-70" r="4" fill="#c89828" stroke="#987010" stroke-width="1"/>
+<!-- Dome shadow -->
+<path d="M -77,4 Q -70,-60 0,-70 Q 70,-60 77,4 Z"
+      fill="rgba(0,0,0,.35)" transform="translate(3,4)"/>
+<!-- Dome canopy outer -->
+<path d="M -77,4 Q -70,-60 0,-70 Q 70,-60 77,4 Z"
+      fill="url(#um-d)" stroke="#7a0c0c" stroke-width="1.2"/>
+<!-- Dome inner lighter section -->
+<path d="M -72,4 Q -66,-55 0,-64 Q 66,-55 72,4 Z"
+      fill="url(#um-d2)" opacity=".5"/>
+<!-- Dome panel ribs (9 sections) -->
+<g stroke="rgba(80,0,0,.45)" stroke-width="1" fill="none">
+  <path d="M 0,-70 Q 9,-42 17,4"/>
+  <path d="M 0,-70 Q 26,-36 40,4"/>
+  <path d="M 0,-70 Q 56,-18 66,4"/>
+  <path d="M 0,-70 Q -9,-42 -17,4"/>
+  <path d="M 0,-70 Q -26,-36 -40,4"/>
+  <path d="M 0,-70 Q -56,-18 -66,4"/>
+</g>
+<!-- Panel rib highlights -->
+<g stroke="rgba(200,60,60,.35)" stroke-width=".5" fill="none">
+  <path d="M 0,-70 Q 9,-42 17,4"/>
+  <path d="M 0,-70 Q -9,-42 -17,4"/>
+  <path d="M 0,-70 Q 26,-36 40,4"/>
+  <path d="M 0,-70 Q -26,-36 -40,4"/>
+</g>
+<!-- Dome-edge gold band -->
+<path d="M -77,4 Q -70,-60 0,-70 Q 70,-60 77,4"
+      fill="none" stroke="url(#um-gold)" stroke-width="3"/>
+<!-- Scalloped hanging border -->
+<path d="M -77,4 Q -70,14 -61,4 Q -54,22 -44,10 Q -36,28 -26,14
+          Q -16,30 -6,18 Q -1,34 0,26
+          Q 1,34 6,18 Q 16,30 26,14 Q 36,28 44,10
+          Q 54,22 61,4 Q 70,14 77,4"
+      fill="#901010" stroke="#6a0808" stroke-width=".9"/>
+<!-- Scallop edge gold line -->
+<path d="M -77,4 Q -70,14 -61,4 Q -54,22 -44,10 Q -36,28 -26,14
+          Q -16,30 -6,18 Q -1,34 0,26
+          Q 1,34 6,18 Q 16,30 26,14 Q 36,28 44,10
+          Q 54,22 61,4 Q 70,14 77,4"
+      fill="none" stroke="url(#um-gold)" stroke-width="1.8"/>
+<!-- Decorative pattern on dome (concentric arc) -->
+<path d="M -40,-42 Q 0,-48 40,-42" fill="none" stroke="rgba(200,80,80,.35)" stroke-width="1.2"/>
+<path d="M -58,-20 Q 0,-27 58,-20" fill="none" stroke="rgba(200,80,80,.28)" stroke-width="1"/>
+<!-- Hanging silk tassels -->
+<g stroke-linecap="round">
+  <line x1="-61" y1="5" x2="-68" y2="28" stroke="#b09028" stroke-width="1.8"/>
+  <line x1="-61" y1="5" x2="-65" y2="24" stroke="#e0c050" stroke-width=".7"/>
+  <line x1="-26" y1="14" x2="-30" y2="38" stroke="#b09028" stroke-width="1.8"/>
+  <line x1="-26" y1="14" x2="-28" y2="34" stroke="#e0c050" stroke-width=".7"/>
+  <line x1="0" y1="26" x2="0" y2="50" stroke="#b09028" stroke-width="1.8"/>
+  <line x1="0" y1="26" x2="0" y2="46" stroke="#e0c050" stroke-width=".7"/>
+  <line x1="26" y1="14" x2="30" y2="38" stroke="#b09028" stroke-width="1.8"/>
+  <line x1="26" y1="14" x2="28" y2="34" stroke="#e0c050" stroke-width=".7"/>
+  <line x1="61" y1="5" x2="68" y2="28" stroke="#b09028" stroke-width="1.8"/>
+  <line x1="61" y1="5" x2="65" y2="24" stroke="#e0c050" stroke-width=".7"/>
+</g>
+<!-- Tassel ends -->
+<g filter="url(#um-glow)">
+  <circle cx="-68" cy="30" r="4.5" fill="#c8a030" stroke="#f0d060" stroke-width=".8"/>
+  <circle cx="-30" cy="40" r="4.5" fill="#c8a030" stroke="#f0d060" stroke-width=".8"/>
+  <circle cx="0" cy="52" r="4.5" fill="#c8a030" stroke="#f0d060" stroke-width=".8"/>
+  <circle cx="30" cy="40" r="4.5" fill="#c8a030" stroke="#f0d060" stroke-width=".8"/>
+  <circle cx="68" cy="30" r="4.5" fill="#c8a030" stroke="#f0d060" stroke-width=".8"/>
+</g>
+<!-- Bottom pole knob -->
+<circle cx="0" cy="62" r="6" fill="#c8a030" stroke="#987010" stroke-width="1.2"/>
+</svg>
+</div>
+<span class="zh">寶 傘</span><span class="en">Precious Parasol</span>
+</div>
 
-    <div id="page-curtain"></div>
+<!-- ══════════════════════════════════════════════
+     4. 蓮花  Lotus Flower
+     Three petal layers, dusty rose, gold pod
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 38%,#140610 0%,#0c0408 55%,#060204 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="lt-o" cx="50%" cy="88%" r="88%">
+    <stop offset="0%" stop-color="#ffd8e8"/>
+    <stop offset="35%" stop-color="#e87898"/>
+    <stop offset="75%" stop-color="#c04870"/>
+    <stop offset="100%" stop-color="#8a2848"/>
+  </radialGradient>
+  <radialGradient id="lt-m" cx="50%" cy="85%" r="85%">
+    <stop offset="0%" stop-color="#fff0f8"/>
+    <stop offset="40%" stop-color="#f0a8c8"/>
+    <stop offset="80%" stop-color="#d87098"/>
+    <stop offset="100%" stop-color="#a04868"/>
+  </radialGradient>
+  <radialGradient id="lt-i" cx="50%" cy="82%" r="82%">
+    <stop offset="0%" stop-color="#fff8fc"/>
+    <stop offset="45%" stop-color="#f8d0e4"/>
+    <stop offset="100%" stop-color="#e090b0"/>
+  </radialGradient>
+  <radialGradient id="lt-pod" cx="40%" cy="36%" r="64%">
+    <stop offset="0%" stop-color="#fef8e0"/>
+    <stop offset="32%" stop-color="#f4d068"/>
+    <stop offset="68%" stop-color="#c8901a"/>
+    <stop offset="100%" stop-color="#8a5c08"/>
+  </radialGradient>
+  <filter id="lt-glow">
+    <feGaussianBlur stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- Outer petal template -->
+  <path id="lt-op" d="M 0,-4 C -18,-22 -22,-58 0,-76 C 22,-58 18,-22 0,-4"/>
+  <!-- Middle petal -->
+  <path id="lt-mp" d="M 0,-4 C -12,-18 -14,-44 0,-56 C 14,-44 12,-18 0,-4"/>
+  <!-- Inner petal -->
+  <path id="lt-ip" d="M 0,-6 C -8,-16 -9,-32 0,-40 C 9,-32 8,-16 0,-6"/>
+</defs>
+<!-- 8 outer petals -->
+<g fill="url(#lt-o)" stroke="#a03858" stroke-width="1.1">
+  <use href="#lt-op"/><use href="#lt-op" transform="rotate(45)"/>
+  <use href="#lt-op" transform="rotate(90)"/><use href="#lt-op" transform="rotate(135)"/>
+  <use href="#lt-op" transform="rotate(180)"/><use href="#lt-op" transform="rotate(225)"/>
+  <use href="#lt-op" transform="rotate(270)"/><use href="#lt-op" transform="rotate(315)"/>
+</g>
+<!-- Outer petal veins -->
+<g stroke="rgba(255,220,235,.38)" stroke-width=".7" fill="none">
+  <line y1="-7" y2="-73"/><line y1="-7" y2="-73" transform="rotate(45)"/>
+  <line y1="-7" y2="-73" transform="rotate(90)"/><line y1="-7" y2="-73" transform="rotate(135)"/>
+  <line y1="-7" y2="-73" transform="rotate(180)"/><line y1="-7" y2="-73" transform="rotate(225)"/>
+  <line y1="-7" y2="-73" transform="rotate(270)"/><line y1="-7" y2="-73" transform="rotate(315)"/>
+</g>
+<!-- Outer petal side veins -->
+<g stroke="rgba(220,140,170,.22)" stroke-width=".5" fill="none">
+  <path d="M 0,-20 C -6,-30 -14,-50 -16,-70"/><path d="M 0,-20 C -6,-30 -14,-50 -16,-70" transform="rotate(45)"/>
+  <path d="M 0,-20 C 6,-30 14,-50 16,-70"/><path d="M 0,-20 C 6,-30 14,-50 16,-70" transform="rotate(45)"/>
+  <path d="M 0,-20 C -6,-30 -14,-50 -16,-70" transform="rotate(90)"/>
+  <path d="M 0,-20 C 6,-30 14,-50 16,-70" transform="rotate(90)"/>
+</g>
+<!-- 8 middle petals (rotated 22.5°) -->
+<g fill="url(#lt-m)" stroke="#c06888" stroke-width=".9" transform="rotate(22.5)">
+  <use href="#lt-mp"/><use href="#lt-mp" transform="rotate(45)"/>
+  <use href="#lt-mp" transform="rotate(90)"/><use href="#lt-mp" transform="rotate(135)"/>
+  <use href="#lt-mp" transform="rotate(180)"/><use href="#lt-mp" transform="rotate(225)"/>
+  <use href="#lt-mp" transform="rotate(270)"/><use href="#lt-mp" transform="rotate(315)"/>
+</g>
+<!-- 8 inner petals -->
+<g fill="url(#lt-i)" stroke="#d888a8" stroke-width=".75" transform="rotate(11.25)">
+  <use href="#lt-ip"/><use href="#lt-ip" transform="rotate(45)"/>
+  <use href="#lt-ip" transform="rotate(90)"/><use href="#lt-ip" transform="rotate(135)"/>
+  <use href="#lt-ip" transform="rotate(180)"/><use href="#lt-ip" transform="rotate(225)"/>
+  <use href="#lt-ip" transform="rotate(270)"/><use href="#lt-ip" transform="rotate(315)"/>
+</g>
+<!-- Seed pod -->
+<circle r="22" fill="url(#lt-pod)" stroke="#9a6c10" stroke-width="1.8"/>
+<circle r="17" fill="none" stroke="rgba(240,200,60,.3)" stroke-width="1"/>
+<!-- Seed holes grid -->
+<g fill="#7a5208" opacity=".6" filter="url(#lt-glow)">
+  <circle cy="-11" r="2.1"/><circle cx="7.8" cy="-7.8" r="2.1"/>
+  <circle cx="11" r="2.1"/><circle cx="7.8" cy="7.8" r="2.1"/>
+  <circle cy="11" r="2.1"/><circle cx="-7.8" cy="7.8" r="2.1"/>
+  <circle cx="-11" r="2.1"/><circle cx="-7.8" cy="-7.8" r="2.1"/>
+  <circle r="2.1"/>
+</g>
+<!-- Long stamens (16 alternating heights) -->
+<g stroke-linecap="round" filter="url(#lt-glow)">
+  <g stroke="#f4d050" stroke-width="1.3">
+    <line y1="-18" y2="-26"/><line y1="-18" y2="-26" transform="rotate(45)"/>
+    <line y1="-18" y2="-26" transform="rotate(90)"/><line y1="-18" y2="-26" transform="rotate(135)"/>
+    <line y1="-18" y2="-26" transform="rotate(180)"/><line y1="-18" y2="-26" transform="rotate(225)"/>
+    <line y1="-18" y2="-26" transform="rotate(270)"/><line y1="-18" y2="-26" transform="rotate(315)"/>
+  </g>
+  <g stroke="#e0bc40" stroke-width="1" transform="rotate(22.5)">
+    <line y1="-18" y2="-23"/><line y1="-18" y2="-23" transform="rotate(45)"/>
+    <line y1="-18" y2="-23" transform="rotate(90)"/><line y1="-18" y2="-23" transform="rotate(135)"/>
+    <line y1="-18" y2="-23" transform="rotate(180)"/><line y1="-18" y2="-23" transform="rotate(225)"/>
+    <line y1="-18" y2="-23" transform="rotate(270)"/><line y1="-18" y2="-23" transform="rotate(315)"/>
+  </g>
+</g>
+<!-- Stamen anther dots -->
+<g filter="url(#lt-glow)">
+  <g fill="#f8e060">
+    <circle cy="-27" r="1.8"/><circle cy="-27" r="1.8" transform="rotate(45)"/>
+    <circle cy="-27" r="1.8" transform="rotate(90)"/><circle cy="-27" r="1.8" transform="rotate(135)"/>
+    <circle cy="-27" r="1.8" transform="rotate(180)"/><circle cy="-27" r="1.8" transform="rotate(225)"/>
+    <circle cy="-27" r="1.8" transform="rotate(270)"/><circle cy="-27" r="1.8" transform="rotate(315)"/>
+  </g>
+  <g fill="#ffe870" transform="rotate(22.5)">
+    <circle cy="-24" r="1.5"/><circle cy="-24" r="1.5" transform="rotate(45)"/>
+    <circle cy="-24" r="1.5" transform="rotate(90)"/><circle cy="-24" r="1.5" transform="rotate(135)"/>
+    <circle cy="-24" r="1.5" transform="rotate(180)"/><circle cy="-24" r="1.5" transform="rotate(225)"/>
+    <circle cy="-24" r="1.5" transform="rotate(270)"/><circle cy="-24" r="1.5" transform="rotate(315)"/>
+  </g>
+</g>
+</svg>
+</div>
+<span class="zh">蓮 花</span><span class="en">Lotus Flower</span>
+</div>
 
-    <div class="top-nav-btn" onclick="goHome('index.html')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        歸返
-    </div>
+<!-- ══════════════════════════════════════════════
+     5. 寶瓶  Treasure Vase
+     Deep jade with gold inlay, overflow lotus
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 40% 36%,#081a14 0%,#040e0a 55%,#020806 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="vz-b" cx="33%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#98e8d0"/>
+    <stop offset="38%" stop-color="#3aaa90"/>
+    <stop offset="72%" stop-color="#1a7060"/>
+    <stop offset="100%" stop-color="#0c4438"/>
+  </radialGradient>
+  <radialGradient id="vz-sh" cx="28%" cy="24%" r="45%">
+    <stop offset="0%" stop-color="rgba(255,255,255,.38)"/>
+    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+  </radialGradient>
+  <linearGradient id="vz-gd" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#907010"/><stop offset="40%" stop-color="#e8cc60"/>
+    <stop offset="60%" stop-color="#e8cc60"/><stop offset="100%" stop-color="#907010"/>
+  </linearGradient>
+  <filter id="vz-glow">
+    <feGaussianBlur stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- Lotus petal -->
+  <path id="vz-lp" d="M 0,0 C -7,-10 -7,-24 0,-32 C 7,-24 7,-10 0,0"/>
+</defs>
+<!-- Shadow -->
+<path d="M -18,24 C -48,24 -68,10 -68,-18 C -68,-50 -46,-68 0,-72 C 46,-68 68,-50 68,-18 C 68,10 48,24 18,24 Z"
+      fill="rgba(0,0,0,.45)" transform="translate(4,4)"/>
+<!-- Foot / base -->
+<rect x="-22" y="58" width="44" height="10" rx="3" fill="url(#vz-gd)" stroke="#806010" stroke-width=".8"/>
+<ellipse cx="0" cy="62" rx="24" ry="5.5" fill="rgba(130,90,15,.3)"/>
+<!-- Base lotus collar petals (8) -->
+<g fill="#c85828" stroke="#8a2c0a" stroke-width=".8" transform="translate(0,24)">
+  <path d="M 0,0 C -10,0 -18,-12 -10,-20 C -6,-14 -4,-6 0,0"/>
+  <path d="M 0,0 C 10,0 18,-12 10,-20 C 6,-14 4,-6 0,0"/>
+  <path d="M 0,0 C -16,-4 -22,-18 -12,-24 C -10,-16 -6,-8 0,0"/>
+  <path d="M 0,0 C 16,-4 22,-18 12,-24 C 10,-16 6,-8 0,0"/>
+  <path d="M 0,0 C -18,-10 -20,-26 -8,-30 C -8,-20 -6,-10 0,0"/>
+  <path d="M 0,0 C 18,-10 20,-26 8,-30 C 8,-20 6,-10 0,0"/>
+  <path d="M 0,0 C -16,-16 -14,-32 -2,-34 C -4,-22 -4,-10 0,0"/>
+  <path d="M 0,0 C 16,-16 14,-32 2,-34 C 4,-22 4,-10 0,0"/>
+</g>
+<!-- Main vase body -->
+<path d="M -18,24 C -48,24 -68,10 -68,-18 C -68,-50 -46,-68 0,-72 C 46,-68 68,-50 68,-18 C 68,10 48,24 18,24 Z"
+      fill="url(#vz-b)" stroke="#207860" stroke-width="1.6"/>
+<!-- Sheen overlay -->
+<path d="M -18,24 C -48,24 -68,10 -68,-18 C -68,-50 -46,-68 0,-72 C 46,-68 68,-50 68,-18 C 68,10 48,24 18,24 Z"
+      fill="url(#vz-sh)"/>
+<!-- Decorative gold bands -->
+<path d="M -68,-18 Q 0,-24 68,-18" fill="none" stroke="url(#vz-gd)" stroke-width="3.5"/>
+<path d="M -62,-30 Q 0,-36 62,-30" fill="none" stroke="rgba(220,190,60,.4)" stroke-width="1"/>
+<path d="M -62,-6 Q 0,-10 62,-6"  fill="none" stroke="rgba(220,190,60,.35)" stroke-width="1"/>
+<!-- Hexagram / diamond motif on body -->
+<g fill="rgba(230,200,60,.18)" stroke="#c8a030" stroke-width="1.1">
+  <polygon points="0,-50 10,-36 0,-22 -10,-36"/>
+  <polygon points="-28,-44 -18,-52 -28,-60 -38,-52" transform="scale(.7,-.7) translate(0,85)"/>
+  <polygon points="28,-44 38,-52 28,-60 18,-52" transform="scale(.7,-.7) translate(0,85)"/>
+</g>
+<!-- Band pattern (small diamonds on gold band) -->
+<g fill="#c8a030" opacity=".6">
+  <circle cx="-40" cy="-18" r="1.5"/><circle cx="-25" cy="-18" r="1.5"/>
+  <circle cx="-10" cy="-18" r="1.5"/><circle cx="5" cy="-18" r="1.5"/>
+  <circle cx="20" cy="-18" r="1.5"/><circle cx="35" cy="-18" r="1.5"/>
+</g>
+<!-- Neck -->
+<path d="M -12,-72 L -12,-54 Q -12,-48 0,-48 Q 12,-48 12,-54 L 12,-72 Z"
+      fill="#207060" stroke="#187050" stroke-width="1"/>
+<!-- Neck gold bands -->
+<rect x="-15" y="-74" width="30" height="6" rx="2" fill="url(#vz-gd)" stroke="#806010" stroke-width=".8"/>
+<rect x="-15" y="-52" width="30" height="6" rx="2" fill="url(#vz-gd)" stroke="#806010" stroke-width=".8"/>
+<!-- Mouth / rim -->
+<ellipse cx="0" cy="-76" rx="18" ry="5" fill="#187058" stroke="url(#vz-gd)" stroke-width="2"/>
+<!-- Overflow lotus from vase top -->
+<g transform="translate(0,-82)">
+  <g fill="#d87898" stroke="#a04868" stroke-width=".9">
+    <use href="#vz-lp"/><use href="#vz-lp" transform="rotate(60)"/>
+    <use href="#vz-lp" transform="rotate(120)"/><use href="#vz-lp" transform="rotate(180)"/>
+    <use href="#vz-lp" transform="rotate(240)"/><use href="#vz-lp" transform="rotate(300)"/>
+  </g>
+  <!-- Center jewel -->
+  <circle r="9" fill="#d4a030" stroke="#987010" stroke-width="1.5" filter="url(#vz-glow)"/>
+  <circle r="5" fill="rgba(255,248,220,.8)" filter="url(#vz-glow)"/>
+  <circle r="2.5" fill="white"/>
+</g>
+</svg>
+</div>
+<span class="zh">寶 瓶</span><span class="en">Treasure Vase</span>
+</div>
 
-    <svg style="position: absolute; width: 0; height: 0;">
-        <defs>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-            
-            <g id="common-lotus-base" transform="translate(0, 150) scale(1.1)">
-                <path d="M-40 0 C -20 20, 20 20, 40 0 C 20 -20, -20 -20, -40 0 Z" fill="#f8bbd0" stroke="#d4af37" stroke-width="0.8" class="draw-petal" />
-                <path d="M-60 20 C -30 40, 30 40, 60 20 C 30 -20, -30 -20, -60 20 Z" fill="#f48fb1" stroke="#d4af37" stroke-width="0.8" opacity="0.9" />
-                <path d="M-90 50 C -40 80, 40 80, 90 50 C 40 20, -40 20, -90 50 Z" fill="#e1bee7" stroke="#d4af37" stroke-width="0.8" opacity="0.8" />
-                <path d="M-120 90 C -60 120, 60 120, 120 90 C 60 40, -60 40, -120 90 Z" fill="#ba68c8" stroke="#d4af37" stroke-width="0.8" opacity="0.7" />
-            </g>
+    <!-- ══════════════════════════════════════════════
+     6. 金魚  Golden Fish
+     Amber gold on deep sapphire, S-curve bodies
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 38%,#06091e 0%,#030612 55%,#020408 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="gf-wa" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#1878d8"/>
+    <stop offset="48%" stop-color="#0c50b8"/>
+    <stop offset="100%" stop-color="#062870"/>
+  </radialGradient>
+  <radialGradient id="gf-f1" cx="35%" cy="30%" r="68%">
+    <stop offset="0%" stop-color="#fff0a0"/>
+    <stop offset="40%" stop-color="#eea030"/>
+    <stop offset="78%" stop-color="#c07010"/>
+    <stop offset="100%" stop-color="#884808"/>
+  </radialGradient>
+  <radialGradient id="gf-f2" cx="35%" cy="30%" r="68%">
+    <stop offset="0%" stop-color="#ffe880"/>
+    <stop offset="40%" stop-color="#d88820"/>
+    <stop offset="78%" stop-color="#a85c08"/>
+    <stop offset="100%" stop-color="#784008"/>
+  </radialGradient>
+  <filter id="gf-glow">
+    <feGaussianBlur stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<!-- Water depth circle -->
+<circle r="82" fill="url(#gf-wa)" stroke="#0858b8" stroke-width="1.2"/>
+<!-- Water caustic ripples -->
+<g fill="none" stroke="rgba(140,195,255,.15)" stroke-width="1">
+  <circle r="24"/><circle r="40"/><circle r="58"/><circle r="72"/>
+</g>
+<!-- Subtle wave lines -->
+<g fill="none" stroke="rgba(100,168,255,.1)" stroke-width="1.5" stroke-linecap="round">
+  <path d="M -60,-8 Q -40,-18 -20,-8 Q 0,2 20,-8 Q 40,-18 60,-8"/>
+  <path d="M -55,16 Q -35,6 -15,16 Q 5,26 25,16 Q 45,6 65,16"/>
+  <path d="M -58,-30 Q -40,-40 -22,-30 Q -4,-20 14,-30 Q 32,-40 50,-30"/>
+</g>
 
-            <g id="totem-prajna-symbol">
-                <path d="M50 10 C 75 40, 75 70, 50 95 C 25 70, 25 40, 50 10 Z" />
-                <path d="M50 35 L 65 55 L 50 75 L 35 55 Z" stroke-width="0.8"/>
-                <circle cx="50" cy="55" r="5" stroke-width="0.8"/>
-            </g>
-        </defs>
-    </svg>
+<!-- ── Fish 1 (upper, S-curve, head to right) ── -->
+<!-- Fan tail -->
+<path d="M -36,-32 C -50,-20 -58,-30 -54,-44 C -48,-36 -40,-32 -36,-32" fill="#e8a028" stroke="#b07010" stroke-width=".8"/>
+<path d="M -36,-32 C -48,-46 -52,-60 -42,-68 C -40,-56 -38,-42 -36,-32" fill="#d09020" stroke="#a06010" stroke-width=".8"/>
+<path d="M -36,-32 C -52,-28 -60,-20 -56,-8 C -48,-16 -40,-24 -36,-32" fill="#c88018" stroke="#906010" stroke-width=".6"/>
+<!-- S-curve body -->
+<path d="M -36,-32 C -20,-38 0,-36 14,-28 C 28,-20 36,-10 32,-2 C 28,6 18,10 8,8 C -4,6 -12,0 -10,-10 C -6,-22 6,-28 16,-24 C 28,-20 34,-8 28,0"
+      fill="none" stroke="none"/>
+<ellipse cx="-4" cy="-28" rx="34" ry="15" fill="url(#gf-f1)" stroke="#a87018" stroke-width="1.3" transform="rotate(-12)"/>
+<!-- Body highlight sheen -->
+<ellipse cx="-8" cy="-32" rx="18" ry="8" fill="rgba(255,240,160,.2)" transform="rotate(-12)"/>
+<!-- Scale arcs (many small) -->
+<g fill="none" stroke="#d0900a" stroke-width=".9" opacity=".6" transform="rotate(-12)">
+  <path d="M -20,-28 Q -12,-18 -2,-28"/>
+  <path d="M -10,-28 Q -2,-18 8,-26"/>
+  <path d="M 0,-26 Q 8,-16 18,-22"/>
+  <path d="M 10,-24 Q 18,-14 26,-20"/>
+  <path d="M -24,-34 Q -16,-26 -8,-34"/>
+  <path d="M -14,-34 Q -6,-26 4,-32"/>
+  <path d="M -26,-22 Q -18,-14 -10,-22"/>
+</g>
+<!-- Dorsal fin -->
+<path d="M -16,-44 C -8,-58 4,-60 16,-50 C 10,-44 2,-42 -16,-44" fill="#f0b030" stroke="#b07818" stroke-width=".9" transform="rotate(-12)"/>
+<!-- Pectoral fin -->
+<path d="M 12,-28 C 18,-18 14,-8 8,-12 C 10,-20 12,-26 12,-28" fill="#e0a028" opacity=".8" transform="rotate(-12)"/>
+<!-- Eye -->
+<circle cx="26" cy="-36" r="5" fill="white" stroke="#806010" stroke-width=".9" filter="url(#gf-glow)"/>
+<circle cx="26.8" cy="-36" r="2.5" fill="#1a0808"/>
+<circle cx="27.8" cy="-37.2" r="1.1" fill="rgba(255,255,255,.9)"/>
+<!-- Pupil glint -->
+<circle cx="28" cy="-37" r=".6" fill="white"/>
+<!-- Mouth curl -->
+<path d="M 32,-30 Q 36,-26 32,-22" fill="none" stroke="#c07818" stroke-width="1.1" stroke-linecap="round"/>
 
-    <canvas id="starCanvas"></canvas>
-    <div id="deck-container"></div>
+<!-- ── Fish 2 (lower, mirrored S-curve) ── -->
+<g transform="scale(-1,-1)">
+  <!-- Fan tail -->
+  <path d="M -36,-32 C -50,-20 -58,-30 -54,-44 C -48,-36 -40,-32 -36,-32" fill="#d8981e" stroke="#a06810" stroke-width=".8"/>
+  <path d="M -36,-32 C -48,-46 -52,-60 -42,-68 C -40,-56 -38,-42 -36,-32" fill="#c88818" stroke="#986010" stroke-width=".8"/>
+  <path d="M -36,-32 C -52,-28 -60,-20 -56,-8 C -48,-16 -40,-24 -36,-32" fill="#b87810" stroke="#886010" stroke-width=".6"/>
+  <!-- Body -->
+  <ellipse cx="-4" cy="-28" rx="34" ry="15" fill="url(#gf-f2)" stroke="#a07018" stroke-width="1.3" transform="rotate(-12)"/>
+  <ellipse cx="-8" cy="-32" rx="18" ry="8" fill="rgba(255,235,140,.18)" transform="rotate(-12)"/>
+  <!-- Scales -->
+  <g fill="none" stroke="#c08808" stroke-width=".9" opacity=".6" transform="rotate(-12)">
+    <path d="M -20,-28 Q -12,-18 -2,-28"/>
+    <path d="M -10,-28 Q -2,-18 8,-26"/>
+    <path d="M 0,-26 Q 8,-16 18,-22"/>
+    <path d="M 10,-24 Q 18,-14 26,-20"/>
+    <path d="M -24,-34 Q -16,-26 -8,-34"/>
+    <path d="M -14,-34 Q -6,-26 4,-32"/>
+  </g>
+  <!-- Dorsal fin -->
+  <path d="M -16,-44 C -8,-58 4,-60 16,-50 C 10,-44 2,-42 -16,-44" fill="#e8a828" stroke="#a87018" stroke-width=".9" transform="rotate(-12)"/>
+  <!-- Eye -->
+  <circle cx="26" cy="-36" r="5" fill="white" stroke="#806010" stroke-width=".9" filter="url(#gf-glow)"/>
+  <circle cx="26.8" cy="-36" r="2.5" fill="#1a0808"/>
+  <circle cx="27.8" cy="-37.2" r="1.1" fill="rgba(255,255,255,.9)"/>
+  <circle cx="28" cy="-37" r=".6" fill="white"/>
+</g>
+<!-- Bubbles -->
+<g fill="rgba(160,220,255,.22)" stroke="rgba(190,235,255,.35)" stroke-width=".7">
+  <circle cx="46" cy="-58" r="4"/>
+  <circle cx="56" cy="-46" r="2.8"/>
+  <circle cx="62" cy="-52" r="2"/>
+  <circle cx="-46" cy="58" r="4"/>
+  <circle cx="-56" cy="46" r="2.8"/>
+</g>
+</svg>
+</div>
+<span class="zh">金 魚</span><span class="en">Golden Fish</span>
+</div>
+<!-- ══════════════════════════════════════════════
+     7. 吉祥結  Endless Knot
+     Burnished coral, clip-path weave, gold detail
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 38%,#160a04 0%,#0e0602 55%,#070401 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <!-- H clips at (-24,-24) and (24,24) where V goes over -->
+  <clipPath id="ek2-hc">
+    <path fill-rule="evenodd" d="
+      M -90,-90 L 90,-90 L 90,90 L -90,90 Z
+      M -29,-29 L -19,-29 L -19,-19 L -29,-19 Z
+      M 19,19 L 29,19 L 29,29 L 19,29 Z
+    "/>
+  </clipPath>
+  <!-- V clips at (24,-24) and (-24,24) where H goes over -->
+  <clipPath id="ek2-vc">
+    <path fill-rule="evenodd" d="
+      M -90,-90 L 90,-90 L 90,90 L -90,90 Z
+      M 19,-29 L 29,-29 L 29,-19 L 19,-19 Z
+      M -29,19 L -19,19 L -19,29 L -29,29 Z
+    "/>
+  </clipPath>
+  <filter id="ek2-glow">
+    <feGaussianBlur stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="ek2-sm">
+    <feGaussianBlur stdDeviation="1.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
 
-    <script>
-        // 星空背景渲染邏輯
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
-        
-        function resize() { 
-            width = window.innerWidth; 
-            height = window.innerHeight; 
-            canvas.width = width; 
-            canvas.height = height; 
-        }
-        
-        window.addEventListener('resize', resize); 
-        resize();
-        
-        for(let i=0; i<150; i++) {
-            stars.push({ 
-                x: (Math.random() - 0.5) * 2000, 
-                y: (Math.random() - 0.5) * 2000, 
-                z: Math.random() * 1000, 
-                s: Math.random() * 2 
-            });
-        }
-        
-        function draw() {
-            ctx.fillStyle = 'rgba(2, 2, 4, 0.4)'; 
-            ctx.fillRect(0, 0, width, height);
-            ctx.globalCompositeOperation = 'screen';
-            
-            stars.forEach(s => { 
-                s.z -= 0.8; 
-                if(s.z <= 0) s.z = 1000; 
-                let sc = 300 / (300 + s.z);
-                let sx = width / 2 + s.x * sc;
-                let sy = height / 2 + s.y * sc; 
-                
-                ctx.beginPath(); 
-                ctx.arc(sx, sy, s.s * sc, 0, Math.PI * 2); 
-                ctx.fillStyle = `rgba(243, 229, 171, ${sc * 1.5})`; 
-                ctx.fill(); 
-            });
-            
-            requestAnimationFrame(draw);
-        }
-        draw();
+<!-- Deep shadow layer -->
+<g fill="none" stroke="rgba(60,10,0,.6)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M -24,-24 L -58,-24 Q -78,-24 -78,0 Q -78,24 -58,24 L -24,24 L 24,24 L 58,24 Q 78,24 78,0 Q 78,-24 58,-24 L 24,-24 Z" transform="translate(2,3)"/>
+  <path d="M -24,-24 L -24,-58 Q -24,-78 0,-78 Q 24,-78 24,-58 L 24,-24 L 24,24 L 24,58 Q 24,78 0,78 Q -24,78 -24,58 L -24,24 Z" transform="translate(2,3)"/>
+</g>
 
-        // 佛教八寶數據 (放大的精緻線條風格，共用底部蓮花座)
-        const TREASURES = [
-            {
-                name: '法輪', sanskrit: 'Dharmachakra', color: '#ba68c8',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="dharma-wheel" transform="scale(1.3)">
-                          <circle cx="0" cy="-50" r="12" fill="#fff"/><circle cx="0" cy="-50" r="10" fill="none" stroke="#d4af37" stroke-width="1.2"/>
-                          <line x1="0" y1="-50" x2="0" y2="-10" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="28" y2="-22" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="40" y2="-50" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="28" y2="-78" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="0" y2="-90" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="-28" y2="-78" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="-40" y2="-50" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-50" x2="-28" y2="-22" stroke="#d4af37" stroke-width="1.2" />
-                          <circle cx="0" cy="-50" r="50" fill="none" stroke="#d4af37" stroke-width="1.5" />
-                          <circle cx="0" cy="-50" r="40" fill="none" stroke="#d4af37" stroke-width="1" />
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '法螺', sanskrit: 'Shankha', color: '#4dd0e1',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="conch-shell" transform="scale(1.3) translate(0,-50)">
-                          <path d="M-30 0 C -10 -20, 20 -20, 30 0 C 40 20, 40 50, 30 70 C 20 80, -20 80, -30 70 C -40 50, -40 20, -30 0 Z" fill="#eeeeee" stroke="#d4af37" stroke-width="1.2" />
-                          <path d="M-15 10 C -5 0, 15 0, 20 10 C 25 20, 25 40, 20 50 C 15 60, -5 60, -10 50 C -15 40, -15 20, -10 10" fill="none" stroke="#cccccc" stroke-width="1" />
-                          <path d="M-5 20 C 0 15, 10 15, 15 20 C 18 25, 18 35, 15 40 C 10 45, 0 45, -2 40 C -5 35, -5 25, -2 20" fill="none" stroke="#cccccc" stroke-width="1" />
-                          <path d="M30 70 L 40 90 L 50 95 L 40 100 L 30 105 Z" fill="#d4af37" stroke="#d4af37" stroke-width="1.2" />
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '寶傘', sanskrit: 'Chattra', color: '#f48fb1',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="parasol" transform="scale(1.3) translate(0,-50)">
-                          <path d="M-60 20 C -60 -10, 60 -10, 60 20 Z" fill="#c62828" stroke="#d4af37" stroke-width="1.2" />
-                          <line x1="0" y1="-10" x2="0" y2="70" stroke="#d4af37" stroke-width="2" stroke-linecap="round" />
-                          <path d="M-60 20 Q -40 30 -20 20 Q 0 30 20 20 Q 40 30 60 20" fill="none" stroke="#f3e5ab" stroke-width="1.2" />
-                          <circle cx="0" y1="-10" r="5" fill="#d4af37" />
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '吉祥結', sanskrit: 'Shrivatsa', color: '#81d4fa',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="endless-knot" transform="scale(1.3) translate(0,-50)">
-                          <path d="M-30 -20 L 30 40 L 10 60 L -50 0 Z" fill="none" stroke="#d4af37" stroke-width="3" stroke-linejoin="round" class="draw-petal" />
-                          <path d="M30 -20 L -30 40 L -10 60 L 50 0 Z" fill="none" stroke="#d4af37" stroke-width="3" stroke-linejoin="round" />
-                          <path d="M-20 -10 L 40 50 L 20 70 L -40 10 Z" fill="none" stroke="#f3e5ab" stroke-width="2" stroke-linejoin="round" />
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '蓮花', sanskrit: 'Padma', color: '#ffb300',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="padma-flower" transform="scale(1.3) translate(0,-50)">
-                          <path d="M0 60 C -15 50, -15 30, 0 10 C 15 30, 15 50, 0 60 Z" fill="#ffffff" stroke="#f48fb1" stroke-width="1.2" />
-                          <path d="M0 60 L -10 70 L 0 75 L 10 70 Z" fill="#fbd22e" />
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '金魚', sanskrit: 'Matsya', color: '#ba68c8',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="golden-fish" transform="scale(1.3) translate(0,-50)">
-                          <g transform="rotate(30 -15 30)">
-                              <path d="M-15 0 C -5 10, -5 40, -15 50 C -25 40, -25 10, -15 0 Z" fill="#ffb300" opacity="0.9"/>
-                              <path d="M-15 50 L -25 65 L -10 65 Z" fill="#ffb300"/>
-                              <circle cx="-20" cy="15" r="2" fill="#000"/>
-                          </g>
-                          <g transform="rotate(-30 15 30)">
-                              <path d="M15 0 C 25 10, 25 40, 15 50 C 5 40, 5 10, 15 0 Z" fill="#ffca28" opacity="0.9"/>
-                              <path d="M15 50 L 5 65 L 20 65 Z" fill="#ffca28"/>
-                              <circle cx="20" cy="15" r="2" fill="#000"/>
-                          </g>
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '勝利幢', sanskrit: 'Dhvaja', color: '#4dd0e1',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="victory-banner" transform="scale(1.3) translate(0,-50)">
-                          <rect x="-3" y="-10" width="6" height="85" fill="#d4af37"/>
-                          <path d="M-25 15 L 25 15 L 20 30 L -20 30 Z" fill="#006064"/>
-                          <path d="M-20 30 L 20 30 L 15 50 L -15 50 Z" fill="#c62828"/>
-                          <path d="M-15 50 L 15 50 L 10 70 L -10 70 Z" fill="#f3e5ab"/>
-                          <circle cx="0" cy="-10" r="5" fill="#d4af37"/>
-                      </g>
-                    </svg>`
-            },
-            {
-                name: '寶瓶', sanskrit: 'Kalasha', color: '#f48fb1',
-                svg: `<svg viewBox="-150 -150 300 300" style="width:100%;height:100%;overflow:visible; filter:url(#glow)">
-                      <use href="#common-lotus-base" />
-                      <g id="treasure-vase" transform="scale(1.3) translate(0,-50)">
-                          <path d="M-15 0 L 15 0 L 12 10 L -12 10 Z" fill="#d4af37"/>
-                          <path d="M-15 10 C -30 20, -30 50, -10 60 L 10 60 C 30 50, 30 20, 15 10 Z" fill="#006064" stroke="#4dd0e1" stroke-width="2"/>
-                          <circle cx="0" cy="35" r="8" fill="#d4af37"/>
-                          <path d="M0 -15 C -5 -10, -5 -5, 0 0 C 5 -5, 5 -10, 0 -15 Z" fill="#f48fb1"/>
-                      </g>
-                    </svg>`
-            }
-        ];
+<!-- H strand: warm coral-orange (lighter, goes over at NE and SW) -->
+<g clip-path="url(#ek2-hc)" fill="none" stroke="#d06840" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M -24,-24 L -58,-24 Q -78,-24 -78,0 Q -78,24 -58,24 L -24,24"/>
+  <path d="M 24,-24 L 58,-24 Q 78,-24 78,0 Q 78,24 58,24 L 24,24"/>
+  <line x1="-24" y1="-24" x2="24" y2="-24"/>
+  <line x1="-24" y1="24" x2="24" y2="24"/>
+</g>
 
-        let db; 
-        try { 
-            db = JSON.parse(localStorage.getItem('PX_V15.0')) || {}; 
-        } catch(e) { 
-            db = {}; 
-        }
-        
-        const userName = db.name || "行者";
-        const deck = document.getElementById('deck-container');
-        
-        TREASURES.forEach((t, idx) => {
-            const card = document.createElement('div');
-            card.className = `card card-${idx}`;
-            card.onclick = (e) => { 
-                e.stopPropagation(); 
-                focusCard(idx); 
-            };
+<!-- V strand: deeper burgundy-red (goes over at NW and SE) -->
+<g clip-path="url(#ek2-vc)" fill="none" stroke="#a83020" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M -24,-24 L -24,-58 Q -24,-78 0,-78 Q 24,-78 24,-58 L 24,-24"/>
+  <path d="M -24,24 L -24,58 Q -24,78 0,78 Q 24,78 24,58 L 24,24"/>
+  <line x1="-24" y1="-24" x2="-24" y2="24"/>
+  <line x1="24" y1="-24" x2="24" y2="24"/>
+</g>
 
-            card.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-back card-face">
-                        <svg class="totem-prajna" style="stroke:#d4af37" viewBox="0 0 100 100">
-                            <use href="#totem-prajna-symbol"/>
-                        </svg>
-                        <div style="margin-top:20px; color:#d4af37; font-size:0.75rem; letter-spacing:3px; font-weight:bold; opacity:0.8">
-                            功德契印
-                        </div>
-                    </div>
-                    <div class="card-front card-face">
-                        <div class="cert-header">✦ ${t.name} ✦</div>
-                        <div class="icon-container">${t.svg}</div>
-                        <div class="cert-name-wrap" style="text-align:center">
-                            <div style="color:var(--gold); font-size:0.6rem; letter-spacing:2px; text-transform:uppercase">${t.sanskrit}</div>
-                            <div class="cert-user">${userName}</div>
-                        </div>
-                        <button class="btn-confirm" onclick="returnToSystem()">收起契印</button>
-                    </div>
-                </div>
-            `;
-            deck.appendChild(card);
-        });
+<!-- Edge highlight on H strand -->
+<g clip-path="url(#ek2-hc)" fill="none" stroke="rgba(240,185,120,.35)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M -24,-24 L -58,-24 Q -78,-24 -78,0 Q -78,24 -58,24 L -24,24"/>
+  <path d="M 24,-24 L 58,-24 Q 78,-24 78,0 Q 78,24 58,24 L 24,24"/>
+  <line x1="-24" y1="-24" x2="24" y2="-24"/>
+  <line x1="-24" y1="24" x2="24" y2="24"/>
+</g>
+<!-- Edge highlight on V strand -->
+<g clip-path="url(#ek2-vc)" fill="none" stroke="rgba(200,120,100,.3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M -24,-24 L -24,-58 Q -24,-78 0,-78 Q 24,-78 24,-58 L 24,-24"/>
+  <path d="M -24,24 L -24,58 Q -24,78 0,78 Q 24,78 24,58 L 24,24"/>
+  <line x1="-24" y1="-24" x2="-24" y2="24"/>
+  <line x1="24" y1="-24" x2="24" y2="24"/>
+</g>
 
-        // 初始載入動畫邏輯
-        window.onload = () => {
-            setTimeout(() => { 
-                document.getElementById('page-curtain').style.opacity = '0'; 
-            }, 300);
-        };
+<!-- Gold outer outline glow -->
+<g fill="none" stroke="rgba(220,172,60,.5)" stroke-width="1.4" filter="url(#ek2-sm)">
+  <path d="M -24,-24 L -58,-24 Q -78,-24 -78,0 Q -78,24 -58,24 L -24,24"/>
+  <path d="M 24,-24 L 58,-24 Q 78,-24 78,0 Q 78,24 58,24 L 24,24"/>
+  <path d="M -24,-24 L -24,-58 Q -24,-78 0,-78 Q 24,-78 24,-58 L 24,-24"/>
+  <path d="M -24,24 L -24,58 Q -24,78 0,78 Q 24,78 24,58 L 24,24"/>
+</g>
 
-        // 聚焦卡牌邏輯
-        function focusCard(idx) {
-            resetAllCards();
-            const targetCard = document.querySelector(`.card-${idx}`);
-            targetCard.classList.add('is-active');
-            
-            setTimeout(() => {
-                targetCard.classList.add('is-flipped');
-            }, 800);
-        }
+<!-- Crossing jewel dots -->
+<g filter="url(#ek2-glow)">
+  <circle cx="-24" cy="-24" r="4" fill="#e8c050" stroke="#c8a030" stroke-width=".8"/>
+  <circle cx="24" cy="-24" r="4" fill="#e8c050" stroke="#c8a030" stroke-width=".8"/>
+  <circle cx="-24" cy="24" r="4" fill="#e8c050" stroke="#c8a030" stroke-width=".8"/>
+  <circle cx="24" cy="24" r="4" fill="#e8c050" stroke="#c8a030" stroke-width=".8"/>
+</g>
+<!-- Loop-end ornaments -->
+<g filter="url(#ek2-glow)">
+  <circle cy="-78" r="4.5" fill="#c84820" stroke="#e8b060" stroke-width="1"/>
+  <circle cy="78" r="4.5" fill="#c84820" stroke="#e8b060" stroke-width="1"/>
+  <circle cx="-78" r="4.5" fill="#c04018" stroke="#e8a850" stroke-width="1"/>
+  <circle cx="78" r="4.5" fill="#c04018" stroke="#e8a850" stroke-width="1"/>
+</g>
+<!-- Small decorative arcs at loop tops/sides -->
+<g fill="none" stroke="rgba(220,170,60,.4)" stroke-width="1">
+  <path d="M -12,-74 Q 0,-82 12,-74"/>
+  <path d="M -12,74 Q 0,82 12,74"/>
+  <path d="M -74,-12 Q -82,0 -74,12"/>
+  <path d="M 74,-12 Q 82,0 74,12"/>
+</g>
+</svg>
+</div>
+<span class="zh">吉 祥 結</span><span class="en">Endless Knot</span>
+</div>
+<!-- ══════════════════════════════════════════════
+     8. 勝利幢  Victory Banner
+     Crimson tiers, gold filigree, silk drapes
+══════════════════════════════════════════════ -->
+<div class="cell">
+<div class="disc" style="background:radial-gradient(circle at 42% 32%,#180404 0%,#0e0202 55%,#080101 100%)">
+<svg viewBox="-90 -90 180 180" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="vb-r" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#6e0808"/><stop offset="22%" stop-color="#b81818"/>
+    <stop offset="78%" stop-color="#b81818"/><stop offset="100%" stop-color="#6e0808"/>
+  </linearGradient>
+  <linearGradient id="vb-g" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#906810"/><stop offset="42%" stop-color="#e8cc58"/>
+    <stop offset="58%" stop-color="#e8cc58"/><stop offset="100%" stop-color="#906810"/>
+  </linearGradient>
+  <linearGradient id="vb-sk" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="#6a0606"/><stop offset="50%" stop-color="#a01010"/>
+    <stop offset="100%" stop-color="#6a0606"/>
+  </linearGradient>
+  <filter id="vb-glow">
+    <feGaussianBlur stdDeviation="2.5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+<!-- Pole shadow -->
+<rect x="-1" y="-86" width="5" height="158" rx="2.5" fill="rgba(0,0,0,.4)" transform="translate(2,2)"/>
+<!-- Main pole -->
+<rect x="-2.5" y="-86" width="5" height="158" rx="2.5" fill="url(#vb-g)"/>
+<rect x="-1" y="-86" width="2" height="158" fill="rgba(255,248,180,.32)" rx="1"/>
 
-        // 重置所有卡牌狀態
-        function resetAllCards(e) {
-            document.querySelectorAll('.card').forEach(c => {
-                c.classList.remove('is-active');
-                c.classList.remove('is-flipped');
-            });
-        }
+<!-- Finial assembly -->
+<circle cx="0" cy="-88" r="8" fill="#d4aa38" stroke="#907010" stroke-width="1.5" filter="url(#vb-glow)"/>
+<circle cx="0" cy="-88" r="5" fill="rgba(255,248,210,.75)"/>
+<ellipse cx="0" cy="-78" rx="5.5" ry="8.5" fill="#d0a832" stroke="#907010" stroke-width="1.1"/>
+<circle cx="0" cy="-68" r="4" fill="#c89828" stroke="#806810" stroke-width="1"/>
 
-        // 回首頁的函數
-        function goHome(targetUrl) {
-            document.getElementById('page-curtain').style.opacity = '1';
-            setTimeout(() => { 
-                window.location.href = targetUrl; 
-            }, 800);
-        }
+<!-- ── Tier 1 (top, narrowest) ── -->
+<path d="M -22,-64 L 22,-64 L 26,-42 L -26,-42 Z" fill="url(#vb-r)" stroke="#580808" stroke-width=".8"/>
+<!-- Tier 1 outer shading -->
+<path d="M -22,-64 L -26,-42 Z" stroke="rgba(0,0,0,.25)" stroke-width="4" fill="none"/>
+<path d="M 22,-64 L 26,-42 Z" stroke="rgba(255,100,100,.08)" stroke-width="4" fill="none"/>
+<rect x="-26" y="-66" width="52" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<rect x="-26" y="-44" width="52" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<!-- Tier 1 inner pattern -->
+<g fill="none" stroke="rgba(250,215,70,.55)" stroke-width=".85">
+  <path d="M -14,-57 C -6,-53 6,-53 14,-57"/>
+  <path d="M -14,-51 C -6,-47 6,-47 14,-51"/>
+  <path d="M -6,-64 L -6,-44" stroke-width=".6" opacity=".5"/>
+  <path d="M 6,-64 L 6,-44" stroke-width=".6" opacity=".5"/>
+</g>
 
-        // 返回系統邏輯
-        function returnToSystem() {
-            resetAllCards(); 
-        }
-    </script>
+<!-- ── Tier 2 (middle) ── -->
+<path d="M -34,-36 L 34,-36 L 38,-12 L -38,-12 Z" fill="url(#vb-r)" stroke="#580808" stroke-width=".8"/>
+<path d="M -34,-36 L -38,-12 Z" stroke="rgba(0,0,0,.22)" stroke-width="5" fill="none"/>
+<path d="M 34,-36 L 38,-12 Z" stroke="rgba(255,100,100,.07)" stroke-width="5" fill="none"/>
+<rect x="-38" y="-38" width="76" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<rect x="-38" y="-14" width="76" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<g fill="none" stroke="rgba(250,215,70,.55)" stroke-width=".85">
+  <path d="M -24,-28 C -12,-24 12,-24 24,-28"/>
+  <path d="M -24,-21 C -12,-17 12,-17 24,-21"/>
+  <path d="M -14,-36 L -14,-14" stroke-width=".6" opacity=".5"/>
+  <path d="M 0,-36 L 0,-14" stroke-width=".6" opacity=".5"/>
+  <path d="M 14,-36 L 14,-14" stroke-width=".6" opacity=".5"/>
+</g>
+<!-- Small diamond ornaments on tier 2 -->
+<g fill="rgba(240,200,60,.18)" stroke="rgba(230,185,50,.5)" stroke-width=".7">
+  <polygon points="-24,-24 -20,-28 -16,-24 -20,-20"/>
+  <polygon points="-4,-24 0,-28 4,-24 0,-20"/>
+  <polygon points="16,-24 20,-28 24,-24 20,-20"/>
+</g>
+
+<!-- ── Tier 3 (widest) ── -->
+<path d="M -46,-6 L 46,-6 L 50,20 L -50,20 Z" fill="url(#vb-r)" stroke="#580808" stroke-width=".8"/>
+<path d="M -46,-6 L -50,20 Z" stroke="rgba(0,0,0,.2)" stroke-width="6" fill="none"/>
+<path d="M 46,-6 L 50,20 Z" stroke="rgba(255,100,100,.06)" stroke-width="6" fill="none"/>
+<rect x="-50" y="-8" width="100" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<rect x="-50" y="18" width="100" height="5.5" rx="1.5" fill="url(#vb-g)"/>
+<g fill="none" stroke="rgba(250,215,70,.55)" stroke-width=".85">
+  <path d="M -32,4 C -16,10 16,10 32,4"/>
+  <path d="M -32,11 C -16,16 16,16 32,11"/>
+  <path d="M -22,-5 L -22,19" stroke-width=".6" opacity=".5"/>
+  <path d="M -8,-5 L -8,19" stroke-width=".6" opacity=".5"/>
+  <path d="M 8,-5 L 8,19" stroke-width=".6" opacity=".5"/>
+  <path d="M 22,-5 L 22,19" stroke-width=".6" opacity=".5"/>
+</g>
+<g fill="rgba(240,200,60,.18)" stroke="rgba(230,185,50,.5)" stroke-width=".7">
+  <polygon points="-32,7 -28,3 -24,7 -28,11"/>
+  <polygon points="-12,7 -8,3 -4,7 -8,11"/>
+  <polygon points="8,7 12,3 16,7 12,11"/>
+  <polygon points="28,7 32,3 36,7 32,11"/>
+</g>
+
+<!-- ── Hanging silk panels ── -->
+<!-- Left panel -->
+<path d="M -50,24 L -50,62 Q -50,72 -38,72 Q -26,72 -26,62 L -26,24 Z" fill="url(#vb-sk)" stroke="#500606" stroke-width=".8"/>
+<rect x="-50" y="24" width="24" height="50" rx="6" fill="none" stroke="url(#vb-g)" stroke-width="1.1"/>
+<!-- Centre panel (taller) -->
+<path d="M -15,24 L -15,68 Q -15,80 0,80 Q 15,80 15,68 L 15,24 Z" fill="url(#vb-sk)" stroke="#500606" stroke-width=".8"/>
+<rect x="-15" y="24" width="30" height="58" rx="7" fill="none" stroke="url(#vb-g)" stroke-width="1.1"/>
+<!-- Right panel -->
+<path d="M 26,24 L 26,62 Q 26,72 38,72 Q 50,72 50,62 L 50,24 Z" fill="url(#vb-sk)" stroke="#500606" stroke-width=".8"/>
+<rect x="26" y="24" width="24" height="50" rx="6" fill="none" stroke="url(#vb-g)" stroke-width="1.1"/>
+<!-- Silk panel inner patterns -->
+<g fill="none" stroke="rgba(230,185,55,.5)" stroke-width=".8">
+  <path d="M -44,34 C -38,38 -32,38 -28,34"/>
+  <path d="M -44,44 C -38,48 -32,48 -28,44"/>
+  <path d="M -44,54 C -38,58 -32,58 -28,54"/>
+  <path d="M -9,34 C -3,40 3,40 9,34"/>
+  <path d="M -9,46 C -3,52 3,52 9,46"/>
+  <path d="M -9,58 C -3,64 3,64 9,58"/>
+  <path d="M 28,34 C 34,38 40,38 44,34"/>
+  <path d="M 28,44 C 34,48 40,48 44,44"/>
+  <path d="M 28,54 C 34,58 40,58 44,54"/>
+</g>
+<!-- Tassel threads -->
+<g stroke="#c8a028" stroke-width="1.8" stroke-linecap="round">
+  <line x1="-38" y1="72" x2="-38" y2="84"/>
+  <line x1="0" y1="80" x2="0" y2="88"/>
+  <line x1="38" y1="72" x2="38" y2="84"/>
+</g>
+<g stroke="#e8cc50" stroke-width=".7" stroke-linecap="round">
+  <line x1="-38" y1="72" x2="-38" y2="84"/>
+  <line x1="0" y1="80" x2="0" y2="88"/>
+  <line x1="38" y1="72" x2="38" y2="84"/>
+</g>
+<g filter="url(#vb-glow)">
+  <circle cx="-38" cy="86" r="4.5" fill="#c8a028" stroke="#e8c850" stroke-width=".8"/>
+  <circle cx="0" cy="90" r="4.5" fill="#c8a028" stroke="#e8c850" stroke-width=".8"/>
+  <circle cx="38" cy="86" r="4.5" fill="#c8a028" stroke="#e8c850" stroke-width=".8"/>
+</g>
+</svg>
+</div>
+<span class="zh">勝 利 幢</span><span class="en">Victory Banner</span>
+</div>
+
+</div><!-- /grid -->
 </body>
 </html>
