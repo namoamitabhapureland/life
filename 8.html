@@ -8,11 +8,10 @@
         :root {
             --gold-light: #f3e5ab;
             --gold-solid: #d4af37;
-            --bronze-glow: #c89030;
             --cyan-jade: #8ba89c;
-            --bg-center: #091114; /* 徹底拔除紫色，改用深邃碧墨琉璃色調 */
+            --bg-center: #091114; 
             --bg-deep: #010304;
-            --card-base: linear-gradient(145deg, #12181a, #050809); /* 告別死黑，帶有隱約的青銅墨玉質感 */
+            --card-base: linear-gradient(145deg, #12181a, #050809); 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -28,112 +27,106 @@
 
         canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* ════ 第一階段：單抽顯化場景 ════ */
+        /* ════ 第一階段：八卦方位 抽卡場景 ════ */
         #draw-scene {
             position: absolute; inset: 0; z-index: 10;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .card-container {
-            width: 230px; height: 390px;
-            perspective: 1500px;
+        .center-hint {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--gold-light); font-size: 0.85rem; letter-spacing: 6px; text-indent: 6px;
+            opacity: 0.6; text-align: center; line-height: 2;
+            transition: opacity 0.8s; pointer-events: none;
+        }
+
+        /* 圓環佈局核心 */
+        .bagua-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+        }
+
+        .card-wrapper {
+            position: absolute;
+            width: 90px; height: 150px; /* 初始較小，適配手機圓環 */
+            top: 0; left: 0;
+            /* 透過 CSS 變數計算八卦圓環位置，同時保持卡牌直立 */
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-150px) rotate(calc(-1 * var(--angle)));
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            perspective: 1000px;
             cursor: pointer;
-            position: relative;
         }
 
+        /* 卡牌本體與 3D 結構 */
         .card-inner {
             width: 100%; height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.9);
-            border-radius: 20px;
+            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-radius: 12px;
         }
 
-        /* 點擊觸發翻轉與整體放大 */
-        .card-container.is-flipped .card-inner {
-            transform: rotateY(180deg) scale(1.06);
+        .card-wrapper.is-flipped .card-inner {
+            transform: rotateY(180deg);
         }
 
         .card-face {
             position: absolute; inset: 0;
             backface-visibility: hidden;
-            border-radius: 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: inherit;
             overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* ── 卡背設計（融合幾何曼陀羅與高雅墨玉底色） ── */
+        /* 卡背：幾何陣列 */
         .card-back {
             background: var(--card-base);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: inset 0 0 35px rgba(139, 168, 156, 0.1);
-            transition: border-color 0.5s, box-shadow 0.5s;
+            box-shadow: inset 0 0 20px rgba(139, 168, 156, 0.1);
+        }
+        .mandala-svg {
+            width: 200%; height: 200%;
+            opacity: 0.4;
         }
 
-        #mandala-back {
-            width: 210px; height: 210px;
-            opacity: 0.75; /* 提升初始透明度，讓色彩浮現 */
-            transition: filter 0.5s ease, transform 0.5s;
-        }
-
-        /* 輕觸未翻轉前的高光爆發與凝聚感 */
-        .card-container:active .card-back {
-            border-color: var(--gold-solid);
-            box-shadow: inset 0 0 40px rgba(212,175,55,0.3), 0 0 30px rgba(212,175,55,0.2);
-        }
-        .card-container:active #mandala-back {
-            filter: brightness(1.5) drop-shadow(0 0 15px var(--gold-solid));
-        }
-
-        /* ── 卡面設計（暫位符） ── */
+        /* 卡面：顯化法相 */
         .card-front {
-            background: linear-gradient(135deg, rgba(14,20,22,0.95), rgba(2,4,5,1));
+            background: #020405; /* 配合 SVG 的極致深黑 */
             border: 1px solid rgba(212, 175, 55, 0.5);
             transform: rotateY(180deg);
             box-shadow: inset 0 0 50px rgba(212,175,55,0.15);
-            padding: 25px 20px;
-            justify-content: space-between;
+            padding: 10px;
         }
 
-        .treasure-svg-space {
-            width: 150px; height: 150px;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
+        /* --- 互動狀態 --- */
+        /* 選中時：移至中央並放大 */
+        .card-wrapper.focused {
+            transform: translate(-50%, -50%) scale(2.8);
+            z-index: 100;
         }
-
-        .placeholder-glow {
-            width: 100%; height: 100%;
-            border: 1px dashed rgba(243,229,171,0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--cyan-jade); font-size: 0.75rem; letter-spacing: 2px;
-            animation: breathe 4s infinite alternate;
-        }
-        @keyframes breathe {
-            0% { box-shadow: inset 0 0 15px rgba(139,168,156,0.1); border-color: rgba(139,168,156,0.2); }
-            100% { box-shadow: inset 0 0 35px rgba(212,175,55,0.3); border-color: rgba(212,175,55,0.5); }
-        }
-
-        .draw-hint {
-            position: absolute; bottom: -55px;
-            color: var(--gold-light); font-size: 0.85rem; letter-spacing: 6px;
-            opacity: 0.6; transition: opacity 0.5s;
+        /* 未被選中時：化為微塵散去 */
+        .card-wrapper.scattered {
+            opacity: 0; pointer-events: none;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-250px) scale(0);
         }
 
         .btn-action {
-            position: absolute; bottom: -75px;
+            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
             padding: 12px 35px; border-radius: 30px;
             border: 1px solid var(--gold-solid); 
             background: linear-gradient(to right, rgba(212,175,55,0.08), rgba(212,175,55,0.18));
             color: var(--gold-light); font-size: 0.85rem; letter-spacing: 4px; text-indent: 4px;
             cursor: pointer; opacity: 0; pointer-events: none;
             transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); backdrop-filter: blur(5px);
+            z-index: 200;
         }
-        .btn-action.show { opacity: 1; pointer-events: auto; bottom: -65px; }
+        .btn-action.show { opacity: 1; pointer-events: auto; }
 
-        /* ════ 第二階段：八寶圖鑑場景（上四下四） ════ */
+        /* ════ 第二階段：多寶閣 圖鑑場景 ════ */
         #gallery-scene {
             position: absolute; inset: 0; z-index: 5;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -142,75 +135,46 @@
             padding: 20px;
         }
 
-        .gallery-header {
-            text-align: center; margin-bottom: 35px;
-        }
-        .gallery-title {
-            color: var(--gold-light); font-size: 1.25rem; letter-spacing: 14px; text-indent: 14px;
-            text-shadow: 0 0 20px rgba(212,175,55,0.3); font-weight: normal;
-        }
-        .gallery-subtitle {
-            color: var(--cyan-jade); font-size: 0.75rem; letter-spacing: 4px; text-indent: 4px; margin-top: 8px; opacity: 0.8;
-        }
-
-        /* 穩重對稱的上四下四佈局 */
+        .gallery-header { text-align: center; margin-bottom: 35px; }
+        .gallery-title { color: var(--gold-light); font-size: 1.2rem; letter-spacing: 12px; text-indent: 12px; font-weight: normal; }
+        
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
-            gap: 25px;
+            gap: 20px;
             width: 100%; max-width: 860px;
         }
 
         .grid-item {
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid rgba(139, 168, 156, 0.25);
-            border-radius: 16px;
-            min-height: 190px;
+            border-radius: 12px;
+            min-height: 180px;
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            padding: 20px 10px; position: relative; 
+            padding: 15px 10px; position: relative; 
             box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.5s;
         }
 
-        .grid-item.locked {
-            border-style: dashed; border-color: rgba(139, 168, 156, 0.15); opacity: 0.45;
-        }
-        .grid-item.new-unlocked {
-            border-color: var(--gold-solid);
-            box-shadow: inset 0 0 25px rgba(212,175,55,0.1), 0 0 20px rgba(212,175,55,0.15);
-        }
+        .grid-item.locked { border-style: dashed; opacity: 0.45; }
+        .grid-item.unlocked { border-color: rgba(212,175,55,0.6); box-shadow: inset 0 0 25px rgba(212,175,55,0.1); }
 
-        .grid-svg-container {
-            width: 100%; height: 95px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .grid-svg-container { width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; }
+        .grid-svg-container svg { width: 100%; height: 100%; }
 
-        .grid-info {
-            text-align: center; width: 100%;
-        }
-        .grid-name {
-            font-size: 0.85rem; color: #fff; letter-spacing: 2px; text-indent: 2px; margin-bottom: 8px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
+        .grid-info { text-align: center; width: 100%; }
+        .grid-name { font-size: 0.8rem; color: #fff; letter-spacing: 2px; margin-bottom: 6px; }
         .grid-item.locked .grid-name { color: var(--cyan-jade); opacity: 0.7; }
+        .grid-count-tag { font-size: 0.65rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 3px 8px; border-radius: 8px; background: rgba(212, 175, 55, 0.06); }
+        .grid-item.locked .grid-count-tag { color: #566461; border-color: rgba(139,168,156,0.1); background: transparent; }
 
-        .grid-count-tag {
-            font-size: 0.65rem; color: var(--gold-light); display: inline-block;
-            border: 1px solid rgba(212, 175, 55, 0.3); padding: 3px 10px;
-            border-radius: 10px; background: rgba(212, 175, 55, 0.06);
-            white-space: nowrap; letter-spacing: 1px;
-        }
-        .grid-item.locked .grid-count-tag {
-            color: #566461; border-color: rgba(139,168,156,0.1); background: transparent;
-        }
-
-        /* 手機板響應式微調 */
         @media (max-width: 768px) {
-            .gallery-grid { gap: 12px; max-width: 100%; }
-            .grid-item { min-height: 155px; padding: 12px 5px; border-radius: 12px; }
-            .grid-svg-container { height: 70px; }
-            .grid-name { font-size: 0.75rem; margin-bottom: 5px; }
+            .card-wrapper { width: 75px; height: 125px; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-120px) rotate(calc(-1 * var(--angle))); }
+            .card-wrapper.focused { transform: translate(-50%, -50%) scale(3.5); }
+            .gallery-grid { gap: 10px; }
+            .grid-item { min-height: 140px; }
+            .grid-svg-container { height: 60px; }
         }
     </style>
 </head>
@@ -219,86 +183,145 @@
     <canvas id="starCanvas"></canvas>
 
     <div id="draw-scene">
-        <div class="card-container" id="main-card" onclick="triggerFlip()">
-            <div class="card-inner">
-                <div class="card-back card-face">
-                    <svg id="mandala-back" viewBox="-115 -115 230 230"></svg>
-                </div>
-                <div class="card-front card-face">
-                    <div style="color: var(--gold-light); font-size: 0.75rem; letter-spacing: 4px;">✦ 功德顯化 ✦</div>
-                    <div class="treasure-svg-space">
-                        <div class="placeholder-glow">
-                            <span>法相線條預留</span>
-                        </div>
-                    </div>
-                    <div class="grid-info">
-                        <div style="color: #fff; font-size: 1.05rem; letter-spacing: 3px; font-weight: bold;" id="drawn-name">法輪契印</div>
-                        <div style="margin-top: 6px; color: var(--cyan-jade); font-size: 0.7rem; letter-spacing: 2px;">恆常顯現金 ‧ 重複率高</div>
-                    </div>
-                </div>
+        <div class="center-hint" id="center-hint">五萬功德聚<br>憑心擇一印</div>
+        <div class="bagua-container" id="bagua-container">
             </div>
-        </div>
-        <div class="draw-hint" id="draw-hint">五萬功德聚 ‧ 輕觸以顯化</div>
-        <button class="btn-action" id="btn-collect" onclick="transitionToGallery()">收攝法相 ‧ 觀多寶閣</button>
+        <button class="btn-action" id="btn-collect" onclick="enterGallery()">收攝法相 ‧ 歸寶閣</button>
     </div>
 
     <div id="gallery-scene">
         <div class="gallery-header">
-            <h2 class="gallery-title">悲願化城 ． 琉璃多寶閣</h2>
-            <p class="gallery-subtitle">每五萬聲佛號凝聚一契印 ． 妙依定課資糧紀錄</p>
+            <h2 class="gallery-title">琉璃多寶閣</h2>
         </div>
-        
-        <div class="gallery-grid" id="gallery-grid"></div>
-        
-        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 40px;" onclick="location.reload()">返回重置 (測試用)</button>
+        <div class="gallery-grid" id="gallery-grid">
+            </div>
+        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 40px;" onclick="location.reload()">重新安立陣法 (測試)</button>
     </div>
 
+    <svg style="display: none;">
+        <defs>
+            <radialGradient id="sacredAura" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#C69320" stop-opacity="0.15" />
+                <stop offset="50%" stop-color="#2a4d5c" stop-opacity="0.05" />
+                <stop offset="100%" stop-color="#020405" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="pureGold" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF3D1" /><stop offset="35%" stop-color="#FCD873" /><stop offset="75%" stop-color="#C6972E" /><stop offset="100%" stop-color="#845F13" /></linearGradient>
+            <linearGradient id="lapisBlue" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4AA8FF" /><stop offset="50%" stop-color="#0A5C99" /><stop offset="100%" stop-color="#011526" /></linearGradient>
+            <linearGradient id="coralRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF7B7B" /><stop offset="50%" stop-color="#D93636" /><stop offset="100%" stop-color="#4A0000" /></linearGradient>
+            <linearGradient id="emeraldGreen" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#208C65" /><stop offset="50%" stop-color="#0B593D" /><stop offset="100%" stop-color="#021A10" /></linearGradient>
+            <linearGradient id="tailRed" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FF7B7B" stop-opacity="0.9" /><stop offset="50%" stop-color="#D93636" stop-opacity="0.7" /><stop offset="100%" stop-color="#4A0000" stop-opacity="0.1" /></linearGradient>
+            <linearGradient id="tailBlue" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#80C3FF" stop-opacity="0.9" /><stop offset="50%" stop-color="#0A5C99" stop-opacity="0.7" /><stop offset="100%" stop-color="#011526" stop-opacity="0.1" /></linearGradient>
+            <linearGradient id="tailGreen" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#40D99D" stop-opacity="0.9" /><stop offset="50%" stop-color="#0B593D" stop-opacity="0.7" /><stop offset="100%" stop-color="#021A10" stop-opacity="0.1" /></linearGradient>
+
+            <pattern id="diamondPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="url(#lapisBlue)" />
+                <path d="M 20 0 L 40 20 L 20 40 L 0 20 Z" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="2.5" />
+                <path d="M 20 5 L 35 20 L 20 35 L 5 20 Z" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none" />
+            </pattern>
+            <pattern id="zigzagPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="url(#emeraldGreen)" />
+                <path d="M 0 10 L 20 30 L 40 10 L 40 20 L 20 40 L 0 20 Z" fill="url(#pureGold)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+            </pattern>
+
+            <g id="horizontal-bands">
+                <rect x="-60" y="0" width="120" height="20" fill="url(#pureGold)" stroke="url(#pureGold)" stroke-width="4" />
+                <rect x="-60" y="20" width="120" height="20" fill="url(#emeraldGreen)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                <circle cx="0" cy="30" r="4" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="2.5" />
+                <circle cx="-30" cy="30" r="4" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="2.5" />
+                <circle cx="30" cy="30" r="4" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="2.5" />
+                <rect x="-60" y="40" width="120" height="20" fill="url(#pureGold)" stroke="url(#pureGold)" stroke-width="4" />
+            </g>
+
+            <g id="banner-top">
+                <path d="M -70 50 C -40 20, 40 20, 70 50 L 60 70 L -60 70 Z" fill="url(#pureGold)" stroke="url(#pureGold)" stroke-width="4" />
+                <path d="M -50 50 C -20 35, 20 35, 50 50" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                <circle cx="0" cy="20" r="12" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="2.5" />
+                <path d="M -5 15 C 0 10, 5 10, 5 15" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+            </g>
+
+            <g id="treasure-banner">
+                <circle cx="500" cy="400" r="500" fill="url(#sacredAura)" />
+                <g transform="translate(300, 100)">
+                    <use href="#banner-top" />
+                    <g transform="translate(0, 70)">
+                        <rect x="-60" y="0" width="120" height="100" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="4" />
+                        <path d="M 0 20 C 30 20, 50 50, 0 80 C -50 50, -30 20, 0 20 Z" fill="url(#pureGold)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+                        <path d="M 0 30 C 15 30, 25 50, 0 70 C -25 50, -15 30, 0 30 Z" fill="url(#lapisBlue)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+                        <g transform="translate(0, 100)"><use href="#horizontal-bands" /></g>
+                        <rect x="-60" y="160" width="120" height="120" fill="url(#diamondPattern)" stroke="url(#pureGold)" stroke-width="4" />
+                        <rect x="-60" y="280" width="120" height="80" fill="url(#zigzagPattern)" stroke="url(#pureGold)" stroke-width="4" />
+                        <rect x="-60" y="360" width="120" height="40" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="4" />
+                        <path d="M -60 360 L -30 400 L 0 360 L 30 400 L 60 360" stroke="url(#pureGold)" stroke-width="2.5" fill="none" />
+                        <path d="M -45 360 L -30 385 L -15 360 M 15 360 L 30 385 L 45 360" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                    </g>
+                    <g transform="translate(0, 470)">
+                        <path d="M -60 0 C -120 120, -200 280, -120 420 C -90 280, -20 120, 0 0 Z" fill="url(#tailGreen)" opacity="0.8" />
+                        <path d="M -20 0 C -80 150, -140 320, -40 460 C -10 320, 20 150, 30 0 Z" fill="url(#tailBlue)" opacity="0.85" />
+                        <path d="M 20 0 C -30 100, -80 250, 20 380 C 40 250, 50 100, 60 0 Z" fill="url(#tailRed)" opacity="0.9" />
+                    </g>
+                </g>
+                <g transform="translate(700, 100)">
+                    <use href="#banner-top" />
+                    <g transform="translate(0, 70)">
+                        <rect x="-60" y="0" width="120" height="100" fill="url(#lapisBlue)" stroke="url(#pureGold)" stroke-width="4" />
+                        <path d="M 0 20 C 30 20, 50 50, 0 80 C -50 50, -30 20, 0 20 Z" fill="url(#pureGold)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+                        <path d="M 0 30 C 15 30, 25 50, 0 70 C -25 50, -15 30, 0 30 Z" fill="url(#coralRed)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" />
+                        <g transform="translate(0, 100)"><use href="#horizontal-bands" /></g>
+                        <rect x="-60" y="160" width="120" height="120" fill="url(#diamondPattern)" stroke="url(#pureGold)" stroke-width="4" />
+                        <rect x="-60" y="280" width="120" height="80" fill="url(#zigzagPattern)" stroke="url(#pureGold)" stroke-width="4" />
+                        <rect x="-60" y="360" width="120" height="40" fill="url(#lapisBlue)" stroke="url(#pureGold)" stroke-width="4" />
+                        <path d="M -60 360 L -30 400 L 0 360 L 30 400 L 60 360" stroke="url(#pureGold)" stroke-width="2.5" fill="none" />
+                        <path d="M -45 360 L -30 385 L -15 360 M 15 360 L 30 385 L 45 360" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                    </g>
+                    <g transform="translate(0, 470)">
+                        <path d="M 60 0 C 120 120, 200 280, 120 420 C 90 280, 20 120, 0 0 Z" fill="url(#tailGreen)" opacity="0.8" />
+                        <path d="M 20 0 C 80 150, 140 320, 40 460 C 10 320, -20 150, -30 0 Z" fill="url(#tailBlue)" opacity="0.85" />
+                        <path d="M -20 0 C 30 100, 80 250, -20 380 C -40 250, -50 100, -60 0 Z" fill="url(#tailRed)" opacity="0.9" />
+                    </g>
+                </g>
+            </g>
+        </defs>
+    </svg>
+
     <script>
-        // 佛八寶定義（對應完整 8 張卡片）
-        const TREASURES_LIST = [
-            { id: "wheel",    name: "八吉祥法輪", type: "common" },
-            { id: "umbrella", name: "妙寶傘蓋",   type: "common" },
-            { id: "fish",     name: "雙壽金魚",   type: "common" },
-            { id: "vase",     name: "隨心寶瓶",   type: "common" },
-            { id: "lotus",    name: "妙淨蓮華",   type: "rare" },
-            { id: "conch",    name: "法音白螺",   type: "rare" },
-            { id: "knot",     name: "吉祥如意結", type: "epic" },
-            { id: "banner",   name: "尊勝寶幢",   type: "ultimate" } // 0.01% 終極大獎
+        // 佛八寶定義 (第一尊已實裝為吉祥寶幡)
+        const TREASURES = [
+            { id: "banner", name: "吉祥寶幡", rarity: "罕見瑞相" },
+            { id: "t2", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t3", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t4", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t5", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t6", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t7", name: "未知法相", rarity: "靜待因緣" },
+            { id: "t8", name: "未知法相", rarity: "靜待因緣" }
         ];
 
-        // 模擬當前抽中的索引（此處暫定為第0個法輪）
-        let currentDrawnIdx = 0;
+        let hasDrawn = false;
+        let drawnIndex = 0; // 這次註定抽中第0格的吉祥寶幡
 
-        // ════ 1. 星空背景渲染 ════
+        // 1. 背景星空渲染
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
         
-        function resize() { 
-            width = window.innerWidth; height = window.innerHeight; 
-            canvas.width = width; canvas.height = height; 
-        }
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
         window.addEventListener('resize', resize); resize();
         
-        for(let i=0; i<160; i++) {
-            stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*1.8 });
-        }
+        for(let i=0; i<150; i++) stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*1.5 });
         
         function drawStars() {
-            ctx.fillStyle = 'rgba(1, 3, 4, 0.4)'; ctx.fillRect(0, 0, width, height);
-            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = 'rgba(1, 3, 4, 0.4)'; ctx.fillRect(0, 0, width, height); ctx.globalCompositeOperation = 'screen';
             stars.forEach(s => { 
-                s.z -= 0.4; if(s.z <= 0) s.z = 1000; 
+                s.z -= 0.5; if(s.z <= 0) s.z = 1000; 
                 let sc = 300 / (300 + s.z);
-                let sx = width / 2 + s.x * sc, sy = height / 2 + s.y * sc; 
-                ctx.beginPath(); ctx.arc(sx, sy, s.s * sc, 0, Math.PI * 2); 
-                ctx.fillStyle = `rgba(243, 229, 171, ${sc * 0.9})`; ctx.fill(); 
+                ctx.beginPath(); ctx.arc(width/2 + s.x*sc, height/2 + s.y*sc, s.s*sc, 0, Math.PI*2); 
+                ctx.fillStyle = `rgba(243, 229, 171, ${sc})`; ctx.fill(); 
             });
             requestAnimationFrame(drawStars);
         }
         drawStars();
 
-        // ════ 2. 卡背曼陀羅生成（融合雙八角與十二角，精緻上色版） ════
+        // 2. 幾何曼陀羅 (卡背) 生成
         function poly(n, r, rotDeg=0) {
             const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
             for(let k=0;k<n;k++) pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]);
@@ -307,101 +330,100 @@
         function ptStr(pts) { return pts.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join(' '); }
         function getWeb(pts, stroke, width, op) {
             let html = `<g stroke="${stroke}" stroke-width="${width}" opacity="${op}" fill="none">`;
-            for(let i=0; i<pts.length; i++) {
-                for(let j=i+1; j<pts.length; j++) {
-                    html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}"/>`;
-                }
-            }
+            for(let i=0; i<pts.length; i++) for(let j=i+1; j<pts.length; j++) html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}"/>`;
             return html + `</g>`;
         }
-
-        const mSvg = document.getElementById('mandala-back');
-        // 設定平滑恆常自轉
-        let mHtml = `<g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="75s" repeatCount="indefinite"/>`;
-        
-        // 結構一：外圍 12角幾何網絡（使用高雅的暗金銅色）
-        const p12 = poly(12, 102);
-        mHtml += `<polygon points="${ptStr(p12)}" fill="rgba(200,144,48,0.03)" stroke="#c89030" stroke-width="1.2" opacity="0.7"/>`;
-        mHtml += getWeb(p12, '#c89030', 0.45, 0.4);
-        
-        // 結構二：內嵌雙軀幹 8角星陣（交錯22.5度，使用明亮的白金色線條）
-        const p8a = poly(8, 55, 0), p8b = poly(8, 55, 22.5);
-        mHtml += getWeb([...p8a, ...p8b], '#f3e5ab', 0.5, 0.5);
-        
-        // 結構三：核心緻密交織點
-        const pInside = poly(4, 20, 45);
-        mHtml += `<polygon points="${ptStr(pInside)}" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.8" opacity="0.6"/>`;
-        mHtml += `<circle cx="0" cy="0" r="6" fill="#fff" opacity="0.9"/>`;
-        
-        mHtml += `</g>`;
-        mSvg.innerHTML = mHtml;
-
-        // 設定初始隨機抽中的卡片名稱顯示
-        document.getElementById('drawn-name').innerText = TREASURES_LIST[currentDrawnIdx].name;
-
-        // ════ 3. 互動與翻轉核心 ════
-        let isFlipped = false;
-
-        function triggerFlip() {
-            if (isFlipped) return;
-            isFlipped = true;
-            
-            const card = document.getElementById('main-card');
-            card.classList.add('is-flipped');
-            document.getElementById('draw-hint').style.opacity = 0;
-            
-            // 翻開後優雅淡入收攝按鈕
-            setTimeout(() => {
-                document.getElementById('btn-collect').classList.add('show');
-            }, 900);
+        function getMandala() {
+            let html = `<svg class="mandala-svg" viewBox="-115 -115 230 230"><g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="80s" repeatCount="indefinite"/>`;
+            const p12 = poly(12, 102);
+            html += `<polygon points="${ptStr(p12)}" fill="rgba(200,144,48,0.03)" stroke="#c89030" stroke-width="1.2" opacity="0.7"/>` + getWeb(p12, '#c89030', 0.45, 0.4);
+            html += getWeb([...poly(8, 55, 0), ...poly(8, 55, 22.5)], '#f3e5ab', 0.5, 0.5);
+            html += `<polygon points="${ptStr(poly(4, 20, 45))}" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.8" opacity="0.6"/><circle cx="0" cy="0" r="6" fill="#fff" opacity="0.9"/></g></svg>`;
+            return html;
         }
 
-        // ════ 4. 場景滑順轉場與完整 8張卡片生成 ════
-        function transitionToGallery() {
-            const drawScene = document.getElementById('draw-scene');
-            const galleryScene = document.getElementById('gallery-scene');
+        // 3. 建立八卦陣列
+        const bagua = document.getElementById('bagua-container');
+        for(let i=0; i<8; i++) {
+            const angle = i * 45;
+            const card = document.createElement('div');
+            card.className = 'card-wrapper';
+            card.style.setProperty('--angle', `${angle}deg`);
             
-            drawScene.style.transform = 'scale(0.85)';
-            drawScene.style.opacity = '0';
-            drawScene.style.pointerEvents = 'none';
+            // 點擊事件：抽卡邏輯
+            card.onclick = () => selectCard(i, card);
 
-            setTimeout(() => {
-                galleryScene.style.opacity = '1';
-                galleryScene.style.pointerEvents = 'auto';
-                buildGalleryGrid();
-            }, 750);
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-back card-face">${getMandala()}</div>
+                    <div class="card-front card-face">
+                        <div style="width:100%; height:60%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                            <svg viewBox="100 0 800 1000" style="width:120%; height:120%; filter: drop-shadow(0 0 15px rgba(243, 229, 171, 0.3));">
+                                <use href="#treasure-banner"></use>
+                            </svg>
+                        </div>
+                        <div style="text-align:center; margin-top:15px;">
+                            <div style="color:#efd07b; font-size:1.05rem; letter-spacing:4px; font-weight:bold;">${TREASURES[drawnIndex].name}</div>
+                            <div style="color:var(--cyan-jade); font-size:0.65rem; letter-spacing:2px; margin-top:6px;">${TREASURES[drawnIndex].rarity}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            bagua.appendChild(card);
         }
 
-        // 確實安立 8 張卡片（上四下四）的排版生成
-        function buildGalleryGrid() {
+        // 4. 抽卡動畫邏輯
+        function selectCard(selectedIndex, selectedCard) {
+            if (hasDrawn) return;
+            hasDrawn = true;
+
+            document.getElementById('center-hint').style.opacity = 0;
+            
+            const allCards = document.querySelectorAll('.card-wrapper');
+            allCards.forEach((c, idx) => {
+                if (idx === selectedIndex) {
+                    c.classList.add('focused');
+                    setTimeout(() => c.classList.add('is-flipped'), 1000);
+                } else {
+                    c.classList.add('scattered');
+                }
+            });
+
+            setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
+        }
+
+        // 5. 進入多寶閣圖鑑
+        function enterGallery() {
+            document.getElementById('draw-scene').style.opacity = '0';
+            document.getElementById('draw-scene').style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                document.getElementById('gallery-scene').style.opacity = '1';
+                document.getElementById('gallery-scene').style.pointerEvents = 'auto';
+                buildGallery();
+            }, 1000);
+        }
+
+        function buildGallery() {
             const grid = document.getElementById('gallery-grid');
-            if (grid.innerHTML !== "") return; // 避免重複渲染
+            if (grid.innerHTML !== "") return;
 
             let html = "";
-            TREASURES_LIST.forEach((item, idx) => {
-                // 模擬狀態：剛剛抽中的項目顯示為「新解鎖」，其餘模擬為「未解鎖空龕」
-                const isCurrentDrawn = idx === currentDrawnIdx;
+            TREASURES.forEach((t, idx) => {
+                const isUnlocked = idx === drawnIndex;
+                const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
                 
-                let itemClass = "grid-item";
-                let countLabel = "因緣未具";
-                
-                if (isCurrentDrawn) {
-                    itemClass += " new-unlocked";
-                    countLabel = "結緣：1 尊";
-                } else {
-                    itemClass += " locked";
-                }
-                
+                // 第一尊有實體 SVG，其餘使用虛線框佔位
+                const svgContent = isUnlocked 
+                    ? `<svg viewBox="0 0 1000 1000" style="width:100%; height:100%;"><use href="#treasure-banner"></use></svg>`
+                    : `<div style="width:50px; height:50px; border:1px dashed rgba(139,168,156,0.3); border-radius:50%;"></div>`;
+
                 html += `
-                    <div class="${itemClass}">
-                        <div class="grid-svg-container">
-                            <div style="width:70px; height:70px; border:1px dashed rgba(139,168,156,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                                <span style="font-size:0.6rem; color:var(--cyan-jade); opacity:0.6;">八寶形制</span>
-                            </div>
-                        </div>
+                    <div class="${cls}">
+                        <div class="grid-svg-container">${svgContent}</div>
                         <div class="grid-info">
-                            <div class="grid-name">${item.name}</div>
-                            <div class="grid-count-tag">${countLabel}</div>
+                            <div class="grid-name">${t.name}</div>
+                            <div class="grid-count-tag">${isUnlocked ? '結緣：1 尊' : '空龕'}</div>
                         </div>
                     </div>
                 `;
