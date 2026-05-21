@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>安立數位道場 - 高畫質名片生成</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+        .controls {
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #C5A059;
+            color: #111;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover { background-color: #D4AF37; }
+        
+        .card-container {
+            display: flex;
+            gap: 40px;
+        }
+        
+        /* 嚴格設定物理比例：54mm x 90mm */
+        .card {
+            width: 318px;  /* 模擬 54mm 比例 */
+            height: 531px; /* 模擬 90mm 比例 */
+            background-color: #111111; /* 深邃黑卡 */
+            border-radius: 18px; /* 模擬 3mm 圓角 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            color: #C5A059; /* 古銅金 */
+        }
+
+        /* --- 正面排版 --- */
+        .card.front { padding-top: 120px; }
+        .logo-img {
+            width: 140px;
+            height: auto;
+            margin-bottom: 60px;
+        }
+        .title-main {
+            font-family: 'BiauKai', 'DFKai-SB', 'Noto Serif TC', serif;
+            font-size: 32px;
+            letter-spacing: 4px;
+            margin: 0 0 16px 0;
+            font-weight: normal;
+        }
+        .title-sub {
+            font-size: 14px;
+            letter-spacing: 8px;
+            margin: 0;
+            margin-left: 8px; /* 平衡字距 */
+        }
+
+        /* --- 背面排版 --- */
+        .card.back { padding-top: 60px; padding-left: 30px; padding-right: 30px;}
+        .back-title {
+            font-size: 18px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        #qrcode-container {
+            background-color: #111111;
+            padding: 10px;
+            margin-bottom: 40px;
+        }
+        .instructions {
+            width: 100%;
+            font-size: 11px;
+            line-height: 2;
+            letter-spacing: 1px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 16px;
+        }
+        .footer-text {
+            position: absolute;
+            bottom: 30px;
+            font-size: 8px;
+            letter-spacing: 1px;
+            color: #887240; /* 稍暗的金，降低干擾 */
+            border-top: 1px solid #887240;
+            padding-top: 10px;
+            width: 80%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button onclick="downloadCards()">下載高畫質 PNG (供印刷廠使用)</button>
+    </div>
+
+    <div class="card-container">
+        <div class="card front" id="card-front">
+            <img src="image.png" alt="合十圖" class="logo-img" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\'width:140px;height:140px;border:1px dashed #C5A059;display:flex;align-items:center;justify-content:center;margin-bottom:60px;\'>請將 image.png 放在同一資料夾</div>');">
+            <h1 class="title-main">南無阿彌陀佛</h1>
+            <p class="title-sub">安立數位道場</p>
+        </div>
+
+        <div class="card back" id="card-back">
+            <div class="back-title">【安立道場儀式】</div>
+            <div id="qrcode-container"></div>
+            
+            <div class="instructions">
+                <ol>
+                    <li>掃碼進入道場。</li>
+                    <li>點選瀏覽器分享選單，選擇「加到主畫面」。</li>
+                    <li>從桌面啟動，即可離線修行。</li>
+                </ol>
+            </div>
+            
+            <div class="footer-text">
+                此法寶流通純粹，若受用，請將此卡轉贈予有緣人。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 生成絕對精準的真實 QR Code
+        // 指向您的彌陀淨土系統主網址
+        window.onload = function() {
+            new QRCode(document.getElementById("qrcode-container"), {
+                text: "https://namoamitabhapureland.github.io/bodhicitta/index.html",
+                width: 140,
+                height: 140,
+                colorDark : "#C5A059",  // 古銅金
+                colorLight : "#111111", // 黑底
+                correctLevel : QRCode.CorrectLevel.H // 最高容錯率，確保印刷後極易掃描
+            });
+        };
+
+        // 2. 高畫質 PNG 截圖功能 (放大 4 倍渲染，達 300 DPI 印刷標準)
+        function downloadCards() {
+            const options = { scale: 4, backgroundColor: null };
+            
+            // 下載正面
+            html2canvas(document.getElementById("card-front"), options).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'PureLand_Card_Front_300dpi.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+
+            // 下載背面 (延遲 500 毫秒避免瀏覽器阻擋同時下載)
+            setTimeout(() => {
+                html2canvas(document.getElementById("card-back"), options).then(canvas => {
+                    let link = document.createElement('a');
+                    link.download = 'PureLand_Card_Back_300dpi.png';
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>
