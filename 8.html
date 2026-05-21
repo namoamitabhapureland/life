@@ -37,9 +37,10 @@
         .center-hint {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            color: var(--gold-light); font-size: 0.85rem; letter-spacing: 6px; text-indent: 6px;
-            opacity: 0.6; text-align: center; line-height: 2;
-            transition: opacity 0.8s; pointer-events: none;
+            color: var(--gold-light); font-size: 0.95rem; letter-spacing: 6px; text-indent: 6px;
+            opacity: 0.8; text-align: center; line-height: 2;
+            text-shadow: 0 0 15px rgba(212,175,55,0.4);
+            transition: opacity 0.8s; pointer-events: none; z-index: 5;
         }
 
         /* 圓環佈局核心 */
@@ -47,17 +48,33 @@
             position: absolute;
             top: 50%; left: 50%;
             width: 0; height: 0;
+            z-index: 10;
         }
 
+        /* 1. 卡牌大幅放大
+           2. 半徑縮小(translateY)，產生唯美重疊 */
         .card-wrapper {
             position: absolute;
-            width: 90px; height: 150px; /* 初始較小，適配手機圓環 */
+            width: 140px; height: 235px; /* 卡片顯著放大 */
             top: 0; left: 0;
-            /* 透過 CSS 變數計算八卦圓環位置，同時保持卡牌直立 */
-            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-150px) rotate(calc(-1 * var(--angle)));
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            perspective: 1000px;
+            /* translateY 數值小於卡片高度，產生環狀交疊 */
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-120px) rotate(calc(-1 * var(--angle)));
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            perspective: 1500px;
             cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 行者手指觸碰或滑鼠懸停時，該卡片浮出並微幅上推，增添盲選的物理手感 */
+        @media (hover: hover) {
+            .card-wrapper:hover {
+                z-index: 50;
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-135px) rotate(calc(-1 * var(--angle))) scale(1.05);
+            }
+        }
+        .card-wrapper:active {
+            z-index: 50;
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-135px) rotate(calc(-1 * var(--angle))) scale(1.05);
         }
 
         /* 卡牌本體與 3D 結構 */
@@ -66,8 +83,8 @@
             position: relative;
             transform-style: preserve-3d;
             transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            border-radius: 14px;
         }
 
         .card-wrapper.is-flipped .card-inner {
@@ -85,28 +102,28 @@
         /* 卡背：幾何陣列 */
         .card-back {
             background: var(--card-base);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: inset 0 0 20px rgba(139, 168, 156, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.05);
         }
         .mandala-svg {
-            width: 200%; height: 200%;
-            opacity: 0.4;
+            width: 250%; height: 250%; /* 圖騰跟隨卡片放大而放大 */
+            opacity: 0.5;
         }
 
         /* 卡面：顯化法相 */
         .card-front {
-            background: #020405; /* 配合 SVG 的極致深黑 */
-            border: 1px solid rgba(212, 175, 55, 0.5);
+            background: #020405;
+            border: 1px solid rgba(212, 175, 55, 0.6);
             transform: rotateY(180deg);
-            box-shadow: inset 0 0 50px rgba(212,175,55,0.15);
-            padding: 10px;
+            box-shadow: inset 0 0 60px rgba(212,175,55,0.2);
+            padding: 15px;
         }
 
         /* --- 互動狀態 --- */
-        /* 選中時：移至中央並放大 */
+        /* 選中時：移至中央、置頂並極大化 */
         .card-wrapper.focused {
-            transform: translate(-50%, -50%) scale(2.8);
-            z-index: 100;
+            transform: translate(-50%, -50%) scale(2.2);
+            z-index: 100 !important;
         }
         /* 未被選中時：化為微塵散去 */
         .card-wrapper.scattered {
@@ -115,13 +132,13 @@
         }
 
         .btn-action {
-            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
-            padding: 12px 35px; border-radius: 30px;
+            position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%);
+            padding: 14px 40px; border-radius: 30px;
             border: 1px solid var(--gold-solid); 
-            background: linear-gradient(to right, rgba(212,175,55,0.08), rgba(212,175,55,0.18));
-            color: var(--gold-light); font-size: 0.85rem; letter-spacing: 4px; text-indent: 4px;
+            background: linear-gradient(to right, rgba(212,175,55,0.08), rgba(212,175,55,0.2));
+            color: var(--gold-light); font-size: 0.9rem; letter-spacing: 4px; text-indent: 4px;
             cursor: pointer; opacity: 0; pointer-events: none;
-            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); backdrop-filter: blur(5px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); backdrop-filter: blur(8px);
             z-index: 200;
         }
         .btn-action.show { opacity: 1; pointer-events: auto; }
@@ -136,21 +153,21 @@
         }
 
         .gallery-header { text-align: center; margin-bottom: 35px; }
-        .gallery-title { color: var(--gold-light); font-size: 1.2rem; letter-spacing: 12px; text-indent: 12px; font-weight: normal; }
+        .gallery-title { color: var(--gold-light); font-size: 1.3rem; letter-spacing: 12px; text-indent: 12px; font-weight: normal; }
         
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(2, 1fr);
             gap: 20px;
-            width: 100%; max-width: 860px;
+            width: 100%; max-width: 900px;
         }
 
         .grid-item {
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(139, 168, 156, 0.25);
             border-radius: 12px;
-            min-height: 180px;
+            min-height: 200px;
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
             padding: 15px 10px; position: relative; 
             box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
@@ -158,23 +175,23 @@
         }
 
         .grid-item.locked { border-style: dashed; opacity: 0.45; }
-        .grid-item.unlocked { border-color: rgba(212,175,55,0.6); box-shadow: inset 0 0 25px rgba(212,175,55,0.1); }
+        .grid-item.unlocked { border-color: rgba(239, 208, 123, 0.6); box-shadow: inset 0 0 30px rgba(239, 208, 123, 0.15); }
 
-        .grid-svg-container { width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; }
-        .grid-svg-container svg { width: 100%; height: 100%; }
+        .grid-svg-container { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
         .grid-info { text-align: center; width: 100%; }
-        .grid-name { font-size: 0.8rem; color: #fff; letter-spacing: 2px; margin-bottom: 6px; }
+        .grid-name { font-size: 0.85rem; color: #fff; letter-spacing: 2px; margin-bottom: 8px; }
         .grid-item.locked .grid-name { color: var(--cyan-jade); opacity: 0.7; }
-        .grid-count-tag { font-size: 0.65rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 3px 8px; border-radius: 8px; background: rgba(212, 175, 55, 0.06); }
+        .grid-count-tag { font-size: 0.7rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 8px; background: rgba(212, 175, 55, 0.08); }
         .grid-item.locked .grid-count-tag { color: #566461; border-color: rgba(139,168,156,0.1); background: transparent; }
 
         @media (max-width: 768px) {
-            .card-wrapper { width: 75px; height: 125px; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-120px) rotate(calc(-1 * var(--angle))); }
-            .card-wrapper.focused { transform: translate(-50%, -50%) scale(3.5); }
-            .gallery-grid { gap: 10px; }
-            .grid-item { min-height: 140px; }
-            .grid-svg-container { height: 60px; }
+            /* 手機版同樣維持重疊感 */
+            .card-wrapper { width: 95px; height: 160px; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-90px) rotate(calc(-1 * var(--angle))); }
+            .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.5); }
+            .gallery-grid { gap: 12px; }
+            .grid-item { min-height: 150px; }
+            .grid-svg-container { height: 70px; }
         }
     </style>
 </head>
@@ -195,7 +212,7 @@
         </div>
         <div class="gallery-grid" id="gallery-grid">
             </div>
-        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 40px;" onclick="location.reload()">重新安立陣法 (測試)</button>
+        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 40px;" onclick="location.reload()">重新安立陣法 (測試用)</button>
     </div>
 
     <svg style="display: none;">
@@ -279,12 +296,17 @@
                         <path d="M -20 0 C 30 100, 80 250, -20 380 C -40 250, -50 100, -60 0 Z" fill="url(#tailRed)" opacity="0.9" />
                     </g>
                 </g>
+                <circle cx="200" cy="300" r="3" fill="#FFF2B2" opacity="0.8" />
+                <circle cx="820" cy="200" r="2" fill="#FFFFFF" opacity="0.6" />
+                <circle cx="500" cy="700" r="4" fill="#FFEEEE" opacity="0.8" />
+                <circle cx="400" cy="850" r="3" fill="#80C3FF" opacity="0.7" />
+                <circle cx="650" cy="500" r="2" fill="#FFF2B2" opacity="0.8" />
             </g>
         </defs>
     </svg>
 
     <script>
-        // 佛八寶定義 (第一尊已實裝為吉祥寶幡)
+        // 佛八寶資料庫結構
         const TREASURES = [
             { id: "banner", name: "吉祥寶幡", rarity: "罕見瑞相" },
             { id: "t2", name: "未知法相", rarity: "靜待因緣" },
@@ -357,14 +379,14 @@
                 <div class="card-inner">
                     <div class="card-back card-face">${getMandala()}</div>
                     <div class="card-front card-face">
-                        <div style="width:100%; height:60%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                            <svg viewBox="100 0 800 1000" style="width:120%; height:120%; filter: drop-shadow(0 0 15px rgba(243, 229, 171, 0.3));">
+                        <div style="width:100%; height:75%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                            <svg viewBox="100 0 800 1000" style="width:140%; height:140%; filter: drop-shadow(0 0 20px rgba(239, 208, 123, 0.4)); transform: translateY(8%);">
                                 <use href="#treasure-banner"></use>
                             </svg>
                         </div>
-                        <div style="text-align:center; margin-top:15px;">
-                            <div style="color:#efd07b; font-size:1.05rem; letter-spacing:4px; font-weight:bold;">${TREASURES[drawnIndex].name}</div>
-                            <div style="color:var(--cyan-jade); font-size:0.65rem; letter-spacing:2px; margin-top:6px;">${TREASURES[drawnIndex].rarity}</div>
+                        <div style="text-align:center; margin-top:5px;">
+                            <div style="color:#efd07b; font-size:1.15rem; letter-spacing:4px; font-weight:bold;">${TREASURES[drawnIndex].name}</div>
+                            <div style="color:var(--cyan-jade); font-size:0.75rem; letter-spacing:2px; margin-top:8px;">${TREASURES[drawnIndex].rarity}</div>
                         </div>
                     </div>
                 </div>
@@ -415,7 +437,7 @@
                 
                 // 第一尊有實體 SVG，其餘使用虛線框佔位
                 const svgContent = isUnlocked 
-                    ? `<svg viewBox="0 0 1000 1000" style="width:100%; height:100%;"><use href="#treasure-banner"></use></svg>`
+                    ? `<svg viewBox="0 0 1000 1000" style="width:120%; height:120%;"><use href="#treasure-banner"></use></svg>`
                     : `<div style="width:50px; height:50px; border:1px dashed rgba(139,168,156,0.3); border-radius:50%;"></div>`;
 
                 html += `
