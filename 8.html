@@ -100,11 +100,18 @@
             border-color: rgba(212, 175, 55, 0.3);
         }
 
-        /* 曼陀羅保持純粹的金色與白色，不再受邊框干擾 */
+               /* 修正曼陀羅：讓它適應卡片並懸浮 */
         .mandala-svg { 
-            width: 250%; height: 250%; 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;        /* 💡 調整為 90% 使其完整顯示，不會被切掉 */
+            height: 90%;       /* 💡 保持比例 */
+            transform: translate(-50%, -50%); /* 💡 確保圖案中心對齊卡片中心 */
+            pointer-events: none;
             opacity: 0.85; 
-            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5)); /* 金色曼陀羅自帶金光 */
+            mix-blend-mode: screen; /* 💡 讓金色線條與黑色底完美融合 */
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
         }
                /* 卡面實體感 */
         .card-front {
