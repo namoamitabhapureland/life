@@ -168,6 +168,27 @@
             .grid-item { min-height: 160px; }
             .grid-svg-container { height: 80px; }
         }
+        /* ════ 微塵迴向特效 CSS ════ */
+.dust-particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #8ba89c; /* 與您系統色調一致的琉璃色 */
+    border-radius: 50%;
+    pointer-events: none;
+    animation: drift 2s ease-out forwards;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+}
+
+/* 迴向確認遮罩層 (抄襲月相結構) */
+#confirm-layer {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; opacity: 0; transition: opacity 0.5s;
+    justify-content: center; align-items: center; z-index: 999;
+}
     </style>
 </head>
 <body>
@@ -430,6 +451,38 @@
     </svg>
 
     <script>
+        // 1. 讀取主系統資料庫
+let db;
+try {
+    db = JSON.parse(localStorage.getItem('PX_V15.0'));
+} catch(e) {}
+
+if (!db) db = { name: "行者", totalNian: 0 }; // 防呆機制
+// 建立八寶閣的專屬陣列 (8個寶物的數量) 與 已經抽卡次數
+if (!db.eightTreasures) db.eightTreasures = [0, 0, 0, 0, 0, 0, 0, 0];
+if (db.treasureDrawnCount === undefined) db.treasureDrawnCount = 0;
+
+// 計算可抽卡次數：(總念佛數 / 100萬) 向下取整 - 已經抽過的次數
+const totalEarnedDraws = Math.floor((db.totalNian || 0) / 1000000);
+let remainingDraws = totalEarnedDraws - db.treasureDrawnCount;
+if (remainingDraws < 0) remainingDraws = 0;
+
+// 更新右上角的名稱 (從 DB 讀取)
+window.addEventListener('DOMContentLoaded', () => {
+    const nameDisplay = document.getElementById('display-name');
+    if(nameDisplay) nameDisplay.innerText = `${db.name || '行者'} ‧ 八寶閣`;
+    
+    // 更新中央提示文字
+    const centerHint = document.getElementById('center-hint');
+    if(centerHint) {
+        if (remainingDraws > 0) {
+            centerHint.innerHTML = `可抽卡次數：${remainingDraws}<br>憑心擇一印`;
+        } else {
+            centerHint.innerHTML = `百萬資糧聚<br>尚需精進念佛`;
+            centerHint.style.color = "rgba(139,168,156,0.8)"; // 變成灰色
+        }
+    }
+});
         // --- 視覺腳本框架 (待置入邏輯) ---
         // 這些資料僅供視覺測試，等您解說 script 後我們再寫入 localStorage 與迴向功能
         const TREASURES = [
@@ -558,23 +611,49 @@
             bagua.appendChild(card);
         }
 
-        function selectCard(selectedIndex, selectedCard) {
-            if (hasDrawn) return;
-            hasDrawn = true;
-            document.getElementById('center-hint').style.opacity = 0;
-            
-            const allCards = document.querySelectorAll('.card-wrapper');
-            allCards.forEach((c, idx) => {
-                if (idx === selectedIndex) {
-                    c.classList.add('focused');
-                    setTimeout(() => c.classList.add('is-flipped'), 1000);
-                } else {
-                    c.classList.add('scattered');
-                }
-            });
-            if (!mockUnlocked.includes(drawnIndex)) mockUnlocked.push(drawnIndex);
-            setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
+        // 2. 抽卡邏輯與存檔
+function selectCard(selectedIndex, selectedCard) {
+    if (hasDrawn) return;
+    
+    // 🔒 檢查是否有次數可以抽
+    if (remainingDraws <= 0) {
+        alert("因緣未具：需累積百萬聲佛號 (100法幣) 方能顯化一契印。");
+        return;
+    }
+
+    hasDrawn = true;
+    document.getElementById('center-hint').style.opacity = 0;
+    
+    // 扣除次數並將抽中的寶物存入 DB
+    drawnIndex = drawGacha(); // 執行機率函數
+    db.treasureDrawnCount++;  // 增加已抽次數
+    db.eightTreasures[drawnIndex]++; // 該寶物數量 +1
+    localStorage.setItem('PX_V15.0', JSON.stringify(db)); // 💾 正式存檔！
+
+    const allCards = document.querySelectorAll('.card-wrapper');
+    allCards.forEach((c, idx) => {
+        if (idx === selectedIndex) {
+            c.classList.add('focused');
+            // 替換這張卡面的圖形為真正抽中的圖形
+            const t = TREASURES[drawnIndex];
+            const front = c.querySelector('.card-front');
+            front.innerHTML = `
+                <div class="treasure-glow" style="--glow-color: ${t.glow}; --glow-anime: ${t.gAnime};"></div>
+                <div class="treasure-svg-box">
+                    <svg viewBox="${t.viewBox}" style="--treasure-anime: ${t.tAnime};"><use href="#${t.svgId}"></use></svg>
+                </div>
+                <div class="treasure-info">
+                    <div class="t-name">${t.name}</div>
+                    <div class="t-merit">${t.merit}</div>
+                </div>
+            `;
+            setTimeout(() => c.classList.add('is-flipped'), 1000);
+        } else {
+            c.classList.add('scattered');
         }
+    });
+    setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
+}
 
         function enterGallery() {
             document.getElementById('draw-scene').style.opacity = '0';
@@ -586,34 +665,87 @@
             }, 1000);
         }
 
-        function buildGallery() {
-            const grid = document.getElementById('gallery-grid');
-            if (grid.innerHTML !== "") return;
+        // 3. 圖鑑生成：讀取真實 DB 數量
+function buildGallery() {
+    const grid = document.getElementById('gallery-grid');
+    if (grid.innerHTML !== "") return;
 
-            let html = "";
-            TREASURES.forEach((t, idx) => {
-                const isUnlocked = mockUnlocked.includes(idx);
-                const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
-                
-                const svgContent = isUnlocked 
-                    ? `<svg viewBox="${t.viewBox}" style="width:120%; height:120%;"><use href="#${t.svgId}"></use></svg>`
-                    : `<svg viewBox="0 0 100 100" style="width:50%; height:50%; opacity:0.1;"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/></svg>`; 
+    let html = "";
+    TREASURES.forEach((t, idx) => {
+        // 從 DB 讀取該寶物有幾個
+        const count = db.eightTreasures[idx]; 
+        const isUnlocked = count > 0;
+        const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
+        
+        const svgContent = isUnlocked 
+            ? `<svg viewBox="${t.viewBox}" style="width:120%; height:120%;"><use href="#${t.svgId}"></use></svg>`
+            : `<svg viewBox="0 0 100 100" style="width:50%; height:50%; opacity:0.1;"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/></svg>`; 
 
-                html += `
-                    <div class="${cls}">
-                        <div class="grid-svg-container">${svgContent}</div>
-                        <div class="grid-info">
-                            <div class="grid-name">${t.name}</div>
-                            <div class="grid-count-tag">${isUnlocked ? '結緣：1 尊' : '因緣未具'}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            grid.innerHTML = html;
-        }
+        html += `
+            <div class="${cls}" onclick="handleDedicateClick(${idx})">
+                <div class="grid-svg-container">${svgContent}</div>
+                <div class="grid-info">
+                    <div class="grid-name">${t.name}</div>
+                    <div class="grid-count-tag">${isUnlocked ? '結緣：' + count + ' 尊' : '因緣未具'}</div>
+                </div>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+}
 
         function goHome() { alert('即將引導回主系統 (測試)'); }
         function toggleHelp() { alert('即將展開法寶說明面板 (測試)'); }
+        // ════ 迴向核心邏輯 ════
+let pendingDedicateIdx = -1;
+
+// 步驟 A：觸發確認
+function handleDedicateClick(idx) {
+    if (db.eightTreasures[idx] <= 0) return;
+    pendingDedicateIdx = idx;
+    
+    // 顯示確認框
+    const m = document.getElementById('confirm-layer');
+    m.style.display = 'flex';
+    setTimeout(() => m.style.opacity = 1, 10);
+}
+
+// 步驟 B：執行扣除與微塵動畫
+function executeDedicate(idx) {
+    db.eightTreasures[idx]--; 
+    localStorage.setItem('PX_V15.0', JSON.stringify(db));
+    
+    // 執行微塵特效 (模擬月相)
+    playDustAnimation();
+    
+    // 重新渲染畫面
+    document.getElementById('gallery-grid').innerHTML = ""; 
+    buildGallery();
+}
+
+// 步驟 C：微塵特效產生器 (抄襲月相)
+function playDustAnimation() {
+    const container = document.body;
+    for(let i=0; i<30; i++) {
+        const p = document.createElement('div');
+        p.className = 'dust-particle';
+        p.style.left = '50%';
+        p.style.top = '50%';
+        p.style.setProperty('--dx', (Math.random()-0.5)*200 + 'px');
+        p.style.setProperty('--dy', (Math.random()-0.5)*200 + 'px');
+        container.appendChild(p);
+        setTimeout(() => p.remove(), 2000);
+    }
+}
     </script>
+    <div id="confirm-layer">
+    <div style="text-align:center; color:#f3e5ab;">
+        <div id="confirm-svg" style="width:100px; height:100px; margin:0 auto;"></div>
+        <p id="confirm-name" style="margin:10px 0;"></p>
+        <p>確認將此寶物化作微塵，迴向法界嗎？</p>
+        <button onclick="executeDedicate(pendingDedicateIdx); document.getElementById('confirm-layer').style.display='none';">確認迴向</button>
+        <button onclick="document.getElementById('confirm-layer').style.display='none';">再留一陣</button>
+    </div>
+</div>
 </body>
 </html>
