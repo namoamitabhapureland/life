@@ -79,31 +79,32 @@
         .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
         .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-                     /* 卡背：透光琉璃質感與邊緣紅藍光暈 */
+                           /* 卡背：移除實體邊框，改用高雅的懸浮質感 */
         .card-back {
-            /* 恢復深邃的黑底，讓曼陀羅的金色紋路能跳出來 */
-            background: rgba(15, 18, 22, 0.95); 
-            border: 1.5px solid rgba(212, 175, 55, 0.4); 
+            background: #010204; /* 保持深邃黑底 */
+            border: 1px solid rgba(212, 175, 55, 0.2); /* 極淡的金邊，幾乎不可見 */
+            transition: all 0.5s ease;
         }
-        
+
+        /* 紅色懸浮感 */
         .card-back.red-glow {
-            /* 光暈大幅收斂：只在邊框內側 20px 和外側 15px 微微發光，不淹沒卡面 */
-            box-shadow: inset 0 0 20px rgba(220, 50, 50, 0.5), 0 0 15px rgba(220, 50, 50, 0.4); 
-            border-color: rgba(255, 80, 80, 0.9);
+            /* 移除明顯的 border-color，改用外擴的深紅陰影讓它像懸浮在空中 */
+            box-shadow: 0 0 30px rgba(180, 40, 40, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(212, 175, 55, 0.3); /* 維持金邊 */
         }
-        
+
+        /* 藍色懸浮感 */
         .card-back.blue-glow {
-            /* 光暈大幅收斂：只在邊框內側發藍光 */
-            box-shadow: inset 0 0 20px rgba(50, 150, 255, 0.5), 0 0 15px rgba(50, 150, 255, 0.4); 
-            border-color: rgba(80, 180, 255, 0.9);
+            /* 藍色同理，收斂色彩，強調懸浮感 */
+            box-shadow: 0 0 30px rgba(40, 100, 180, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(212, 175, 55, 0.3);
         }
-        
-        .mandala-svg {
+
+        /* 曼陀羅保持純粹的金色與白色，不再受邊框干擾 */
+        .mandala-svg { 
             width: 250%; height: 250%; 
-            opacity: 0.8; 
-            mix-blend-mode: screen; 
-            /* 微微的自發光，讓線條更有質感 */
-            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3)); 
+            opacity: 0.85; 
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5)); /* 金色曼陀羅自帶金光 */
         }
                /* 卡面實體感 */
         .card-front {
