@@ -9,15 +9,13 @@
             --gold-light: #f3e5ab;
             --gold-solid: #d4af37;
             --cyan-jade: #8ba89c;
-            --bg-center: #091114; 
-            --bg-deep: #010304;
-            --card-base: linear-gradient(145deg, #12181a, #050809); 
+            --bg-deep: #010204;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background: radial-gradient(circle at 50% 40%, var(--bg-center) 0%, var(--bg-deep) 100%);
+            background: var(--bg-deep); /* 回歸純粹深黑宇宙底色 */
             color: #fff; 
             font-family: "PingFang TC", "Microsoft JhengHei", serif;
             height: 100vh; height: 100dvh;
@@ -25,8 +23,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* ════ 法相 SVG 專屬全域樣式 (修復色彩消失問題) ════ */
-        /* 使用 :not([fill]) 確保若有自帶漸層的元件不會被強制透明化 */
+        /* ════ 法相 SVG 專屬全域樣式 (嚴格保護色彩) ════ */
         .wire-white:not([fill]) { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.5; stroke-linejoin: round; fill: none; }
         .wire-white-thin:not([fill]) { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-linejoin: round; fill: none; }
         .wire-gold:not([fill]) { stroke: url(#pureGold); stroke-width: 2.5; stroke-linejoin: round; fill: none; }
@@ -91,25 +88,29 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
+        /* 👑 優化：卡背不再死黑，採用琉璃底質，並預留紅藍光暈的 class */
         .card-back {
-            background: var(--card-base);
+            background: rgba(18, 20, 24, 0.95);
             border: 1px solid rgba(212, 175, 55, 0.35);
-            box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.05);
         }
-        .mandala-svg { width: 250%; height: 250%; opacity: 0.5; }
+        .card-back.red-glow { box-shadow: inset 0 0 40px rgba(180, 50, 50, 0.15); border-color: rgba(180, 50, 50, 0.3); }
+        .card-back.blue-glow { box-shadow: inset 0 0 40px rgba(50, 100, 180, 0.15); border-color: rgba(50, 100, 180, 0.3); }
+        
+        .mandala-svg { width: 250%; height: 250%; opacity: 0.4; }
 
+        /* 👑 優化：卡面實體厚度感 (微弱的暗金底色) */
         .card-front {
-            background: radial-gradient(circle at 50% 40%, #080d12 0%, #010203 100%);
+            background: radial-gradient(circle at 50% 40%, #0d1214 0%, #030406 100%);
             border: 1px solid rgba(212, 175, 55, 0.6);
             transform: rotateY(180deg);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.05);
         }
 
         /* ✨ 發光與動畫核心 ✨ */
         .treasure-glow {
             position: absolute; top: 40%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 160px; height: 160px;
+            width: 180px; height: 180px;
             background: radial-gradient(circle, var(--glow-color) 0%, transparent 65%);
             animation: var(--glow-anime) 4s ease-in-out infinite;
             z-index: 1; pointer-events: none;
@@ -117,7 +118,7 @@
 
         .treasure-svg-box {
             position: absolute; top: 5%; 
-            width: 90%; height: 65%;
+            width: 90%; height: 60%;
             display: flex; align-items: center; justify-content: center;
             z-index: 2; overflow: visible;
         }
@@ -133,9 +134,10 @@
         @keyframes float-knot { 0%, 100% { transform: scale(0.98) translateY(0); } 50% { transform: scale(1.03) translateY(-4px); } }
         @keyframes pulse-glow { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); } 50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); } }
 
+        /* 👑 優化：文字縮小，加入功德說明 */
         .treasure-info { position: absolute; bottom: 8%; width: 100%; text-align: center; z-index: 3; }
-        .t-name { color: #efd07b; font-size: 1.05rem; letter-spacing: 5px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.5); }
-        .t-rarity { color: var(--cyan-jade); font-size: 0.65rem; letter-spacing: 3px; margin-top: 8px; opacity: 0.8; }
+        .t-name { color: #efd07b; font-size: 0.9rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.4); }
+        .t-merit { color: var(--cyan-jade); font-size: 0.6rem; letter-spacing: 2px; margin-top: 6px; opacity: 0.9; }
 
         .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.2); z-index: 100 !important; }
         .card-wrapper.scattered {
@@ -143,56 +145,73 @@
             transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-250px) scale(0);
         }
 
+        /* 👑 優化：合十收攝按鈕 */
         .btn-action {
             position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%);
-            padding: 14px 40px; border-radius: 30px;
+            padding: 12px 35px; border-radius: 30px;
             border: 1px solid var(--gold-solid); 
             background: linear-gradient(to right, rgba(212,175,55,0.08), rgba(212,175,55,0.2));
-            color: var(--gold-light); font-size: 0.9rem; letter-spacing: 4px; text-indent: 4px;
+            color: var(--gold-light); font-size: 0.85rem; letter-spacing: 4px; text-indent: 4px;
             cursor: pointer; opacity: 0; pointer-events: none;
             transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); backdrop-filter: blur(8px); z-index: 200;
         }
         .btn-action.show { opacity: 1; pointer-events: auto; }
 
-        /* ════ 第二階段：多寶閣 圖鑑場景 ════ */
+        /* ════ 第二階段：多寶閣 圖鑑場景 (三三二排版) ════ */
         #gallery-scene {
             position: absolute; inset: 0; z-index: 5;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            opacity: 0; pointer-events: none; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 50px 20px; overflow-y: auto; /* 允許滾動 */
         }
 
-        .gallery-header { text-align: center; margin-bottom: 35px; }
-        .gallery-title { color: var(--gold-light); font-size: 1.3rem; letter-spacing: 12px; text-indent: 12px; font-weight: normal; }
+        .gallery-header { text-align: center; margin-bottom: 35px; flex-shrink: 0; }
+        .gallery-title { color: var(--gold-light); font-size: 1.2rem; letter-spacing: 12px; text-indent: 12px; font-weight: normal; }
         
+        /* 👑 優化：三三二佈局 */
         .gallery-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
             gap: 20px; width: 100%; max-width: 900px;
+            padding-bottom: 80px; /* 底部留白 */
         }
+        
+        /* 讓最後兩個項目置中對齊 (佔據 3 格空間的中間) */
+        .gallery-grid > div:nth-child(7) { grid-column-start: 1; transform: translateX(50%); }
+        .gallery-grid > div:nth-child(8) { transform: translateX(50%); }
 
+        /* 👑 優化：實體卡面底色 */
         .grid-item {
-            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(139, 168, 156, 0.25); border-radius: 12px;
-            min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            padding: 15px 10px; position: relative; box-shadow: inset 0 0 25px rgba(0,0,0,0.6); transition: all 0.5s;
+            background: rgba(14, 18, 20, 0.95); /* 不透明莊嚴底色 */
+            border: 1px solid rgba(139, 168, 156, 0.3); border-radius: 12px;
+            min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: 20px 10px; position: relative; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); transition: all 0.5s;
         }
 
-        .grid-item.locked { border-style: dashed; opacity: 0.45; }
-        .grid-item.unlocked { border-color: rgba(239, 208, 123, 0.6); box-shadow: inset 0 0 30px rgba(239, 208, 123, 0.15); }
+        .grid-item.locked { 
+            background: rgba(8, 10, 12, 0.9); /* 空龕的深邃暗金屬底色 */
+            border-color: rgba(139, 168, 156, 0.15); opacity: 0.6; 
+        }
+        .grid-item.unlocked { border-color: rgba(239, 208, 123, 0.5); box-shadow: inset 0 0 40px rgba(239, 208, 123, 0.1); }
 
-        .grid-svg-container { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .grid-svg-container { width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
         .grid-info { text-align: center; width: 100%; }
-        .grid-name { font-size: 0.85rem; color: #fff; letter-spacing: 2px; margin-bottom: 8px; }
-        .grid-item.locked .grid-name { color: var(--cyan-jade); opacity: 0.7; }
-        .grid-count-tag { font-size: 0.7rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 8px; background: rgba(212, 175, 55, 0.08); }
-        .grid-item.locked .grid-count-tag { color: #566461; border-color: rgba(139,168,156,0.1); background: transparent; }
+        .grid-name { font-size: 0.8rem; color: #fff; letter-spacing: 2px; margin-bottom: 8px; }
+        .grid-item.locked .grid-name { color: #566461; }
+        .grid-count-tag { font-size: 0.65rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 8px; background: rgba(212, 175, 55, 0.08); }
+        .grid-item.locked .grid-count-tag { color: #404a48; border-color: rgba(139,168,156,0.1); background: transparent; }
 
         @media (max-width: 768px) {
             .card-wrapper { width: 95px; height: 160px; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-90px) rotate(calc(-1 * var(--angle))); }
             .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.5); }
             .gallery-grid { gap: 12px; }
-            .grid-item { min-height: 150px; padding: 10px 5px;}
-            .grid-svg-container { height: 70px; }
+            .grid-item { min-height: 180px; padding: 15px 5px;}
+            .grid-svg-container { height: 90px; }
             .grid-name { font-size: 0.75rem; }
+            /* 手機版修正最後兩張對齊 */
+            .gallery-grid > div:nth-child(7) { transform: translateX(52%); }
+            .gallery-grid > div:nth-child(8) { transform: translateX(52%); }
         }
     </style>
 </head>
@@ -203,13 +222,13 @@
     <div id="draw-scene">
         <div class="center-hint" id="center-hint">五萬功德聚<br>憑心擇一印</div>
         <div class="bagua-container" id="bagua-container"></div>
-        <button class="btn-action" id="btn-collect" onclick="enterGallery()">收攝法相 ‧ 歸寶閣</button>
+        <button class="btn-action" id="btn-collect" onclick="enterGallery()">合十收攝</button>
     </div>
 
     <div id="gallery-scene">
         <div class="gallery-header"><h2 class="gallery-title">琉璃多寶閣</h2></div>
         <div class="gallery-grid" id="gallery-grid"></div>
-        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 40px;" onclick="location.reload()">重新安立陣法 (測試)</button>
+        <button class="btn-action show" style="position: relative; bottom: 0; margin-top: 20px;" onclick="location.reload()">重新安立陣法 (測試)</button>
     </div>
 
     <svg style="position: absolute; width: 0; height: 0; pointer-events: none;" aria-hidden="true">
@@ -468,53 +487,89 @@
                 </g>
             </g>
 
-            <radialGradient id="conchBgGrad" cx="165" cy="210" r="210" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(45,8,85,0.18)" /><stop offset="100%" stop-color="rgba(0,0,8,0)" /></radialGradient>
-            <radialGradient id="conchRadialGrad" cx="145" cy="224" r="220" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.18)" /><stop offset="12%" stop-color="rgba(255,255,255,0.07)" /><stop offset="55%" stop-color="rgba(0,0,0,0)" /><stop offset="100%" stop-color="rgba(0,0,0,0.30)" /></radialGradient>
-            <radialGradient id="conchSparkle" cx="145" cy="224" r="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.98)" /><stop offset="35%" stop-color="rgba(255,240,200,0.55)" /><stop offset="100%" stop-color="rgba(255,240,200,0)" /></radialGradient>
-            
             <path id="conch-base-path" d="M 263 160 C 295 200, 295 268, 245 318 C 203 358, 137 372, 83 346 C 27 318, 13 252, 21 200 C 29 146, 69 100, 127 82 C 187 62, 245 78, 263 122 C 270 130, 260 135, 255 140 C 258 152, 261 157, 263 160 Z" />
             <clipPath id="conch-clip"><use href="#conch-base-path"/></clipPath>
-
             <g id="treasure-conch" transform="translate(170, -20) scale(2)">
                 <g clip-path="url(#conch-clip)">
                     <rect x="-100" y="-100" width="500" height="500" fill="#03010c" />
-                    <rect x="-100" y="-100" width="500" height="500" fill="url(#conchBgGrad)" />
                     <g id="conch-spiral-container" style="transform-origin: 145px 224px; animation: steady-rotate 40s linear infinite;"></g>
-                    <circle cx="145" cy="224" r="220" fill="url(#conchRadialGrad)" />
                     <ellipse cx="145" cy="224" rx="66" ry="58" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="4.5" />
                     <ellipse cx="145" cy="224" rx="38" ry="34" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="3" />
                     <ellipse cx="145" cy="224" rx="18" ry="16" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
-                    <circle cx="145" cy="224" r="20" fill="url(#conchSparkle)" />
+                    <circle cx="145" cy="224" r="20" fill="rgba(255,255,255,0.9)" />
                 </g>
                 <use href="#conch-base-path" fill="none" stroke="url(#pureGold)" stroke-width="2.5" />
-                <use href="#conch-base-path" fill="none" stroke="rgba(255,240,180,0.4)" stroke-width="1" filter="drop-shadow(0 0 10px rgba(255,240,180,0.4))" />
             </g>
-
         </defs>
     </svg>
 
     <script>
-        // 匯集 8 尊法寶大圓滿
+        // 匯集 8 尊法寶大圓滿與其功德
         const TREASURES = [
-            { id: "banner", name: "吉祥寶幡", rarity: "罕見瑞相", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
-            { id: "fish", name: "雙壽金魚", rarity: "恆常顯現金", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
-            { id: "umbrella", name: "妙寶傘蓋", rarity: "恆常顯現金", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
-            { id: "knot", name: "吉祥如意結", rarity: "精進瑞相", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
-            { id: "vase", name: "無盡寶瓶", rarity: "恆常顯現金", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
-            { id: "wheel", name: "常轉法輪", rarity: "罕見瑞相", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
-            { id: "lotus", name: "吉祥聖蓮", rarity: "精進瑞相", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
-            { id: "conch", name: "右旋寶螺", rarity: "罕見瑞相", svgId: "treasure-conch", viewBox: "0 0 1000 800", glow: "rgba(255, 179, 179, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" }
+            { id: "banner", name: "吉祥寶幡", merit: "摧伏魔怨 ‧ 尊勝無礙", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "fish", name: "雙壽金魚", merit: "自在解脫 ‧ 慧眼明澈", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
+            { id: "umbrella", name: "妙寶傘蓋", merit: "淨化護身 ‧ 消災除障", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "knot", name: "吉祥如意結", merit: "慈悲無盡 ‧ 圓滿相續", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "vase", name: "無盡寶瓶", merit: "福智圓滿 ‧ 健康長壽", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "wheel", name: "常轉法輪", merit: "正法久住 ‧ 摧破無明", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "lotus", name: "吉祥聖蓮", merit: "出污不染 ‧ 菩提清淨", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
+            { id: "conch", name: "右旋寶螺", merit: "法音遠播 ‧ 覺悟群生", svgId: "treasure-conch", viewBox: "0 0 1000 800", glow: "rgba(255, 179, 179, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" }
         ];
 
         let hasDrawn = false;
-        let drawnIndex = 7; // 💡 測試：強制抽中第八格的「右旋寶螺」
-        let mockUnlocked = [0, 1, 2, 3, 4, 5, 6, 7]; // 💡 測試：圖鑑中全數解鎖，讓您一次看齊
+        
+        // 💡 真實抽卡機率邏輯
+        function drawGacha() {
+            const rand = Math.random() * 100;
+            if (rand <= 0.01) return 0; // 寶幡 (終極)
+            if (rand <= 5.01) return 5; // 法輪
+            if (rand <= 10.01) return 7; // 寶螺
+            if (rand <= 25.01) return 6; // 聖蓮
+            if (rand <= 40.01) return 3; // 如意結
+            if (rand <= 60.01) return 2; // 傘蓋
+            if (rand <= 80.01) return 4; // 寶瓶
+            return 1; // 雙魚
+        }
+        
+        let drawnIndex = drawGacha(); // 執行隨機抽取
+        let mockUnlocked = [1, 2, 4]; // 💡 測試用：預設圖鑑已擁有金魚、傘蓋、寶瓶
 
-        // ════ 初始化寶螺的 JS 螺旋線條 ════
+        // ════ 繪製彩色星塵背景 ════
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+        
+        // 賦予星星微弱的彩色
+        const starColors = ['rgba(243, 229, 171, ', 'rgba(255, 150, 150, ', 'rgba(150, 200, 255, ']; 
+
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resize); resize();
+        for(let i=0; i<180; i++) {
+            stars.push({ 
+                x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, 
+                s: Math.random()*2, colorType: Math.floor(Math.random() * 3) 
+            });
+        }
+        
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height); 
+            ctx.globalCompositeOperation = 'screen';
+            stars.forEach(s => { 
+                s.z -= 0.3; if(s.z <= 0) s.z = 1000; 
+                let sc = 300 / (300 + s.z);
+                ctx.beginPath(); ctx.arc(width/2 + s.x*sc, height/2 + s.y*sc, s.s*sc, 0, Math.PI*2); 
+                ctx.fillStyle = starColors[s.colorType] + sc + ')'; // 套用彩色星塵
+                ctx.fill(); 
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+
+        // ════ 初始化寶螺螺旋線條 ════
         function initConchSpirals() {
             const container = document.getElementById('conch-spiral-container');
             if(!container) return;
-            const SCX = 145, SCY = 224, MAX_R = 222, TURNS = 3.5, ARMS = 4, SEGS = 150;
+            const SCX = 145, SCY = 224, MAX_R = 222, TURNS = 3.5, ARMS = 4, SEGS = 100;
             const colors = ['#FFB3B3', '#81D4FA', '#FFB3B3', '#81D4FA'];
             let html = '';
             for(let a=0; a<ARMS; a++) {
@@ -526,31 +581,11 @@
                     pts.push(`${SCX + r * Math.cos(theta)},${SCY + r * Math.sin(theta)}`);
                 }
                 let d = `M ${pts[0]} ` + pts.slice(1).map(p => `L ${p}`).join(' ');
-                html += `<path d="${d}" fill="none" stroke="${colors[a]}" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 8px ${colors[a]})" />`;
+                html += `<path d="${d}" fill="none" stroke="${colors[a]}" stroke-width="4.5" stroke-linecap="round" />`;
             }
             container.innerHTML = html;
         }
-
-        // ════ 背景星空渲染 ════
-        const canvas = document.getElementById('starCanvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
-        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
-        window.addEventListener('resize', resize); resize();
-        for(let i=0; i<150; i++) stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*1.5 });
-        
-        function drawStars() {
-            ctx.fillStyle = 'rgba(1, 3, 4, 0.4)'; ctx.fillRect(0, 0, width, height); ctx.globalCompositeOperation = 'screen';
-            stars.forEach(s => { 
-                s.z -= 0.5; if(s.z <= 0) s.z = 1000; 
-                let sc = 300 / (300 + s.z);
-                ctx.beginPath(); ctx.arc(width/2 + s.x*sc, height/2 + s.y*sc, s.s*sc, 0, Math.PI*2); 
-                ctx.fillStyle = `rgba(243, 229, 171, ${sc})`; ctx.fill(); 
-            });
-            requestAnimationFrame(drawStars);
-        }
-        drawStars();
-        initConchSpirals(); // 星空啟動後順便畫出螺旋
+        initConchSpirals();
 
         // ════ 卡背曼陀羅生成 ════
         function poly(n, r, rotDeg=0) {
@@ -580,12 +615,16 @@
             const card = document.createElement('div');
             card.className = 'card-wrapper';
             card.style.setProperty('--angle', `${angle}deg`);
+            
+            // 👑 優化：卡背交錯標記 (偶數紅光，奇數藍光)
+            const glowClass = (i % 2 === 0) ? 'red-glow' : 'blue-glow';
+
             card.onclick = () => selectCard(i, card);
 
             const t = TREASURES[drawnIndex];
             card.innerHTML = `
                 <div class="card-inner">
-                    <div class="card-back card-face">${getMandala()}</div>
+                    <div class="card-back card-face ${glowClass}">${getMandala()}</div>
                     <div class="card-front card-face">
                         <div class="treasure-glow" style="--glow-color: ${t.glow}; --glow-anime: ${t.gAnime};"></div>
                         <div class="treasure-svg-box">
@@ -595,7 +634,7 @@
                         </div>
                         <div class="treasure-info">
                             <div class="t-name">${t.name}</div>
-                            <div class="t-rarity">${t.rarity}</div>
+                            <div class="t-merit">${t.merit}</div>
                         </div>
                     </div>
                 </div>
@@ -618,6 +657,9 @@
                     c.classList.add('scattered');
                 }
             });
+            // 模擬解鎖該寶物
+            if (!mockUnlocked.includes(drawnIndex)) mockUnlocked.push(drawnIndex);
+            
             setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
         }
 
@@ -632,6 +674,7 @@
             }, 1000);
         }
 
+        // ════ 建立多寶閣 (三三二排版) ════
         function buildGallery() {
             const grid = document.getElementById('gallery-grid');
             if (grid.innerHTML !== "") return;
@@ -643,14 +686,14 @@
                 
                 const svgContent = isUnlocked 
                     ? `<svg viewBox="${t.viewBox}" style="width:120%; height:120%;"><use href="#${t.svgId}"></use></svg>`
-                    : `<div style="width:50px; height:50px; border:1px dashed rgba(139,168,156,0.3); border-radius:50%;"></div>`;
+                    : `<svg viewBox="0 0 100 100" style="width:50%; height:50%; opacity:0.1;"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/></svg>`; // 空龕的微弱輪廓
 
                 html += `
                     <div class="${cls}">
                         <div class="grid-svg-container">${svgContent}</div>
                         <div class="grid-info">
                             <div class="grid-name">${t.name}</div>
-                            <div class="grid-count-tag">${isUnlocked ? '結緣：1 尊' : '空龕'}</div>
+                            <div class="grid-count-tag">${isUnlocked ? '結緣：1 尊' : '因緣未具'}</div>
                         </div>
                     </div>
                 `;
