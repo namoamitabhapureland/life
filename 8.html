@@ -25,12 +25,13 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* ════ 法相 SVG 專屬全域樣式 ════ */
-        .wire-white { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.5; stroke-linejoin: round; fill: none; }
-        .wire-white-thin { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-linejoin: round; fill: none; }
-        .wire-gold { stroke: url(#pureGold); stroke-width: 2.5; stroke-linejoin: round; fill: none; }
-        .wire-gold-thin { stroke: url(#pureGold); stroke-width: 1; stroke-linecap: round; fill: none; }
-        .edge-gold { stroke: url(#pureGold); stroke-width: 4; stroke-linejoin: round; }
+        /* ════ 法相 SVG 專屬全域樣式 (修復色彩消失問題) ════ */
+        /* 使用 :not([fill]) 確保若有自帶漸層的元件不會被強制透明化 */
+        .wire-white:not([fill]) { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.5; stroke-linejoin: round; fill: none; }
+        .wire-white-thin:not([fill]) { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-linejoin: round; fill: none; }
+        .wire-gold:not([fill]) { stroke: url(#pureGold); stroke-width: 2.5; stroke-linejoin: round; fill: none; }
+        .wire-gold-thin:not([fill]) { stroke: url(#pureGold); stroke-width: 1; stroke-linecap: round; fill: none; }
+        .edge-gold:not([fill]) { stroke: url(#pureGold); stroke-width: 4; stroke-linejoin: round; fill: none; }
 
         canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 
@@ -64,7 +65,6 @@
             perspective: 1500px; cursor: pointer; z-index: 10;
         }
 
-        /* 盲選觸碰微縮 (修復手機點擊失效問題) */
         @media (hover: hover) {
             .card-wrapper:hover {
                 z-index: 50;
@@ -128,22 +128,10 @@
             animation: var(--treasure-anime) 4s ease-in-out infinite;
         }
 
-        @keyframes float-swim {
-            0%, 100% { transform: scale(0.96) translateY(0); }
-            50% { transform: scale(1.05) translateY(-8px); }
-        }
-        @keyframes steady-rotate {
-            from { transform: rotate(0deg) scale(0.98); }
-            to { transform: rotate(360deg) scale(0.98); }
-        }
-        @keyframes float-knot {
-            0%, 100% { transform: scale(0.98) translateY(0); }
-            50% { transform: scale(1.03) translateY(-4px); }
-        }
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
-            50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); }
-        }
+        @keyframes float-swim { 0%, 100% { transform: scale(0.96) translateY(0); } 50% { transform: scale(1.05) translateY(-8px); } }
+        @keyframes steady-rotate { from { transform: rotate(0deg) scale(0.98); } to { transform: rotate(360deg) scale(0.98); } }
+        @keyframes float-knot { 0%, 100% { transform: scale(0.98) translateY(0); } 50% { transform: scale(1.03) translateY(-4px); } }
+        @keyframes pulse-glow { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); } 50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); } }
 
         .treasure-info { position: absolute; bottom: 8%; width: 100%; text-align: center; z-index: 3; }
         .t-name { color: #efd07b; font-size: 1.05rem; letter-spacing: 5px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.5); }
@@ -241,6 +229,12 @@
             <linearGradient id="leafBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E1F5FE" stop-opacity="0.8" /><stop offset="60%" stop-color="#81D4FA" stop-opacity="0.3" /><stop offset="100%" stop-color="#81D4FA" stop-opacity="0" /></linearGradient>
             <linearGradient id="leafRedGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFEBEE" stop-opacity="0.8" /><stop offset="60%" stop-color="#EF9A9A" stop-opacity="0.3" /><stop offset="100%" stop-color="#EF9A9A" stop-opacity="0" /></linearGradient>
 
+            <radialGradient id="conchBgGrad" cx="165" cy="210" r="210" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(45,8,85,0.18)" /><stop offset="100%" stop-color="rgba(0,0,8,0)" /></radialGradient>
+            <radialGradient id="conchRadialGrad" cx="145" cy="224" r="220" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.18)" /><stop offset="12%" stop-color="rgba(255,255,255,0.07)" /><stop offset="55%" stop-color="rgba(0,0,0,0)" /><stop offset="100%" stop-color="rgba(0,0,0,0.30)" /></radialGradient>
+            <radialGradient id="conchSparkle" cx="145" cy="224" r="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.98)" /><stop offset="35%" stop-color="rgba(255,240,200,0.55)" /><stop offset="100%" stop-color="rgba(255,240,200,0)" /></radialGradient>
+            <path id="conch-base-path" d="M 263 160 C 295 200, 295 268, 245 318 C 203 358, 137 372, 83 346 C 27 318, 13 252, 21 200 C 29 146, 69 100, 127 82 C 187 62, 245 78, 263 122 C 270 130, 260 135, 255 140 C 258 152, 261 157, 263 160 Z" />
+            <clipPath id="conch-clip"><use href="#conch-base-path"/></clipPath>
+
             <pattern id="diamondPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="url(#lapisBlue)" /><path d="M 20 0 L 40 20 L 20 40 L 0 20 Z" fill="url(#coralRed)" class="wire-gold" /><path d="M 20 5 L 35 20 L 20 35 L 5 20 Z" class="wire-white" /></pattern>
             <pattern id="zigzagPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="url(#emeraldGreen)" /><path d="M 0 10 L 20 30 L 40 10 L 40 20 L 20 40 L 0 20 Z" fill="url(#pureGold)" class="wire-white" /></pattern>
 
@@ -262,7 +256,6 @@
             <g id="red-leaf-right"><path d="M 0 0 C 60 -50, 90 -160, 20 -240 C -30 -160, -20 -70, 0 0 Z" fill="url(#leafRedGrad)" class="wire-gold-thin" /><path d="M 0 0 C 15 -80, 20 -160, 15 -230" class="wire-gold-thin" opacity="0.6"/></g>
             <g id="red-leaf-left"><path d="M 0 0 C -50 -40, -80 -130, -15 -200 C 25 -130, 15 -60, 0 0 Z" fill="url(#leafRedGrad)" class="wire-gold-thin" /><path d="M 0 0 C -10 -70, -15 -140, -10 -190" class="wire-gold-thin" opacity="0.6"/></g>
             <g id="blue-leaf-right"><path d="M 0 0 C 50 -40, 80 -130, 15 -200 C -25 -130, -15 -60, 0 0 Z" fill="url(#leafBlueGrad)" class="wire-gold-thin" /><path d="M 0 0 C 10 -70, 15 -140, 10 -190" class="wire-gold-thin" opacity="0.6"/></g>
-
 
             <g id="treasure-banner">
                 <linearGradient id="tailRed" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FF7B7B" stop-opacity="0.9" /><stop offset="50%" stop-color="#D93636" stop-opacity="0.7" /><stop offset="100%" stop-color="#4A0000" stop-opacity="0.1" /></linearGradient>
@@ -383,8 +376,8 @@
                 <path d="M 460 610 L 450 640 L 550 640 L 540 610" fill="none" class="edge-gold" />
                 <path d="M 460 610 L 540 610 L 530 580 L 470 580 Z" fill="url(#coralRed)" />
                 <path d="M 460 610 L 470 580 L 530 580 L 540 610" fill="none" class="edge-gold" />
-                <path d="M 445 670 L 555 670" class="wire-white" opacity="0.6" />
-                <path d="M 455 630 L 545 630" class="wire-white" opacity="0.6" />
+                <path d="M 445 670 L 555 670" class="wire-white" opacity="0.6" fill="none"/>
+                <path d="M 455 630 L 545 630" class="wire-white" opacity="0.6" fill="none"/>
 
                 <path d="M 470 350 C 320 350, 310 620, 460 620 L 540 620 C 690 620, 680 350, 530 350 Z" fill="url(#pureGold)" class="edge-gold" />
                 <path d="M 474 353 C 330 353, 320 614, 462 614 L 538 614 C 680 614, 670 353, 526 353 Z" fill="url(#lapisBlue)" />
@@ -474,11 +467,34 @@
                     <path d="M 0 0 C -30 -60, -30 -140, 0 -190 C 30 -140, 30 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
                 </g>
             </g>
+
+            <radialGradient id="conchBgGrad" cx="165" cy="210" r="210" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(45,8,85,0.18)" /><stop offset="100%" stop-color="rgba(0,0,8,0)" /></radialGradient>
+            <radialGradient id="conchRadialGrad" cx="145" cy="224" r="220" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.18)" /><stop offset="12%" stop-color="rgba(255,255,255,0.07)" /><stop offset="55%" stop-color="rgba(0,0,0,0)" /><stop offset="100%" stop-color="rgba(0,0,0,0.30)" /></radialGradient>
+            <radialGradient id="conchSparkle" cx="145" cy="224" r="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(255,255,255,0.98)" /><stop offset="35%" stop-color="rgba(255,240,200,0.55)" /><stop offset="100%" stop-color="rgba(255,240,200,0)" /></radialGradient>
+            
+            <path id="conch-base-path" d="M 263 160 C 295 200, 295 268, 245 318 C 203 358, 137 372, 83 346 C 27 318, 13 252, 21 200 C 29 146, 69 100, 127 82 C 187 62, 245 78, 263 122 C 270 130, 260 135, 255 140 C 258 152, 261 157, 263 160 Z" />
+            <clipPath id="conch-clip"><use href="#conch-base-path"/></clipPath>
+
+            <g id="treasure-conch" transform="translate(170, -20) scale(2)">
+                <g clip-path="url(#conch-clip)">
+                    <rect x="-100" y="-100" width="500" height="500" fill="#03010c" />
+                    <rect x="-100" y="-100" width="500" height="500" fill="url(#conchBgGrad)" />
+                    <g id="conch-spiral-container" style="transform-origin: 145px 224px; animation: steady-rotate 40s linear infinite;"></g>
+                    <circle cx="145" cy="224" r="220" fill="url(#conchRadialGrad)" />
+                    <ellipse cx="145" cy="224" rx="66" ry="58" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="4.5" />
+                    <ellipse cx="145" cy="224" rx="38" ry="34" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="3" />
+                    <ellipse cx="145" cy="224" rx="18" ry="16" transform="rotate(-10 145 224)" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+                    <circle cx="145" cy="224" r="20" fill="url(#conchSparkle)" />
+                </g>
+                <use href="#conch-base-path" fill="none" stroke="url(#pureGold)" stroke-width="2.5" />
+                <use href="#conch-base-path" fill="none" stroke="rgba(255,240,180,0.4)" stroke-width="1" filter="drop-shadow(0 0 10px rgba(255,240,180,0.4))" />
+            </g>
+
         </defs>
     </svg>
 
     <script>
-        // 匯集 7 尊法寶
+        // 匯集 8 尊法寶大圓滿
         const TREASURES = [
             { id: "banner", name: "吉祥寶幡", rarity: "罕見瑞相", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "fish", name: "雙壽金魚", rarity: "恆常顯現金", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
@@ -487,23 +503,33 @@
             { id: "vase", name: "無盡寶瓶", rarity: "恆常顯現金", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
             { id: "wheel", name: "常轉法輪", rarity: "罕見瑞相", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "lotus", name: "吉祥聖蓮", rarity: "精進瑞相", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
-            { id: "t8", name: "待顯法相", rarity: "靜待因緣", svgId: null, viewBox: "0 0 100 100", glow: "transparent", tAnime: "none", gAnime: "none" }
+            { id: "conch", name: "右旋寶螺", rarity: "罕見瑞相", svgId: "treasure-conch", viewBox: "0 0 1000 800", glow: "rgba(255, 179, 179, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" }
         ];
 
         let hasDrawn = false;
-        
-        // 💡 真實抽卡機率邏輯 (此次先強制顯示 6 號「吉祥聖蓮」供您測試特效)
-        function drawGacha() {
-            // const rand = Math.random() * 100;
-            // if (rand <= 0.01) return 0; // 寶幡
-            // ...以此類推
-            return 6; // 測試：強制抽中吉祥聖蓮
+        let drawnIndex = 7; // 💡 測試：強制抽中第八格的「右旋寶螺」
+        let mockUnlocked = [0, 1, 2, 3, 4, 5, 6, 7]; // 💡 測試：圖鑑中全數解鎖，讓您一次看齊
+
+        // ════ 初始化寶螺的 JS 螺旋線條 ════
+        function initConchSpirals() {
+            const container = document.getElementById('conch-spiral-container');
+            if(!container) return;
+            const SCX = 145, SCY = 224, MAX_R = 222, TURNS = 3.5, ARMS = 4, SEGS = 150;
+            const colors = ['#FFB3B3', '#81D4FA', '#FFB3B3', '#81D4FA'];
+            let html = '';
+            for(let a=0; a<ARMS; a++) {
+                let pts = [];
+                for(let i=0; i<=SEGS; i++) {
+                    const t = i/SEGS;
+                    const r = MAX_R * Math.pow(t, 0.85);
+                    const theta = t * Math.PI * 2 * TURNS + (Math.PI * 2 / ARMS) * a;
+                    pts.push(`${SCX + r * Math.cos(theta)},${SCY + r * Math.sin(theta)}`);
+                }
+                let d = `M ${pts[0]} ` + pts.slice(1).map(p => `L ${p}`).join(' ');
+                html += `<path d="${d}" fill="none" stroke="${colors[a]}" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 8px ${colors[a]})" />`;
+            }
+            container.innerHTML = html;
         }
-        
-        let drawnIndex = drawGacha();
-        
-        // 💡 測試：圖鑑中模擬已獲得前 7 尊法相，讓您能在「琉璃多寶閣」一次看齊
-        let mockUnlocked = [0, 1, 2, 3, 4, 5, 6]; 
 
         // ════ 背景星空渲染 ════
         const canvas = document.getElementById('starCanvas');
@@ -524,6 +550,7 @@
             requestAnimationFrame(drawStars);
         }
         drawStars();
+        initConchSpirals(); // 星空啟動後順便畫出螺旋
 
         // ════ 卡背曼陀羅生成 ════
         function poly(n, r, rotDeg=0) {
@@ -553,8 +580,6 @@
             const card = document.createElement('div');
             card.className = 'card-wrapper';
             card.style.setProperty('--angle', `${angle}deg`);
-            
-            // 加入 onclick 事件
             card.onclick = () => selectCard(i, card);
 
             const t = TREASURES[drawnIndex];
