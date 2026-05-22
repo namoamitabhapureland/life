@@ -79,15 +79,36 @@
         .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
         .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* 卡背：透光琉璃質感與紅藍光暈 */
-        .card-back { background: rgba(18, 22, 26, 0.85); border: 1px solid rgba(212, 175, 55, 0.35); }
-        .card-back.red-glow { box-shadow: inset 0 0 45px rgba(220, 80, 80, 0.25); border-color: rgba(220, 80, 80, 0.4); }
-        .card-back.blue-glow { box-shadow: inset 0 0 45px rgba(80, 150, 220, 0.25); border-color: rgba(80, 150, 220, 0.4); }
-        .mandala-svg { width: 250%; height: 250%; opacity: 0.4; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1)); }
-
-        /* 卡面實體感 */
+              /* 卡背：透光琉璃質感與全新增亮紅藍光暈 */
+        .card-back {
+            /* 💡 稍微減輕背景深度，提高光暈對比度 (18 -> 30) */
+            background: rgba(30, 37, 45, 0.85); 
+            border: 1px solid rgba(212, 175, 55, 0.4); /* 稍微調亮金邊 */
+        }
+        
+        .card-back.red-glow {
+            /* 💡 使用更鮮豔的紅色 (255, 50, 50)，並大幅提高透明度 (0.25 -> 0.7) */
+            box-shadow: inset 0 0 60px rgba(255, 50, 50, 0.7); 
+            /* 💡 邊框也同步增亮 */
+            border-color: rgba(255, 80, 80, 0.8);
+        }
+        
+        .card-back.blue-glow {
+            /* 💡 使用更鮮豔的藍色 (0, 120, 255)，並大幅提高透明度 (0.25 -> 0.7) */
+            box-shadow: inset 0 0 60px rgba(0, 120, 255, 0.7); 
+            /* 💡 邊框也同步增亮 */
+            border-color: rgba(50, 180, 255, 0.8);
+        }
+        
+        .mandala-svg {
+            width: 250%; height: 250%; 
+            opacity: 0.5; /* 💡 稍微增加曼陀羅圖騰的透明度，讓它更醒目 */
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.15));
+        }
+               /* 卡面實體感 */
         .card-front {
-            background: radial-gradient(circle at 50% 40%, #0d1214 0%, #030406 100%);
+                        /* 💡 替換：深藍色實體質感 (舊：#0d1214 -> 新：#1a233a) */
+            background: radial-gradient(circle at 50% 40%, #1a233a 0%, #060912 100%);
             border: 1px solid rgba(212, 175, 55, 0.6); transform: rotateY(180deg);
             box-shadow: inset 0 0 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1);
         }
