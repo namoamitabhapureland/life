@@ -80,26 +80,30 @@
         .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
                            /* 卡背：移除實體邊框，改用高雅的懸浮質感 */
-        .card-back {
-            background: #010204; /* 保持深邃黑底 */
-            border: 1px solid rgba(212, 175, 55, 0.2); /* 極淡的金邊，幾乎不可見 */
-            transition: all 0.5s ease;
-        }
+      /* 修改 .card-back 基礎定義 */
+.card-back {
+    width: 100%;
+    height: 100%;
+    /* 使用放射狀漸層，讓中心稍微亮一點點，周圍變暗，模擬物體體積感 */
+    background: radial-gradient(circle at 50% 50%, #1a1c22 0%, #010204 100%);
+    /* 增加一點點內陰影，讓邊緣產生微微的凹陷感 */
+    box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.15); /* 極細金邊，維持高雅 */
+    transition: all 0.6s ease;
+    overflow: hidden;
+}
 
-        /* 紅色懸浮感 */
-        .card-back.red-glow {
-            /* 移除明顯的 border-color，改用外擴的深紅陰影讓它像懸浮在空中 */
-            box-shadow: 0 0 30px rgba(180, 40, 40, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5);
-            border-color: rgba(212, 175, 55, 0.3); /* 維持金邊 */
-        }
+/* 當發光時，讓底色與光暈疊加 */
+.card-back.red-glow {
+    /* 在深色背景下，光暈看起來會更溫潤、不刺眼 */
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(180, 40, 40, 0.3);
+    border-color: rgba(212, 175, 55, 0.3);
+}
 
-        /* 藍色懸浮感 */
-        .card-back.blue-glow {
-            /* 藍色同理，收斂色彩，強調懸浮感 */
-            box-shadow: 0 0 30px rgba(40, 100, 180, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5);
-            border-color: rgba(212, 175, 55, 0.3);
-        }
-
+.card-back.blue-glow {
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(40, 100, 180, 0.3);
+    border-color: rgba(212, 175, 55, 0.3);
+} 
                /* 修正曼陀羅：讓它適應卡片並懸浮 */
         .mandala-svg { 
             position: absolute;
