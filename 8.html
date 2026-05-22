@@ -189,13 +189,25 @@
     display: none; opacity: 0; transition: opacity 0.5s;
     justify-content: center; align-items: center; z-index: 999;
 }
+    /* ════ 新增：黑金彈框樣式 ════ */
+.modal-overlay { 
+    position: fixed; inset: 0; z-index: 999; background: rgba(1,2,4,0.85); backdrop-filter: blur(15px); 
+    display: none; flex-direction: column; justify-content: center; align-items: center; 
+    opacity: 0; transition: opacity 0.5s; 
+}
+.t-box { 
+    background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.12) 0%, rgba(1,2,4,0.95) 100%); 
+    border: 1px solid rgba(212,175,55,0.4); border-radius: 25px; padding: 40px; 
+    display: flex; flex-direction: column; align-items: center; max-width: 85%; text-align: center; 
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}    
     </style>
 </head>
 <body>
 
     <div class="top-nav">
         <div class="nav-btn" onclick="goHome()">歸返道場</div>
-        <div class="nav-title" id="display-name">妙依 ‧ 八寶閣</div>
+        <div class="nav-title" id="display-name" onclick="enterGallery()" style="cursor: pointer; transition: all 0.3s;">八寶閣</div>
         <div class="nav-btn" onclick="toggleHelp()">法寶說明</div>
     </div>
 
@@ -617,7 +629,7 @@ function selectCard(selectedIndex, selectedCard) {
     
     // 🔒 檢查是否有次數可以抽
     if (remainingDraws <= 0) {
-        alert("因緣未具：需累積百萬聲佛號 (100法幣) 方能顯化一契印。");
+        showCustomAlert("因緣未具：需累積百萬聲佛號 (100法幣) 方能顯化一契印。");
         return;
     }
 
@@ -694,8 +706,8 @@ function buildGallery() {
     grid.innerHTML = html;
 }
 
-        function goHome() { alert('即將引導回主系統 (測試)'); }
-        function toggleHelp() { alert('即將展開法寶說明面板 (測試)'); }
+        function goHome() { showCustomAlert('即將引導回主系統 (測試)'); }⁠
+        function toggleHelp() { showCustomAlert('即將展開法寶說明面板 (測試)'); }⁠
         // ════ 迴向核心邏輯 ════
 let pendingDedicateIdx = -1;
 
@@ -737,6 +749,19 @@ function playDustAnimation() {
         setTimeout(() => p.remove(), 2000);
     }
 }
+        // 新增：黑金彈窗控制函數
+function showCustomAlert(msg, title = "法界告示") {
+    document.getElementById('custom-alert-title').innerText = title;
+    document.getElementById('custom-alert-desc').innerHTML = msg;
+    const m = document.getElementById('custom-alert-modal');
+    m.style.display = 'flex';
+    setTimeout(() => m.style.opacity = 1, 50);
+}
+function closeCustomAlert() {
+    const m = document.getElementById('custom-alert-modal');
+    m.style.opacity = 0;
+    setTimeout(() => m.style.display = 'none', 500);
+}
     </script>
     <div id="confirm-layer">
     <div style="text-align:center; color:#f3e5ab;">
@@ -745,6 +770,13 @@ function playDustAnimation() {
         <p>確認將此寶物化作微塵，迴向法界嗎？</p>
         <button onclick="executeDedicate(pendingDedicateIdx); document.getElementById('confirm-layer').style.display='none';">確認迴向</button>
         <button onclick="document.getElementById('confirm-layer').style.display='none';">再留一陣</button>
+    </div>
+</div>
+    <div id="custom-alert-modal" class="modal-overlay" onclick="closeCustomAlert()">
+    <div class="t-box" onclick="event.stopPropagation()">
+        <div id="custom-alert-title" style="color:var(--gold-light); font-size:1.3rem; margin-bottom:20px; letter-spacing:4px;">法界告示</div>
+        <div id="custom-alert-desc" style="color:#ddd; font-size:0.95rem; line-height:2; text-align:justify; margin-bottom:25px; letter-spacing:1px;"></div>
+        <button class="nav-btn" style="width:120px; font-size:0.85rem;" onclick="closeCustomAlert()">確 認</button>
     </div>
 </div>
 </body>
