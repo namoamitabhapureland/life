@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -30,6 +29,7 @@
         .wire-white { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.5; stroke-linejoin: round; fill: none; }
         .wire-white-thin { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-linejoin: round; fill: none; }
         .wire-gold { stroke: url(#pureGold); stroke-width: 2.5; stroke-linejoin: round; fill: none; }
+        .wire-gold-thin { stroke: url(#pureGold); stroke-width: 1; stroke-linecap: round; fill: none; }
         .edge-gold { stroke: url(#pureGold); stroke-width: 4; stroke-linejoin: round; }
 
         canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
@@ -64,16 +64,16 @@
             perspective: 1500px; cursor: pointer; z-index: 10;
         }
 
-        /* 盲選觸碰浮出 */
+        /* 盲選觸碰微縮 (修復手機點擊失效問題) */
         @media (hover: hover) {
             .card-wrapper:hover {
                 z-index: 50;
-                transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-135px) rotate(calc(-1 * var(--angle))) scale(1.05);
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-120px) rotate(calc(-1 * var(--angle))) scale(1.05);
             }
         }
         .card-wrapper:active {
             z-index: 50;
-            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-135px) rotate(calc(-1 * var(--angle))) scale(1.05);
+            transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-120px) rotate(calc(-1 * var(--angle))) scale(0.98);
         }
 
         .card-inner {
@@ -91,7 +91,6 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* 卡背 */
         .card-back {
             background: var(--card-base);
             border: 1px solid rgba(212, 175, 55, 0.35);
@@ -99,7 +98,6 @@
         }
         .mandala-svg { width: 250%; height: 250%; opacity: 0.5; }
 
-        /* 卡面 (徹底去除方框與多餘背景) */
         .card-front {
             background: radial-gradient(circle at 50% 40%, #080d12 0%, #010203 100%);
             border: 1px solid rgba(212, 175, 55, 0.6);
@@ -107,7 +105,7 @@
             box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* ✨ 發光核心 ✨ */
+        /* ✨ 發光與動畫核心 ✨ */
         .treasure-glow {
             position: absolute; top: 40%; left: 50%;
             transform: translate(-50%, -50%);
@@ -119,7 +117,7 @@
 
         .treasure-svg-box {
             position: absolute; top: 5%; 
-            width: 90%; height: 65%; /* 佔據卡面最莊嚴的黃金比例 */
+            width: 90%; height: 65%;
             display: flex; align-items: center; justify-content: center;
             z-index: 2; overflow: visible;
         }
@@ -130,34 +128,24 @@
             animation: var(--treasure-anime) 4s ease-in-out infinite;
         }
 
-        /* =════ 動畫定義 ════= */
-
-        /* 1. 金魚專屬：游泳動畫 (縮放幅度更大，上下浮動) */
         @keyframes float-swim {
             0%, 100% { transform: scale(0.96) translateY(0); }
             50% { transform: scale(1.05) translateY(-8px); }
         }
-        /* 2. 傘蓋/幡蓋專屬：自轉動畫 */
         @keyframes steady-rotate {
             from { transform: rotate(0deg) scale(0.98); }
             to { transform: rotate(360deg) scale(0.98); }
         }
-        /* 3. 吉祥結專屬：複合縮放 */
         @keyframes float-knot {
-            0%, 100% { transform: scale(0.98); }
-            50% { transform: scale(1.03); }
+            0%, 100% { transform: scale(0.98) translateY(0); }
+            50% { transform: scale(1.03) translateY(-4px); }
         }
-
-        /* 光暈呼吸動畫 (配合游泳節奏) */
         @keyframes pulse-glow {
             0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
             50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); }
         }
 
-        /* 卡面文字微調，優雅不搶戲 */
-        .treasure-info {
-            position: absolute; bottom: 8%; width: 100%; text-align: center; z-index: 3;
-        }
+        .treasure-info { position: absolute; bottom: 8%; width: 100%; text-align: center; z-index: 3; }
         .t-name { color: #efd07b; font-size: 1.05rem; letter-spacing: 5px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.5); }
         .t-rarity { color: var(--cyan-jade); font-size: 0.65rem; letter-spacing: 3px; margin-top: 8px; opacity: 0.8; }
 
@@ -178,7 +166,7 @@
         }
         .btn-action.show { opacity: 1; pointer-events: auto; }
 
-        /* ════ 第二階段：多寶閣 圖鑑場景 (圓環陣法) ════ */
+        /* ════ 第二階段：多寶閣 圖鑑場景 ════ */
         #gallery-scene {
             position: absolute; inset: 0; z-index: 5;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -243,18 +231,43 @@
             <linearGradient id="coralRed" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF7B7B" /><stop offset="50%" stop-color="#D93636" /><stop offset="100%" stop-color="#4A0000" /></linearGradient>
             <linearGradient id="emeraldGreen" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#208C65" /><stop offset="50%" stop-color="#0B593D" /><stop offset="100%" stop-color="#021A10" /></linearGradient>
             
+            <linearGradient id="softBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E6F2FF" /><stop offset="50%" stop-color="#80C3FF" /><stop offset="100%" stop-color="#0066CC" /></linearGradient>
+            <linearGradient id="lightRedLine" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" /><stop offset="50%" stop-color="#FF9999" stop-opacity="0.8" /><stop offset="100%" stop-color="#CC0000" stop-opacity="0.2" /></linearGradient>
+            <linearGradient id="lightBlueLine" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" /><stop offset="50%" stop-color="#80C3FF" stop-opacity="0.8" /><stop offset="100%" stop-color="#0066CC" stop-opacity="0.2" /></linearGradient>
+
+            <linearGradient id="petalGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" /><stop offset="60%" stop-color="#FEF1D4" /><stop offset="100%" stop-color="#FCD873" /></linearGradient>
+            <linearGradient id="petalDark" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FEF1D4" /><stop offset="50%" stop-color="#FCD873" /><stop offset="100%" stop-color="#C6972E" /></linearGradient>
+            <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#0B593D" /><stop offset="50%" stop-color="#40D99D" /><stop offset="100%" stop-color="#0B593D" /></linearGradient>
+            <linearGradient id="leafBlueGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E1F5FE" stop-opacity="0.8" /><stop offset="60%" stop-color="#81D4FA" stop-opacity="0.3" /><stop offset="100%" stop-color="#81D4FA" stop-opacity="0" /></linearGradient>
+            <linearGradient id="leafRedGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFEBEE" stop-opacity="0.8" /><stop offset="60%" stop-color="#EF9A9A" stop-opacity="0.3" /><stop offset="100%" stop-color="#EF9A9A" stop-opacity="0" /></linearGradient>
+
             <pattern id="diamondPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="url(#lapisBlue)" /><path d="M 20 0 L 40 20 L 20 40 L 0 20 Z" fill="url(#coralRed)" class="wire-gold" /><path d="M 20 5 L 35 20 L 20 35 L 5 20 Z" class="wire-white" /></pattern>
             <pattern id="zigzagPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="url(#emeraldGreen)" /><path d="M 0 10 L 20 30 L 40 10 L 40 20 L 20 40 L 0 20 Z" fill="url(#pureGold)" class="wire-white" /></pattern>
 
             <g id="horizontal-bands"><rect x="-60" y="0" width="120" height="20" fill="url(#pureGold)" class="edge-gold" /><rect x="-60" y="20" width="120" height="20" fill="url(#emeraldGreen)" class="wire-white"/><circle cx="0" cy="30" r="4" fill="url(#coralRed)" class="wire-gold" /><circle cx="-30" cy="30" r="4" fill="url(#coralRed)" class="wire-gold" /><circle cx="30" cy="30" r="4" fill="url(#coralRed)" class="wire-gold" /><rect x="-60" y="40" width="120" height="20" fill="url(#pureGold)" class="edge-gold" /></g>
             <g id="banner-top"><path d="M -70 50 C -40 20, 40 20, 70 50 L 60 70 L -60 70 Z" fill="url(#pureGold)" class="edge-gold" /><path d="M -50 50 C -20 35, 20 35, 50 50" class="wire-white"/><circle cx="0" cy="20" r="12" fill="url(#coralRed)" class="wire-gold" /><path d="M -5 15 C 0 10, 5 10, 5 15" class="wire-white"/></g>
 
+            <g id="center-petal"><path d="M 0 -25 C -25 -55, 25 -55, 0 -25 Z" fill="url(#lapisBlue)" stroke="url(#pureGold)" stroke-width="2" /><path d="M 0 -30 L 0 -50" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" /></g>
+            <g id="outer-petal"><path d="M 0 -60 C -35 -95, 35 -95, 0 -60 Z" fill="url(#emeraldGreen)" stroke="url(#pureGold)" stroke-width="2" /></g>
+
+            <g id="dharma-spoke">
+                <path d="M -12 -55 L -20 -155 L 20 -155 L 12 -55 Z" fill="url(#lapisBlue)" class="edge-gold" />
+                <path d="M -5 -65 L -10 -145 L 10 -145 L 5 -65 Z" class="wire-white" opacity="0.6"/>
+                <path d="M -15 -195 L 0 -225 L 15 -195 Z" fill="url(#pureGold)" class="edge-gold" />
+                <path d="M 0 -195 L 0 -220" class="wire-white" />
+            </g>
+            <g id="lotus-petal"><path d="M 0 -15 C -15 -35, 15 -35, 0 -15 Z" fill="url(#coralRed)" stroke="url(#pureGold)" stroke-width="1.5" /><path d="M 0 -18 L 0 -30" stroke="rgba(255,255,255,0.8)" stroke-width="1" /></g>
+
+            <g id="blue-leaf-left"><path d="M 0 0 C -60 -50, -90 -160, -20 -240 C 30 -160, 20 -70, 0 0 Z" fill="url(#leafBlueGrad)" class="wire-gold-thin" /><path d="M 0 0 C -15 -80, -20 -160, -15 -230" class="wire-gold-thin" opacity="0.6"/></g>
+            <g id="red-leaf-right"><path d="M 0 0 C 60 -50, 90 -160, 20 -240 C -30 -160, -20 -70, 0 0 Z" fill="url(#leafRedGrad)" class="wire-gold-thin" /><path d="M 0 0 C 15 -80, 20 -160, 15 -230" class="wire-gold-thin" opacity="0.6"/></g>
+            <g id="red-leaf-left"><path d="M 0 0 C -50 -40, -80 -130, -15 -200 C 25 -130, 15 -60, 0 0 Z" fill="url(#leafRedGrad)" class="wire-gold-thin" /><path d="M 0 0 C -10 -70, -15 -140, -10 -190" class="wire-gold-thin" opacity="0.6"/></g>
+            <g id="blue-leaf-right"><path d="M 0 0 C 50 -40, 80 -130, 15 -200 C -25 -130, -15 -60, 0 0 Z" fill="url(#leafBlueGrad)" class="wire-gold-thin" /><path d="M 0 0 C 10 -70, 15 -140, 10 -190" class="wire-gold-thin" opacity="0.6"/></g>
+
+
             <g id="treasure-banner">
-                <radialGradient id="sacredAura" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="#C69320" stop-opacity="0.15" /><stop offset="50%" stop-color="#2a4d5c" stop-opacity="0.05" /><stop offset="100%" stop-color="#020405" stop-opacity="0" /></radialGradient>
                 <linearGradient id="tailRed" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FF7B7B" stop-opacity="0.9" /><stop offset="50%" stop-color="#D93636" stop-opacity="0.7" /><stop offset="100%" stop-color="#4A0000" stop-opacity="0.1" /></linearGradient>
                 <linearGradient id="tailBlue" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#80C3FF" stop-opacity="0.9" /><stop offset="50%" stop-color="#0A5C99" stop-opacity="0.7" /><stop offset="100%" stop-color="#011526" stop-opacity="0.1" /></linearGradient>
                 <linearGradient id="tailGreen" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#40D99D" stop-opacity="0.9" /><stop offset="50%" stop-color="#0B593D" stop-opacity="0.7" /><stop offset="100%" stop-color="#021A10" stop-opacity="0.1" /></linearGradient>
-                <circle cx="500" cy="400" r="500" fill="url(#sacredAura)" />
                 <g transform="translate(300, 100)"><use href="#banner-top" /><g transform="translate(0, 70)"><rect x="-60" y="0" width="120" height="100" fill="url(#coralRed)" class="edge-gold" /><path d="M 0 20 C 30 20, 50 50, 0 80 C -50 50, -30 20, 0 20 Z" fill="url(#pureGold)" class="wire-white" /><path d="M 0 30 C 15 30, 25 50, 0 70 C -25 50, -15 30, 0 30 Z" fill="url(#lapisBlue)" class="wire-white" /><g transform="translate(0, 100)"><use href="#horizontal-bands" /></g><rect x="-60" y="160" width="120" height="120" fill="url(#diamondPattern)" class="edge-gold" /><rect x="-60" y="280" width="120" height="80" fill="url(#zigzagPattern)" class="edge-gold" /><rect x="-60" y="360" width="120" height="40" fill="url(#coralRed)" class="edge-gold" /><path d="M -60 360 L -30 400 L 0 360 L 30 400 L 60 360" class="wire-gold" /><path d="M -45 360 L -30 385 L -15 360 M 15 360 L 30 385 L 45 360" class="wire-white"/></g><g transform="translate(0, 470)"><path d="M -60 0 C -120 120, -200 280, -120 420 C -90 280, -20 120, 0 0 Z" fill="url(#tailGreen)" opacity="0.8" /><path d="M -20 0 C -80 150, -140 320, -40 460 C -10 320, 20 150, 30 0 Z" fill="url(#tailBlue)" opacity="0.85" /><path d="M 20 0 C -30 100, -80 250, 20 380 C 40 250, 50 100, 60 0 Z" fill="url(#tailRed)" opacity="0.9" /></g></g>
                 <g transform="translate(700, 100)"><use href="#banner-top" /><g transform="translate(0, 70)"><rect x="-60" y="0" width="120" height="100" fill="url(#lapisBlue)" class="edge-gold" /><path d="M 0 20 C 30 20, 50 50, 0 80 C -50 50, -30 20, 0 20 Z" fill="url(#pureGold)" class="wire-white" /><path d="M 0 30 C 15 30, 25 50, 0 70 C -25 50, -15 30, 0 30 Z" fill="url(#coralRed)" class="wire-white" /><g transform="translate(0, 100)"><use href="#horizontal-bands" /></g><rect x="-60" y="160" width="120" height="120" fill="url(#diamondPattern)" class="edge-gold" /><rect x="-60" y="280" width="120" height="80" fill="url(#zigzagPattern)" class="edge-gold" /><rect x="-60" y="360" width="120" height="40" fill="url(#lapisBlue)" class="edge-gold" /><path d="M -60 360 L -30 400 L 0 360 L 30 400 L 60 360" class="wire-gold" /><path d="M -45 360 L -30 385 L -15 360 M 15 360 L 30 385 L 45 360" class="wire-white"/></g><g transform="translate(0, 470)"><path d="M 60 0 C 120 120, 200 280, 120 420 C 90 280, 20 120, 0 0 Z" fill="url(#tailGreen)" opacity="0.8" /><path d="M 20 0 C 80 150, 140 320, 40 460 C 10 320, -20 150, -30 0 Z" fill="url(#tailBlue)" opacity="0.85" /><path d="M -20 0 C 30 100, 80 250, -20 380 C -40 250, -50 100, -60 0 Z" fill="url(#tailRed)" opacity="0.9" /></g></g>
             </g>
@@ -275,10 +288,10 @@
                 <linearGradient id="silkRibbonBlue" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/><stop offset="50%" stop-color="#4AA8FF" stop-opacity="0.5"/><stop offset="100%" stop-color="#032640" stop-opacity="0.1"/></linearGradient>
                 <g transform="translate(0, -50)">
                     <rect x="494" y="200" width="12" height="500" fill="url(#pureGold)" rx="6" />
-                    <path d="M 485 620 L 515 620 L 510 680 L 490 680 Z" fill="url(#pureGold)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M 485 620 L 515 620 L 510 680 L 490 680 Z" fill="url(#pureGold)" class="wire-white" />
                     <path d="M 350 400 C 200 450, 150 650, 250 800 C 180 650, 280 500, 400 420 Z" fill="url(#silkRibbonBlue)" />
                     <path d="M 650 400 C 800 450, 850 650, 750 800 C 820 650, 720 500, 600 420 Z" fill="url(#silkRibbonBlue)" />
-                    <path d="M 320 370 Q 500 430 680 370 L 680 420 Q 650 450 620 437 Q 590 460 560 447 Q 530 465 500 450 Q 470 465 440 447 Q 410 460 380 437 Q 350 450 320 420 Z" fill="url(#emeraldGreen)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M 320 370 Q 500 430 680 370 L 680 420 Q 650 450 620 437 Q 590 460 560 447 Q 530 465 500 450 Q 470 465 440 447 Q 410 460 380 437 Q 350 450 320 420 Z" fill="url(#emeraldGreen)" class="wire-white" />
                     <path d="M 320 420 Q 350 450 380 437 Q 410 460 440 447 Q 470 465 500 450 Q 530 465 560 447 Q 590 460 620 437 Q 650 450 680 420" class="wire-gold" />
                     <path d="M 320 417 Q 350 447 380 434 Q 410 457 440 444 Q 470 462 500 447 Q 530 462 560 444 Q 590 457 620 434 Q 650 447 680 417" class="wire-white" />
                     <g class="wire-gold">
@@ -290,22 +303,17 @@
                         <path d="M 620 437 L 620 510" /><circle cx="620" cy="515" r="5" fill="url(#pureGold)" stroke="none" />
                         <path d="M 680 420 L 680 480" /><circle cx="680" cy="485" r="4" fill="#FFFFFF" stroke="none" />
                     </g>
-                    <path d="M 500 240 L 320 370 Q 500 430 680 370 Z" fill="url(#coralRed)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
-                    <path d="M 500 240 L 380 387" class="wire-white" />
-                    <path d="M 500 240 L 440 397" class="wire-white" />
-                    <path d="M 500 240 L 500 400" class="wire-white" />
-                    <path d="M 500 240 L 560 397" class="wire-white" />
-                    <path d="M 500 240 L 620 387" class="wire-white" />
-                    <path d="M 500 170 L 410 260 Q 500 295 590 260 Z" fill="url(#lapisBlue)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
-                    <path d="M 500 170 L 470 275.5" class="wire-gold" />
-                    <path d="M 500 170 L 530 275.5" class="wire-gold" />
+                    <path d="M 500 240 L 320 370 Q 500 430 680 370 Z" fill="url(#coralRed)" class="wire-white" />
+                    <path d="M 500 240 L 380 387" class="wire-white" /><path d="M 500 240 L 440 397" class="wire-white" /><path d="M 500 240 L 500 400" class="wire-white" /><path d="M 500 240 L 560 397" class="wire-white" /><path d="M 500 240 L 620 387" class="wire-white" />
+                    <path d="M 500 170 L 410 260 Q 500 295 590 260 Z" fill="url(#lapisBlue)" class="wire-white" />
+                    <path d="M 500 170 L 470 275.5" class="wire-gold" /><path d="M 500 170 L 530 275.5" class="wire-gold" />
                     <path d="M 300 370 C 150 400, 200 550, 100 650 C 250 600, 220 480, 350 420 Z" fill="url(#silkRibbon)" />
                     <path d="M 700 370 C 850 400, 800 550, 900 650 C 750 600, 780 480, 650 420 Z" fill="url(#silkRibbon)" />
                     <path d="M 250 410 C 80 450, 120 680, 20 800 C 150 700, 180 500, 320 440 Z" fill="url(#silkRibbon)" opacity="0.7"/>
                     <path d="M 750 410 C 920 450, 880 680, 980 800 C 850 700, 820 500, 680 440 Z" fill="url(#silkRibbon)" opacity="0.7"/>
-                    <path d="M 470 175 C 470 150, 530 150, 530 175 Z" fill="url(#emeraldGreen)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
-                    <path d="M 480 155 C 480 130, 520 130, 520 155 Z" fill="url(#pureGold)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
-                    <path d="M 490 135 C 470 90, 530 90, 510 135 Z" fill="url(#coralRed)" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M 470 175 C 470 150, 530 150, 530 175 Z" fill="url(#emeraldGreen)" class="wire-white" />
+                    <path d="M 480 155 C 480 130, 520 130, 520 155 Z" fill="url(#pureGold)" class="wire-white" />
+                    <path d="M 490 135 C 470 90, 530 90, 510 135 Z" fill="url(#coralRed)" class="wire-white" />
                     <circle cx="500" cy="115" r="4" fill="#FFFFFF" />
                     <path d="M 500 90 L 500 105 M 500 125 L 500 140 M 480 115 L 495 115 M 505 115 L 520 115" class="wire-white" opacity="0.6"/>
                 </g>
@@ -319,7 +327,6 @@
                 <path id="pathS" d="M150,155 A65,65 0 0,1 150,285 A65,65 0 0,1 150,155"/>
                 <path id="pathW" d="M150,155 A65,65 0 0,1 20,155 A65,65 0 0,1 150,155"/>
                 <path id="pathE" d="M150,155 A65,65 0 0,0 280,155 A65,65 0 0,0 150,155"/>
-
                 <g transform="translate(350, 180)">
                     <g fill="none" stroke-linecap="round">
                         <use href="#pathW" stroke="#4A3311" stroke-width="24"/>
@@ -369,26 +376,136 @@
                     </g>
                 </g>
             </g>
+
+            <g id="treasure-vase">
+                <path d="M 440 680 L 560 680 L 550 640 L 450 640 Z" fill="url(#pureGold)" class="edge-gold" />
+                <path d="M 450 640 L 550 640 L 540 610 L 460 610 Z" fill="url(#softBlueGrad)" />
+                <path d="M 460 610 L 450 640 L 550 640 L 540 610" fill="none" class="edge-gold" />
+                <path d="M 460 610 L 540 610 L 530 580 L 470 580 Z" fill="url(#coralRed)" />
+                <path d="M 460 610 L 470 580 L 530 580 L 540 610" fill="none" class="edge-gold" />
+                <path d="M 445 670 L 555 670" class="wire-white" opacity="0.6" />
+                <path d="M 455 630 L 545 630" class="wire-white" opacity="0.6" />
+
+                <path d="M 470 350 C 320 350, 310 620, 460 620 L 540 620 C 690 620, 680 350, 530 350 Z" fill="url(#pureGold)" class="edge-gold" />
+                <path d="M 474 353 C 330 353, 320 614, 462 614 L 538 614 C 680 614, 670 353, 526 353 Z" fill="url(#lapisBlue)" />
+
+                <g transform="translate(500, 480)">
+                    <circle cx="0" cy="0" r="95" fill="url(#pureGold)" class="edge-gold"/>
+                    <circle cx="0" cy="0" r="85" fill="url(#coralRed)" />
+                    <circle cx="0" cy="0" r="75" fill="none" class="wire-white" opacity="0.8"/>
+                    <use href="#outer-petal" transform="rotate(0)" /><use href="#outer-petal" transform="rotate(45)" /><use href="#outer-petal" transform="rotate(90)" /><use href="#outer-petal" transform="rotate(135)" /><use href="#outer-petal" transform="rotate(180)" /><use href="#outer-petal" transform="rotate(225)" /><use href="#outer-petal" transform="rotate(270)" /><use href="#outer-petal" transform="rotate(315)" />
+                    <circle cx="0" cy="0" r="50" fill="url(#pureGold)" class="wire-white"/>
+                    <circle cx="0" cy="0" r="43" fill="#011526" />
+                    <use href="#center-petal" transform="rotate(22.5)" /><use href="#center-petal" transform="rotate(67.5)" /><use href="#center-petal" transform="rotate(112.5)" /><use href="#center-petal" transform="rotate(157.5)" /><use href="#center-petal" transform="rotate(202.5)" /><use href="#center-petal" transform="rotate(247.5)" /><use href="#center-petal" transform="rotate(292.5)" /><use href="#center-petal" transform="rotate(337.5)" />
+                    <circle cx="0" cy="0" r="18" fill="url(#coralRed)" class="wire-gold"/>
+                    <circle cx="-4" cy="-4" r="4" fill="#FFFFFF" opacity="0.8" />
+                </g>
+
+                <path d="M 470 350 C 470 300, 475 270, 475 270 L 525 270 C 525 270, 530 300, 530 350 Z" fill="url(#softBlueGrad)" />
+                <path d="M 470 350 C 470 300, 475 270, 475 270 L 525 270 C 525 270, 530 300, 530 350" fill="none" class="edge-gold" />
+                <path d="M 440 230 L 560 230 L 525 270 L 475 270 Z" fill="url(#coralRed)" class="edge-gold" />
+                <ellipse cx="500" cy="230" rx="60" ry="14" fill="url(#lapisBlue)" class="edge-gold" />
+                <ellipse cx="500" cy="230" rx="48" ry="10" fill="#011526" />
+
+                <path d="M 465 625 C 295 625, 305 345, 475 345 C 325 365, 315 615, 455 615 Z" fill="url(#lightRedLine)" opacity="0.85" />
+                <path d="M 535 625 C 675 625, 685 460, 620 410 C 665 480, 655 615, 545 615 Z" fill="url(#lightBlueLine)" opacity="0.85" />
+            </g>
+
+            <g id="treasure-wheel" transform="translate(500, 380)">
+                <circle cx="0" cy="0" r="175" fill="none" stroke="url(#coralRed)" stroke-width="40" />
+                <circle cx="0" cy="0" r="195" fill="none" class="edge-gold" />
+                <circle cx="0" cy="0" r="155" fill="none" class="edge-gold" />
+                <circle cx="0" cy="0" r="188" fill="none" class="wire-white" opacity="0.5" />
+                <circle cx="0" cy="0" r="162" fill="none" class="wire-white" opacity="0.5" />
+                
+                <use href="#dharma-spoke" transform="rotate(0)" /><use href="#dharma-spoke" transform="rotate(45)" /><use href="#dharma-spoke" transform="rotate(90)" /><use href="#dharma-spoke" transform="rotate(135)" /><use href="#dharma-spoke" transform="rotate(180)" /><use href="#dharma-spoke" transform="rotate(225)" /><use href="#dharma-spoke" transform="rotate(270)" /><use href="#dharma-spoke" transform="rotate(315)" />
+                
+                <circle cx="0" cy="0" r="60" fill="url(#pureGold)" class="edge-gold" />
+                <circle cx="0" cy="0" r="48" fill="url(#emeraldGreen)" />
+                <use href="#lotus-petal" transform="rotate(0)" /><use href="#lotus-petal" transform="rotate(45)" /><use href="#lotus-petal" transform="rotate(90)" /><use href="#lotus-petal" transform="rotate(135)" /><use href="#lotus-petal" transform="rotate(180)" /><use href="#lotus-petal" transform="rotate(225)" /><use href="#lotus-petal" transform="rotate(270)" /><use href="#lotus-petal" transform="rotate(315)" />
+                
+                <circle cx="0" cy="0" r="16" fill="url(#lapisBlue)" class="wire-white" />
+                <circle cx="-4" cy="-4" r="3" fill="#FFFFFF" opacity="0.8" />
+                
+                <path d="M -20 250 C 220 280, 290 20, 160 -190 C 260 -10, 180 230, -30 235 Z" fill="url(#lightRedLine)" opacity="0.9" />
+                <path d="M 20 -250 C -220 -280, -290 -20, -160 190 C -260 10, -180 -230, 30 -235 Z" fill="url(#lightBlueLine)" opacity="0.9" />
+            </g>
+
+            <g id="treasure-lotus">
+                <g id="leaves">
+                    <use href="#red-leaf-left" transform="translate(410, 765) rotate(-55) scale(0.75)" />
+                    <use href="#blue-leaf-right" transform="translate(320, 665) rotate(15) scale(0.6)" />
+                    <use href="#blue-leaf-right" transform="translate(590, 765) rotate(55) scale(0.75)" />
+                    <use href="#red-leaf-left" transform="translate(680, 665) rotate(-15) scale(0.6)" />
+                    <use href="#blue-leaf-left" transform="translate(495, 700) rotate(-25) scale(0.8)" />
+                    <use href="#red-leaf-right" transform="translate(506, 580) rotate(25) scale(0.65)" />
+                </g>
+                <g id="stems">
+                    <path d="M 500 850 C 490 700, 510 600, 500 480" stroke="url(#stemGrad)" stroke-width="5" fill="none" />
+                    <path d="M 480 850 C 420 750, 250 650, 260 550" stroke="url(#stemGrad)" stroke-width="3.5" fill="none" />
+                    <path d="M 520 850 C 580 750, 750 650, 740 550" stroke="url(#stemGrad)" stroke-width="3.5" fill="none" />
+                </g>
+                <g transform="translate(500, 480) scale(1.1)">
+                    <path d="M 0 0 C -120 20, -180 -30, -170 -90 C -100 -50, -60 -10, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C 120 20, 180 -30, 170 -90 C 100 -50, 60 -10, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C -100 -30, -140 -110, -110 -170 C -50 -120, -30 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 C 100 -30, 140 -110, 110 -170 C 50 -120, 30 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 C -60 -50, -90 -160, -50 -220 C -10 -150, -15 -80, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C 60 -50, 90 -160, 50 -220 C 10 -150, 15 -80, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C -40 -80, -40 -180, 0 -250 C 40 -180, 40 -80, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 C -15 -30, -25 -50, -10 -80" class="wire-gold" fill="none" opacity="0.8"/>
+                    <path d="M 0 0 C 15 -30, 25 -50, 10 -80" class="wire-gold" fill="none" opacity="0.8"/>
+                    <path d="M 0 0 L 0 -90" class="wire-gold" fill="none" />
+                    <circle cx="-10" cy="-80" r="2.5" fill="#FFFFFF" />
+                    <circle cx="10" cy="-80" r="2.5" fill="#FFFFFF" />
+                    <circle cx="0" cy="-90" r="3" fill="#FFFFFF" />
+                </g>
+                <g transform="translate(260, 550) scale(0.75) rotate(-15)">
+                    <path d="M 0 0 C -80 10, -120 -30, -110 -80 C -60 -40, -40 -10, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C 80 10, 120 -30, 110 -80 C 60 -40, 40 -10, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C -60 -40, -80 -120, -50 -170 C -10 -120, -15 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 C 60 -40, 80 -120, 50 -170 C 10 -120, 15 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 C -35 -70, -35 -160, 0 -210 C 35 -160, 35 -70, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                    <path d="M 0 0 L -8 -60 M 0 0 L 8 -60" class="wire-gold-thin" fill="none" />
+                    <circle cx="-8" cy="-60" r="2" fill="#FFFFFF" /><circle cx="8" cy="-60" r="2" fill="#FFFFFF" />
+                </g>
+                <g transform="translate(740, 550) scale(0.65) rotate(15)">
+                    <path d="M 0 0 C -60 -50, -70 -130, 0 -200 C 70 -130, 60 -50, 0 0 Z" fill="url(#petalDark)" class="wire-gold" />
+                    <path d="M 0 0 C -30 -60, -30 -140, 0 -190 C 30 -140, 30 -60, 0 0 Z" fill="url(#petalGrad)" class="wire-gold" />
+                </g>
+            </g>
         </defs>
     </svg>
 
     <script>
+        // 匯集 7 尊法寶
         const TREASURES = [
             { id: "banner", name: "吉祥寶幡", rarity: "罕見瑞相", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "fish", name: "雙壽金魚", rarity: "恆常顯現金", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
             { id: "umbrella", name: "妙寶傘蓋", rarity: "恆常顯現金", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "knot", name: "吉祥如意結", rarity: "精進瑞相", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
-            { id: "t5", name: "待顯法相", rarity: "靜待因緣", svgId: null, viewBox: "0 0 100 100", glow: "transparent", tAnime: "none", gAnime: "none" },
-            { id: "t6", name: "待顯法相", rarity: "靜待因緣", svgId: null, viewBox: "0 0 100 100", glow: "transparent", tAnime: "none", gAnime: "none" },
-            { id: "t7", name: "待顯法相", rarity: "靜待因緣", svgId: null, viewBox: "0 0 100 100", glow: "transparent", tAnime: "none", gAnime: "none" },
+            { id: "vase", name: "無盡寶瓶", rarity: "恆常顯現金", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "wheel", name: "常轉法輪", rarity: "罕見瑞相", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "lotus", name: "吉祥聖蓮", rarity: "精進瑞相", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
             { id: "t8", name: "待顯法相", rarity: "靜待因緣", svgId: null, viewBox: "0 0 100 100", glow: "transparent", tAnime: "none", gAnime: "none" }
         ];
 
         let hasDrawn = false;
-        let drawnIndex = 3; // 💡 測試：這次強制抽中第四格的「吉祥如意結」
-        let mockUnlocked = [0, 1, 2, 3]; // 💡 測試：圖鑑中模擬已獲得前四尊法相
+        
+        // 💡 真實抽卡機率邏輯 (此次先強制顯示 6 號「吉祥聖蓮」供您測試特效)
+        function drawGacha() {
+            // const rand = Math.random() * 100;
+            // if (rand <= 0.01) return 0; // 寶幡
+            // ...以此類推
+            return 6; // 測試：強制抽中吉祥聖蓮
+        }
+        
+        let drawnIndex = drawGacha();
+        
+        // 💡 測試：圖鑑中模擬已獲得前 7 尊法相，讓您能在「琉璃多寶閣」一次看齊
+        let mockUnlocked = [0, 1, 2, 3, 4, 5, 6]; 
 
-        // 背景星空渲染
+        // ════ 背景星空渲染 ════
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
@@ -408,7 +525,7 @@
         }
         drawStars();
 
-        // 卡背曼陀羅生成
+        // ════ 卡背曼陀羅生成 ════
         function poly(n, r, rotDeg=0) {
             const pts=[], off = -Math.PI/2 + rotDeg*Math.PI/180;
             for(let k=0;k<n;k++) pts.push([r*Math.cos(2*Math.PI*k/n + off), r*Math.sin(2*Math.PI*k/n + off)]);
@@ -429,13 +546,15 @@
             return html;
         }
 
-        // 建立八卦抽卡陣列
+        // ════ 建立八卦抽卡陣列 ════
         const bagua = document.getElementById('bagua-container');
         for(let i=0; i<8; i++) {
             const angle = i * 45;
             const card = document.createElement('div');
             card.className = 'card-wrapper';
             card.style.setProperty('--angle', `${angle}deg`);
+            
+            // 加入 onclick 事件
             card.onclick = () => selectCard(i, card);
 
             const t = TREASURES[drawnIndex];
@@ -459,7 +578,7 @@
             bagua.appendChild(card);
         }
 
-        // 抽卡動畫
+        // ════ 抽卡動畫 ════
         function selectCard(selectedIndex, selectedCard) {
             if (hasDrawn) return;
             hasDrawn = true;
@@ -477,7 +596,7 @@
             setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
         }
 
-        // 進入圖鑑
+        // ════ 進入多寶閣圖鑑 ════
         function enterGallery() {
             document.getElementById('draw-scene').style.opacity = '0';
             document.getElementById('draw-scene').style.pointerEvents = 'none';
@@ -488,7 +607,6 @@
             }, 1000);
         }
 
-        // 建立多寶閣 (同時點亮四尊法寶供測試)
         function buildGallery() {
             const grid = document.getElementById('gallery-grid');
             if (grid.innerHTML !== "") return;
