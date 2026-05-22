@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>右旋寶螺</title>
+<title>右旋寶螺 - 淨化版</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -16,25 +16,10 @@ body {
   overflow: hidden;
 }
 canvas { display: block; max-width: 100%; }
-.label { text-align: center; margin-top: 14px; font-family: 'Georgia', serif; }
-.t1 {
-  font-size: 1.35rem;
-  font-weight: 300;
-  letter-spacing: 10px;
-  background: linear-gradient(90deg, #ffb0cc, #ffd490, #aaffcc, #aaddff, #ddaaff, #ffb0cc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.t2 { margin-top: 7px; font-size: 0.68rem; letter-spacing: 4px; color: rgba(180,150,220,0.38); }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="label">
-  <div class="t1">右 旋 寶 螺</div>
-  <div class="t2">妙音吉祥　法音遠播</div>
-</div>
 <script>
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
@@ -59,47 +44,42 @@ function conchPath() {
   ctx.bezierCurveTo(BX-138,BY+108, BX-152,BY+42,  BX-144,BY-10);
   ctx.bezierCurveTo(BX-136,BY-64,  BX-96, BY-110, BX-38, BY-128);
   ctx.bezierCurveTo(BX+22, BY-148, BX+80, BY-132, BX+98, BY-88);
-  // beak
-  ctx.bezierCurveTo(BX+112,BY-72,  BX+138,BY-78,  BX+158,BY-98);
-  ctx.bezierCurveTo(BX+178,BY-118, BX+172,BY-150, BX+150,BY-156);
-  ctx.bezierCurveTo(BX+130,BY-162, BX+110,BY-148, BX+104,BY-130);
-  ctx.bezierCurveTo(BX+98, BY-112, BX+92, BY-93,  BX+90, BY-70);
-  ctx.bezierCurveTo(BX+93, BY-58,  BX+96, BY-53,  BX+98, BY-50);
+  
+  // 移除頂部小圈圈，改為平順俐落收尾
+  ctx.bezierCurveTo(BX+105, BY-80, BX+95, BY-75,  BX+90, BY-70);
+  ctx.bezierCurveTo(BX+93,  BY-58, BX+96, BY-53,  BX+98, BY-50);
   ctx.closePath();
 }
 
-// ── Rainbow spiral: solid filled arms ────────────────────
+// ── 改造：明確線條的同系列配色漩渦 ────────────────────
 function drawRainbowSpiral() {
   const MAX_R = 222;
-  const TURNS = 9;
-  const SEGS  = TURNS * 380;          // ~380 steps per turn
-  const armW  = (MAX_R / TURNS) * 1.12; // slightly overlap adjacent arms
+  const TURNS = 3.5; 
+  const ARMS = 4;
+  const SEGS = 300;
+  // 替換為同系列的：淡紅、淡藍、淡綠、淡白(金)
+  const palette = ['#FFB3B3', '#81D4FA', '#A5D6A7', '#FFF9C4'];
 
   ctx.save();
   ctx.lineCap = 'round';
+  ctx.lineWidth = 4.5; // 確保線條明確清晰
 
-  for (let i = 0; i < SEGS; i++) {
-    const t  = i       / SEGS;
-    const t2 = (i + 1) / SEGS;
-
-    const r  = MAX_R * t;
-    const r2 = MAX_R * t2;
-    const theta  = t  * Math.PI * 2 * TURNS;
-    const theta2 = t2 * Math.PI * 2 * TURNS;
-
-    const x  = SCX + r  * Math.cos(theta);
-    const y  = SCY + r  * Math.sin(theta);
-    const x2 = SCX + r2 * Math.cos(theta2);
-    const y2 = SCY + r2 * Math.sin(theta2);
-
-    // One full rainbow per turn
-    const hue = ((theta / (Math.PI * 2)) % 1) * 360;
-
+  for(let a=0; a<ARMS; a++) {
     ctx.beginPath();
-    ctx.moveTo(x,  y);
-    ctx.lineTo(x2, y2);
-    ctx.strokeStyle = `hsl(${hue}, 92%, 62%)`;
-    ctx.lineWidth   = armW;
+    ctx.strokeStyle = palette[a];
+    ctx.shadowBlur = 12; // 增加法華發光感
+    ctx.shadowColor = palette[a];
+    
+    for(let i=0; i<=SEGS; i++) {
+      const t = i/SEGS;
+      const r = MAX_R * Math.pow(t, 0.85); // 讓螺旋向外舒展更自然
+      const theta = t * Math.PI * 2 * TURNS + (Math.PI * 2 / ARMS) * a;
+      const x = SCX + r * Math.cos(theta);
+      const y = SCY + r * Math.sin(theta);
+      
+      if(i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
     ctx.stroke();
   }
   ctx.restore();
@@ -134,7 +114,7 @@ function drawWhorls() {
   ctx.fillStyle = 'rgba(3,1,12,0.96)';
   ctx.fillRect(0,0,W,H);
 
-  // 2 ── Rainbow spiral
+  // 2 ── 明確線條的配色漩渦
   drawRainbowSpiral();
 
   // 3 ── Radial luminosity overlay (bright nucleus, dark edge)
@@ -151,7 +131,7 @@ function drawWhorls() {
 
   ctx.restore();
 
-  // 5 ── Iridescent outline
+  // 5 ── Iridescent outline (保留原始完美漸層)
   ctx.save();
   conchPath();
   const rim = ctx.createLinearGradient(BX-158,BY-165,BX+175,BY+165);
@@ -165,24 +145,24 @@ function drawWhorls() {
   ctx.stroke();
   ctx.restore();
 
-  // 6 ── Purple outer glow
+  // 6 ── Outer glow (微調至偏金白色的外發光，更符合系列感)
   ctx.save();
   conchPath();
-  ctx.shadowColor = 'rgba(140,90,255,0.45)';
+  ctx.shadowColor = 'rgba(255,240,180,0.4)';
   ctx.shadowBlur  = 32;
   ctx.strokeStyle = 'rgba(0,0,0,0)';
   ctx.lineWidth   = 1;
   ctx.stroke();
   ctx.restore();
 
-  // 7 ── Center nucleus sparkle
+  // 7 ── Center nucleus sparkle (微調配合淡白金配色)
   ctx.save();
   conchPath();
   ctx.clip();
   const spark = ctx.createRadialGradient(SCX,SCY,0,SCX,SCY,20);
   spark.addColorStop(0,   'rgba(255,255,255,0.98)');
-  spark.addColorStop(0.35,'rgba(255,235,255,0.55)');
-  spark.addColorStop(1,   'rgba(200,150,255,0)');
+  spark.addColorStop(0.35,'rgba(255,240,200,0.55)');
+  spark.addColorStop(1,   'rgba(255,240,200,0)');
   ctx.fillStyle = spark;
   ctx.beginPath();
   ctx.arc(SCX,SCY,20,0,Math.PI*2);
