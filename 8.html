@@ -79,32 +79,31 @@
         .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
         .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-              /* 卡背：透光琉璃質感與全新增亮紅藍光暈 */
+                     /* 卡背：透光琉璃質感與邊緣紅藍光暈 */
         .card-back {
-            /* 💡 稍微減輕背景深度，提高光暈對比度 (18 -> 30) */
-            background: rgba(30, 37, 45, 0.85); 
-            border: 1px solid rgba(212, 175, 55, 0.4); /* 稍微調亮金邊 */
+            /* 恢復深邃的黑底，讓曼陀羅的金色紋路能跳出來 */
+            background: rgba(15, 18, 22, 0.95); 
+            border: 1.5px solid rgba(212, 175, 55, 0.4); 
         }
         
         .card-back.red-glow {
-            /* 💡 使用更鮮豔的紅色 (255, 50, 50)，並大幅提高透明度 (0.25 -> 0.7) */
-            box-shadow: inset 0 0 60px rgba(255, 50, 50, 0.7); 
-            /* 💡 邊框也同步增亮 */
-            border-color: rgba(255, 80, 80, 0.8);
+            /* 光暈大幅收斂：只在邊框內側 20px 和外側 15px 微微發光，不淹沒卡面 */
+            box-shadow: inset 0 0 20px rgba(220, 50, 50, 0.5), 0 0 15px rgba(220, 50, 50, 0.4); 
+            border-color: rgba(255, 80, 80, 0.9);
         }
         
         .card-back.blue-glow {
-            /* 💡 使用更鮮豔的藍色 (0, 120, 255)，並大幅提高透明度 (0.25 -> 0.7) */
-            box-shadow: inset 0 0 60px rgba(0, 120, 255, 0.7); 
-            /* 💡 邊框也同步增亮 */
-            border-color: rgba(50, 180, 255, 0.8);
+            /* 光暈大幅收斂：只在邊框內側發藍光 */
+            box-shadow: inset 0 0 20px rgba(50, 150, 255, 0.5), 0 0 15px rgba(50, 150, 255, 0.4); 
+            border-color: rgba(80, 180, 255, 0.9);
         }
         
-                .mandala-svg { 
+        .mandala-svg {
             width: 250%; height: 250%; 
-            opacity: 0.9; /* 💡 提高整體透明度，不再暗淡 */
-            mix-blend-mode: screen; /* 💡 關鍵：讓有顏色的線條在發光背景上更突出 */
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); /* 💡 增強線條的自發光 */
+            opacity: 0.8; 
+            mix-blend-mode: screen; 
+            /* 微微的自發光，讓線條更有質感 */
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3)); 
         }
                /* 卡面實體感 */
         .card-front {
@@ -606,23 +605,21 @@ window.addEventListener('DOMContentLoaded', () => {
             for(let i=0; i<pts.length; i++) for(let j=i+1; j<pts.length; j++) html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}"/>`;
             return html + `</g>`;
         }
-                function getMandala() {
-            // 💡 1. 加快轉動速度 (dur="80s" 改為 "30s")
+                        function getMandala() {
             let html = `<svg class="mandala-svg" viewBox="-115 -115 230 230"><g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/>`;
             const p12 = poly(12, 102);
             
-            // 💡 2. 最外圈多邊形：加入青藍色底與邊框，並將內部連線改為加粗的亮金色 (#FFD700)
-            html += `<polygon points="${ptStr(p12)}" fill="rgba(139,168,156,0.15)" stroke="#00FFFF" stroke-width="1.5" opacity="0.9"/>` + getWeb(p12, '#FFD700', 0.8, 0.7);
+            // 1. 最外圈：拿掉青色，改用系統主色「華麗金 (#d4af37)」，內部填入極淡的金色
+            html += `<polygon points="${ptStr(p12)}" fill="rgba(212,175,55,0.05)" stroke="#d4af37" stroke-width="1.2" opacity="0.8"/>` + getWeb(p12, '#d4af37', 0.6, 0.5);
             
-            // 💡 3. 內圈的雙八角星網格：使用純白色、加粗線條並提高不透明度
-            html += getWeb([...poly(8, 55, 0), ...poly(8, 55, 22.5)], '#FFFFFF', 0.8, 0.8);
+            // 2. 內圈的雙八角星網格：改用柔和的「淺金/白 (#f3e5ab)」，讓層次分明
+            html += getWeb([...poly(8, 55, 0), ...poly(8, 55, 22.5)], '#f3e5ab', 0.8, 0.7);
             
-            // 💡 4. 最中心的菱形與圓點：使用金色外框與發光的青色圓心
-            html += `<polygon points="${ptStr(poly(4, 20, 45))}" fill="rgba(255,215,0,0.2)" stroke="#FFD700" stroke-width="1.5" opacity="0.9"/><circle cx="0" cy="0" r="6" fill="#00FFFF" opacity="1"/></g></svg>`;
+            // 3. 最中心：金色菱形，中間綴一顆純白色的明亮圓點，不再用突兀的顏色
+            html += `<polygon points="${ptStr(poly(4, 20, 45))}" fill="rgba(243,229,171,0.1)" stroke="#f3e5ab" stroke-width="1.2" opacity="0.9"/><circle cx="0" cy="0" r="5" fill="#ffffff" opacity="0.9"/></g></svg>`;
             
             return html;
         }
-
         const bagua = document.getElementById('bagua-container');
         for(let i=0; i<8; i++) {
             const angle = i * 45;
