@@ -750,9 +750,34 @@ function buildGallery() {
     grid.innerHTML = html;
 }
 
-    function goHome() { showCustomAlert('即將引導回主系統 (測試)'); }
-function toggleHelp() { showCustomAlert('即將展開法寶說明面板 (測試)'); }
-        
+    // 💡 修正：引導回主系統的正確路徑
+function goHome() { 
+    window.location.href = 'index.html?screen=3'; 
+}
+
+// 💡 修正：八寶閣的專屬法寶說明與玄機文案
+function toggleHelp() { 
+    const helpContent = `
+        <div style="text-align: center; margin-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px;">
+            <span style="color: var(--gold-solid); font-size: 1.05rem; letter-spacing: 2px;">佛門八寶 ‧ 又稱八吉祥</span>
+        </div>
+        <div style="color: #ddd; font-size: 0.9rem; line-height: 1.8; text-align: justify; letter-spacing: 1px;">
+            乃象徵圓滿、清淨與無上福智的八件殊勝法物：<br>
+            <div style="color: var(--cyan-jade); text-align: center; margin: 10px 0; font-size: 0.95rem; letter-spacing: 3px;">
+                寶傘、雙魚、法螺、寶瓶<br>蓮花、吉祥結、法幢、法輪
+            </div>
+            
+            <div style="margin-top: 15px; color: var(--gold-light); font-size: 0.95rem;">【 百萬資糧 ‧ 法界迴響 】</div>
+            法界不虛，功不唐捐。行者每積累 <span style="color: var(--gold-solid); font-weight: bold;">一百萬聲佛號</span> 之深厚功德，虛空法界便會與之共振，於業鏡中相應顯化，賜予一次契印八寶的殊勝因緣。
+            <br><br>
+            願行者於此悲願化城中，勤修不輟。集滿八寶印記，不僅是功德聚足的具象，更是在菩提道上，步步生蓮、福慧雙修的真實見證。<br>
+            <span style="color: #aaa; font-size: 0.85rem;">莫向外求，但念彌陀，靜待自性寶光。</span>
+        </div>
+    `;
+    
+    // 呼叫現有的彈窗系統來顯示這段精美的 HTML
+    showCustomAlert(helpContent, "八寶閣 ‧ 修持指南"); 
+}
 // 💡 修正 6B：替換為完整爆發特效邏輯
 let pendingDedicateIdx = -1;
 
@@ -864,11 +889,22 @@ function closeCustomAlert() {
         </div>
     </div>
 
-    <div id="anim-overlay" class="modal-overlay" style="z-index: 1000;">
+      <div id="anim-overlay" class="modal-overlay" style="z-index: 1000;">
         <div id="full-screen-flash" style="position:absolute; inset:0; background:#f3e5ab; opacity:0; transition:opacity 0.1s ease-out; box-shadow:inset 0 0 100px 50px rgba(255,255,255,0.3);"></div>
         <div id="anim-svg-container" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:250px; height:250px; transition:transform 1.5s ease-in, filter 1s; z-index:20;"></div>
         <div id="anim-text" style="position:absolute; top:65%; left:50%; transform:translateX(-50%); width:90%; font-size:1.1rem; color:#fffce0; letter-spacing:4px; text-align:center; line-height:2.2; opacity:0; transition:1.5s; z-index:30;"></div>
         <button class="nav-btn" id="close-anim-btn" style="position:absolute; top:85%; left:50%; transform:translateX(-50%); z-index:40; opacity:0; pointer-events:none;" onclick="closeAnim()">功德圓滿</button>
     </div>
+
+    <div id="custom-alert-modal" class="modal-overlay" onclick="closeCustomAlert()">
+        <div class="t-box" onclick="event.stopPropagation()">
+            <div id="custom-alert-title" style="color:var(--gold-light); font-size:1.3rem; margin-bottom:20px; letter-spacing:4px;">法界告示</div>
+            <div id="custom-alert-desc" style="color:#ddd; font-size:0.95rem; line-height:2; text-align:justify; margin-bottom:25px; letter-spacing:1px;"></div>
+            <button class="nav-btn" style="width:120px; font-size:0.85rem;" onclick="closeCustomAlert()">確 認</button>
+        </div>
+    </div>
+
+</body>
+</html>
 </body>
 </html>
