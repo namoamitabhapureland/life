@@ -24,18 +24,24 @@
         }
 
         /* ════ 頂部導航列 (承襲華藏月相) ════ */
-        .top-nav {
-            position: absolute; top: 25px; left: 0; width: 100%;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; z-index: 200;
-        }
+       .top-nav {
+    position: absolute; top: 25px; left: 0; width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    /* 增加 safe-area-inset 防護 */
+    padding: env(safe-area-inset-top, 0px) 20px 0 20px; 
+    z-index: 200;
+}
         .nav-btn {
             color: var(--cyan-jade); font-size: 0.85rem; letter-spacing: 2px;
             padding: 6px 14px; border: 1px solid rgba(139,168,156,0.3); border-radius: 20px;
             background: rgba(1,2,4,0.6); cursor: pointer; backdrop-filter: blur(5px);
             transition: all 0.3s;
         }
-        .nav-btn:active { background: rgba(139,168,156,0.2); }
+.nav-btn:active { 
+    background: rgba(139,168,156,0.2); 
+    transform: scale(0.95); 
+    opacity: 0.8; 
+}
         .nav-title {
             color: var(--gold-light); font-size: 1.1rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(243,229,171,0.3);
         }
@@ -595,24 +601,33 @@ if (db.streakDays === undefined) db.streakDays = 0;
 if (db.lastNianDate === undefined) db.lastNianDate = "";
 if (db.musicList !== undefined) delete db.musicList;
 // 計算可抽卡次數：(總念佛數 / 100萬) 向下取整 - 已經抽過的次數
+function saveDB() {
+    localStorage.setItem('PX_V15.0', JSON.stringify(db));
+}
 const totalEarnedDraws = Math.floor((db.totalNian || 0) / 1000000);
 let remainingDraws = totalEarnedDraws - db.treasureDrawnCount;
 if (remainingDraws < 0) remainingDraws = 0;
 
-// 更新右上角的名稱 (從 DB 讀取)
-window.addEventListener('DOMContentLoaded', () => {
+// 將 UI 初始化邏輯封裝，確保清淨無礙
+function initUI() {
     const nameDisplay = document.getElementById('display-name');
     if(nameDisplay) nameDisplay.innerText = `${db.name || '行者'} ‧ 八寶閣`;
     
-    // 更新中央提示文字
     const centerHint = document.getElementById('center-hint');
     if(centerHint) {
         if (remainingDraws > 0) {
             centerHint.innerHTML = `可抽卡次數：${remainingDraws}<br>憑心擇一印`;
         } else {
             centerHint.innerHTML = `百萬資糧聚<br>尚需精進念佛`;
-            centerHint.style.color = "rgba(139,168,156,0.8)"; // 變成灰色
+            centerHint.style.color = "rgba(139,168,156,0.8)"; 
         }
+    }
+}
+
+// 確保網頁 DOM 載入且 db 資料庫確實存在時，才執行介面渲染
+window.addEventListener('DOMContentLoaded', () => {
+    if (db) {
+        initUI();
     }
 });
         // --- 視覺腳本框架  ---
@@ -763,11 +778,13 @@ function selectCard(selectedIndex, selectedCard) {
     hasDrawn = true;
     document.getElementById('center-hint').style.opacity = 0;
     
-    // 扣除次數並將抽中的寶物存入 DB
-    drawnIndex = drawGacha(); // 執行機率函數
-    db.treasureDrawnCount++;  // 增加已抽次數
-    db.eightTreasures[drawnIndex]++; // 該寶物數量 +1
-    localStorage.setItem('PX_V15.0', JSON.stringify(db)); // 💾 正式存檔！
+// 扣除次數並將抽中的寶物存入 DB
+drawnIndex = drawGacha(); // 執行機率函數
+
+// 增加防護：若數值異常則預設為 0 再加 1，徹底杜絕 NaN
+db.treasureDrawnCount = (db.treasureDrawnCount || 0) + 1;  
+db.eightTreasures[drawnIndex] = (db.eightTreasures[drawnIndex] || 0) + 1; 
+saveDB(); // 💾 正式存檔！
 
     const allCards = document.querySelectorAll('.card-wrapper');
     allCards.forEach((c, idx) => {
@@ -883,7 +900,7 @@ function executeDedicate(idx) {
 
     // 扣除並存檔
     db.eightTreasures[idx]--; 
-    localStorage.setItem('PX_V15.0', JSON.stringify(db));
+    saveDB(); // 💾 統一呼叫存檔函數
     
     const t = TREASURES[idx];
     const ov = document.getElementById('anim-overlay'), 
