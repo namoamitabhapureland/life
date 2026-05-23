@@ -340,16 +340,20 @@
                     <path d="M 500 90 L 500 105 M 500 125 L 500 140 M 480 115 L 495 115 M 505 115 L 520 115" class="wire-white" opacity="0.6"/>
                 </g>
             </g>
-
-            <g id="treasure-knot">
+                        <g id="treasure-knot">
                 <radialGradient id="goldBead" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="#FFF59D"/><stop offset="30%" stop-color="#FCD873"/><stop offset="70%" stop-color="#C6972E"/><stop offset="100%" stop-color="#3E2723"/></radialGradient>
                 <linearGradient id="tailGold" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FFF3D1" stop-opacity="0.8" /><stop offset="60%" stop-color="#C6972E" stop-opacity="0.5" /><stop offset="100%" stop-color="#3E2723" stop-opacity="0.1" /></linearGradient>
-                <path id="pathN" d="M150,155 A65,65 0 0,0 150,25 A65,65 0 0,0 150,155"/>
-                <path id="pathS" d="M150,155 A65,65 0 0,1 150,285 A65,65 0 0,1 150,155"/>
-                <path id="pathW" d="M150,155 A65,65 0 0,1 20,155 A65,65 0 0,1 150,155"/>
-                <path id="pathE" d="M150,155 A65,65 0 0,0 280,155 A65,65 0 0,0 150,155"/>
+                
+                <defs>
+                    <path id="pathN" d="M150,155 A65,65 0 0,0 150,25 A65,65 0 0,0 150,155"/>
+                    <path id="pathS" d="M150,155 A65,65 0 0,1 150,285 A65,65 0 0,1 150,155"/>
+                    <path id="pathW" d="M150,155 A65,65 0 0,1 20,155 A65,65 0 0,1 150,155"/>
+                    <path id="pathE" d="M150,155 A65,65 0 0,0 280,155 A65,65 0 0,0 150,155"/>
+                </defs>
+
                 <g transform="translate(350, 180)">
-                    <g fill="none" stroke-linecap="round">
+
+             <g fill="none" stroke-linecap="round">
                         <use href="#pathW" stroke="#4A3311" stroke-width="24"/>
                         <use href="#pathW" stroke="url(#pureGold)" stroke-width="18"/>
                         <use href="#pathW" stroke="#FFFFFF" stroke-width="3" opacity="0.7"/>
@@ -567,8 +571,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
         window.addEventListener('resize', resize); resize();
-        for(let i=0; i<300; i++) { // 數量加倍
-            stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*2.5, colorType: Math.floor(Math.random() * 3) });
+               // 💡 修正 3：數量增加至 800，並強化繪製時的亮度
+        for(let i=0; i<800; i++) { 
+            stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*3.5 + 0.5, colorType: Math.floor(Math.random() * 3) });
         }
         function drawStars() {
             ctx.clearRect(0, 0, width, height); 
@@ -577,8 +582,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 s.z -= 0.3; if(s.z <= 0) s.z = 1000; 
                 let sc = 300 / (300 + s.z);
                 ctx.beginPath(); ctx.arc(width/2 + s.x*sc, height/2 + s.y*sc, s.s*sc, 0, Math.PI*2); 
-                // 亮度加成，保留微光呼吸感
-                ctx.fillStyle = starColors[s.colorType] + (sc * 1.5) + ')'; 
+                // 將透明度倍率從 1.5 提升至 3.0
+                ctx.fillStyle = starColors[s.colorType] + (sc * 3.0) + ')'; 
                 ctx.fill(); 
             });
             requestAnimationFrame(drawStars);
@@ -729,9 +734,8 @@ function buildGallery() {
         const isUnlocked = count > 0;
         const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
         
-        const svgContent = isUnlocked 
-            ? `<svg viewBox="${t.viewBox}" style="width:120%; height:120%;"><use href="#${t.svgId}"></use></svg>`
-            : `<svg viewBox="0 0 100 100" style="width:50%; height:50%; opacity:0.1;"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/></svg>`; 
+        // 💡 修正 5：直接完全替換成這行，利用 CSS 濾鏡做出黑白剪影效果
+        const svgContent = `<svg viewBox="${t.viewBox}" style="width:120%; height:120%; ${!isUnlocked ? 'opacity:0.2; filter:grayscale(100%) brightness(0.5);' : 'filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));'}"><use href="#${t.svgId}"></use></svg>`; 
 
         html += `
             <div class="${cls}" onclick="handleDedicateClick(${idx})">
@@ -751,43 +755,89 @@ function toggleHelp() { showCustomAlert('即將展開法寶說明面板 (測試)
         // ════ 迴向核心邏輯 ════
 let pendingDedicateIdx = -1;
 
-// 步驟 A：觸發確認
+// 💡 修正 6B：替換為完整爆發特效邏輯
+let pendingDedicateIdx = -1;
+
 function handleDedicateClick(idx) {
     if (db.eightTreasures[idx] <= 0) return;
     pendingDedicateIdx = idx;
     
-    // 顯示確認框
+    const t = TREASURES[idx];
+    document.getElementById('confirm-svg').innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%;"><use href="#${t.svgId}"></use></svg>`;
+    document.getElementById('confirm-name').innerText = t.name;
+    
     const m = document.getElementById('confirm-layer');
     m.style.display = 'flex';
     setTimeout(() => m.style.opacity = 1, 10);
 }
 
-// 步驟 B：執行扣除與微塵動畫
 function executeDedicate(idx) {
+    // 關閉確認框
+    document.getElementById('confirm-layer').style.opacity = 0;
+    setTimeout(() => document.getElementById('confirm-layer').style.display = 'none', 500);
+
+    // 扣除並存檔
     db.eightTreasures[idx]--; 
     localStorage.setItem('PX_V15.0', JSON.stringify(db));
     
-    // 執行微塵特效 (模擬月相)
-    playDustAnimation();
-    
-    // 重新渲染畫面
-    document.getElementById('gallery-grid').innerHTML = ""; 
-    buildGallery();
+    const t = TREASURES[idx];
+    const ov = document.getElementById('anim-overlay'), 
+          flash = document.getElementById('full-screen-flash'), 
+          txt = document.getElementById('anim-text'), 
+          btn = document.getElementById('close-anim-btn'),
+          svgCont = document.getElementById('anim-svg-container');
+
+    // 初始化動畫場景
+    ov.style.display = 'flex';
+    svgCont.innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%; filter: drop-shadow(0 0 25px ${t.glow});"><use href="#${t.svgId}"></use></svg>`;
+    txt.style.opacity = 0;
+    btn.style.opacity = 0;
+    btn.style.pointerEvents = 'none';
+
+    setTimeout(() => ov.style.opacity = 1, 50);
+
+    // 觸發閃光與微塵
+    setTimeout(() => {
+        flash.style.opacity = 1; 
+        svgCont.innerHTML = ''; // 實體消失，化為微塵
+        
+        for (let k = 0; k < 250; k++) {
+            let d = document.createElement('div');
+            d.className = 'dust-particle';
+            d.style.background = Math.random() > 0.5 ? '#f3e5ab' : '#FCF6D8'; 
+            d.style.width = Math.random() * 4 + 2 + 'px'; 
+            d.style.height = d.style.width;
+            d.style.position = 'absolute';
+            d.style.left = '50%'; d.style.top = '50%';
+            let a = Math.random() * Math.PI * 2, dist = 100 + Math.random() * 600;
+            d.style.setProperty('--dx', Math.cos(a) * dist + 'px');
+            d.style.setProperty('--dy', Math.sin(a) * dist + 'px');
+            d.style.animationDuration = (0.7 + Math.random() * 1.5) + 's';
+            ov.appendChild(d);
+        }
+        
+        setTimeout(() => { 
+            flash.style.transition = 'opacity 1.5s ease-in'; 
+            flash.style.opacity = 0; 
+        }, 1200); 
+
+        txt.innerHTML = "【 因緣圓滿 ‧ 悉皆迴向 】<br><span style='font-size:0.95rem; color:var(--cyan-jade);'><br>寶物已化作無漏金剛光束，迴向虛空法界。</span>";
+        txt.style.opacity = 1;
+        
+        setTimeout(() => { btn.style.opacity = 1; btn.style.pointerEvents = 'auto'; }, 2500);
+    }, 1600);
 }
 
-// 步驟 C：微塵特效產生器 (抄襲月相)
-function playDustAnimation() {
-    const container = document.body;
-    for(let i=0; i<30; i++) {
-        const p = document.createElement('div');
-        p.className = 'dust-particle';
-        p.style.left = '50%';
-        p.style.top = '50%';
-        p.style.setProperty('--dx', (Math.random()-0.5)*200 + 'px');
-        p.style.setProperty('--dy', (Math.random()-0.5)*200 + 'px');
-        container.appendChild(p);
-        setTimeout(() => p.remove(), 2000);
-    }
+function closeAnim() {
+    const ov = document.getElementById('anim-overlay');
+    ov.style.opacity = 0;
+    setTimeout(() => {
+        ov.style.display = 'none';
+        document.querySelectorAll('#anim-overlay .dust-particle').forEach(d => d.remove());
+        // 重新渲染圖鑑狀態
+        document.getElementById('gallery-grid').innerHTML = ""; 
+        buildGallery();
+    }, 500);
 }
         // 新增：黑金彈窗控制函數
 function showCustomAlert(msg, title = "法界告示") {
@@ -803,20 +853,24 @@ function closeCustomAlert() {
     setTimeout(() => m.style.display = 'none', 500);
 }
     </script>
-    <div id="confirm-layer">
-    <div style="text-align:center; color:#f3e5ab;">
-        <div id="confirm-svg" style="width:100px; height:100px; margin:0 auto;"></div>
-        <p id="confirm-name" style="margin:10px 0;"></p>
-        <p>確認將此寶物化作微塵，迴向法界嗎？</p>
-        <button onclick="executeDedicate(pendingDedicateIdx); document.getElementById('confirm-layer').style.display='none';">確認迴向</button>
-        <button onclick="document.getElementById('confirm-layer').style.display='none';">再留一陣</button>
+        <div id="confirm-layer" class="modal-overlay">
+        <div class="t-box">
+            <div style="color:var(--cyan-jade); font-size:1.1rem; margin-bottom:20px; letter-spacing:4px;">即將迴向法界</div>
+            <div id="confirm-svg" style="width:160px; height:160px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));"></div>
+            <div id="confirm-name" style="font-size:1.5rem; color:var(--gold-light); margin:20px 0; letter-spacing:3px;"></div>
+            <div style="color:#ddd; font-size:0.9rem; margin-bottom:25px;">確認將此寶物化作微塵，迴向虛空法界嗎？</div>
+            <div style="display:flex; gap:15px;">
+                <button class="nav-btn" onclick="document.getElementById('confirm-layer').style.display='none';">再留一陣</button>
+                <button class="nav-btn" style="border-color:var(--gold-solid); color:var(--gold-solid);" onclick="executeDedicate(pendingDedicateIdx)">確認迴向</button>
+            </div>
+        </div>
     </div>
-</div>
-    <div id="custom-alert-modal" class="modal-overlay" onclick="closeCustomAlert()">
-    <div class="t-box" onclick="event.stopPropagation()">
-        <div id="custom-alert-title" style="color:var(--gold-light); font-size:1.3rem; margin-bottom:20px; letter-spacing:4px;">法界告示</div>
-        <div id="custom-alert-desc" style="color:#ddd; font-size:0.95rem; line-height:2; text-align:justify; margin-bottom:25px; letter-spacing:1px;"></div>
-        <button class="nav-btn" style="width:120px; font-size:0.85rem;" onclick="closeCustomAlert()">確 認</button>
+
+    <div id="anim-overlay" class="modal-overlay" style="z-index: 1000;">
+        <div id="full-screen-flash" style="position:absolute; inset:0; background:#f3e5ab; opacity:0; transition:opacity 0.1s ease-out; box-shadow:inset 0 0 100px 50px rgba(255,255,255,0.3);"></div>
+        <div id="anim-svg-container" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:250px; height:250px; transition:transform 1.5s ease-in, filter 1s; z-index:20;"></div>
+        <div id="anim-text" style="position:absolute; top:65%; left:50%; transform:translateX(-50%); width:90%; font-size:1.1rem; color:#fffce0; letter-spacing:4px; text-align:center; line-height:2.2; opacity:0; transition:1.5s; z-index:30;"></div>
+        <button class="nav-btn" id="close-anim-btn" style="position:absolute; top:85%; left:50%; transform:translateX(-50%); z-index:40; opacity:0; pointer-events:none;" onclick="closeAnim()">功德圓滿</button>
     </div>
 </div>
 </body>
