@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>悲願化城 ． 八寶閣</title>
+    <title>City of Vows ． Eight Treasures Vault</title>
     <style>
         :root {
             --gold-light: #f3e5ab;
@@ -23,30 +23,29 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* ════ 頂部導航列 (承襲華藏月相) ════ */
-       .top-nav {
-    position: absolute; top: 25px; left: 0; width: 100%;
-    display: flex; justify-content: space-between; align-items: center;
-    /* 增加 safe-area-inset 防護 */
-    padding: env(safe-area-inset-top, 0px) 20px 0 20px; 
-    z-index: 200;
-}
+        /* ════ Top Navigation ════ */
+        .top-nav {
+            position: absolute; top: 25px; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: env(safe-area-inset-top, 0px) 20px 0 20px; 
+            z-index: 200;
+        }
         .nav-btn {
             color: var(--cyan-jade); font-size: 0.85rem; letter-spacing: 2px;
             padding: 6px 14px; border: 1px solid rgba(139,168,156,0.3); border-radius: 20px;
             background: rgba(1,2,4,0.6); cursor: pointer; backdrop-filter: blur(5px);
             transition: all 0.3s;
         }
-.nav-btn:active { 
-    background: rgba(139,168,156,0.2); 
-    transform: scale(0.95); 
-    opacity: 0.8; 
-}
+        .nav-btn:active { 
+            background: rgba(139,168,156,0.2); 
+            transform: scale(0.95); 
+            opacity: 0.8; 
+        }
         .nav-title {
             color: var(--gold-light); font-size: 1.1rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(243,229,171,0.3);
         }
 
-        /* ════ 法相 SVG 專屬全域樣式 ════ */
+        /* ════ SVG Global Styles ════ */
         .wire-white:not([fill]) { stroke: rgba(255, 255, 255, 0.9); stroke-width: 1.5; stroke-linejoin: round; fill: none; }
         .wire-white-thin:not([fill]) { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; stroke-linejoin: round; fill: none; }
         .wire-gold:not([fill]) { stroke: url(#pureGold); stroke-width: 2.5; stroke-linejoin: round; fill: none; }
@@ -55,7 +54,7 @@
 
         canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* ════ 第一階段：八卦方位 抽卡場景 ════ */
+        /* ════ Scene 1: Gacha / Bagua ════ */
         #draw-scene {
             position: absolute; inset: 0; z-index: 10;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -85,53 +84,42 @@
         .card-wrapper.is-flipped .card-inner { transform: rotateY(180deg); }
         .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: inherit; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-                           /* 卡背：移除實體邊框，改用高雅的懸浮質感 */
-      /* 修改 .card-back 基礎定義 */
-.card-back {
-    width: 100%;
-    height: 100%;
-    /* 使用放射狀漸層，讓中心稍微亮一點點，周圍變暗，模擬物體體積感 */
-    background: radial-gradient(circle at 50% 50%, #1a1c22 0%, #010204 100%);
-    /* 增加一點點內陰影，讓邊緣產生微微的凹陷感 */
-    box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.15); /* 極細金邊，維持高雅 */
-    transition: all 0.6s ease;
-    overflow: hidden;
-}
+        /* Card Back */
+        .card-back {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a1c22 0%, #010204 100%);
+            box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.15); 
+            transition: all 0.6s ease;
+            overflow: hidden;
+        }
 
-/* 當發光時，讓底色與光暈疊加 */
-.card-back.red-glow {
-    /* 在深色背景下，光暈看起來會更溫潤、不刺眼 */
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(180, 40, 40, 0.3);
-    border-color: rgba(212, 175, 55, 0.3);
-}
+        .card-back.red-glow {
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(180, 40, 40, 0.3);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
 
-.card-back.blue-glow {
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(40, 100, 180, 0.3);
-    border-color: rgba(212, 175, 55, 0.3);
-} 
-               /* 修正曼陀羅：讓它適應卡片並懸浮 */
+        .card-back.blue-glow {
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px rgba(40, 100, 180, 0.3);
+            border-color: rgba(212, 175, 55, 0.3);
+        } 
+        
         .mandala-svg { 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 90%;        /* 💡 調整為 90% 使其完整顯示，不會被切掉 */
-            height: 90%;       /* 💡 保持比例 */
-            transform: translate(-50%, -50%); /* 💡 確保圖案中心對齊卡片中心 */
-            pointer-events: none;
-            opacity: 0.85; 
-            mix-blend-mode: screen; /* 💡 讓金色線條與黑色底完美融合 */
+            position: absolute; top: 50%; left: 50%; width: 90%; height: 90%;       
+            transform: translate(-50%, -50%); 
+            pointer-events: none; opacity: 0.85; 
+            mix-blend-mode: screen; 
             filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
         }
-               /* 卡面實體感 */
+
+        /* Card Front */
         .card-front {
-                        /* 💡 替換：深藍色實體質感 (舊：#0d1214 -> 新：#1a233a) */
             background: radial-gradient(circle at 50% 40%, #1a233a 0%, #060912 100%);
             border: 1px solid rgba(212, 175, 55, 0.6); transform: rotateY(180deg);
             box-shadow: inset 0 0 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(212,175,55,0.1);
         }
 
-        /* 發光核心 */
         .treasure-glow {
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
             width: 180px; height: 180px; background: radial-gradient(circle, var(--glow-color) 0%, transparent 65%);
@@ -150,15 +138,13 @@
         @keyframes float-knot { 0%, 100% { transform: scale(0.98) translateY(0); } 50% { transform: scale(1.03) translateY(-4px); } }
         @keyframes pulse-glow { 0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); } 50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.15); } }
 
-        /* 文字縮小與功德 */
         .treasure-info { position: absolute; bottom: 8%; width: 100%; text-align: center; z-index: 3; }
-        .t-name { color: #efd07b; font-size: 0.9rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.4); }
-        .t-merit { color: var(--cyan-jade); font-size: 0.6rem; letter-spacing: 2px; margin-top: 6px; opacity: 0.9; }
+        .t-name { color: #efd07b; font-size: 0.9rem; letter-spacing: 2px; text-shadow: 0 0 10px rgba(239, 208, 123, 0.4); }
+        .t-merit { color: var(--cyan-jade); font-size: 0.55rem; letter-spacing: 1px; margin-top: 6px; opacity: 0.9; }
 
         .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.2); z-index: 100 !important; }
         .card-wrapper.scattered { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-250px) scale(0); }
 
-        /* 合十收攝按鈕 */
         .btn-action {
             position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%);
             padding: 12px 35px; border-radius: 30px; border: 1px solid var(--gold-solid); 
@@ -169,7 +155,7 @@
         }
         .btn-action.show { opacity: 1; pointer-events: auto; }
 
-        /* ════ 第二階段：八寶閣 圖鑑場景 (三三二排版) ════ */
+        /* ════ Scene 2: Gallery ════ */
         #gallery-scene {
             position: absolute; inset: 0; z-index: 5;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
@@ -195,7 +181,7 @@
         .grid-svg-container { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
         .grid-info { text-align: center; width: 100%; }
-        .grid-name { font-size: 0.75rem; color: #fff; letter-spacing: 2px; margin-bottom: 8px; }
+        .grid-name { font-size: 0.75rem; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
         .grid-item.locked .grid-name { color: #566461; }
         .grid-count-tag { font-size: 0.65rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 8px; background: rgba(212, 175, 55, 0.08); }
         .grid-item.locked .grid-count-tag { color: #404a48; border-color: rgba(139,168,156,0.1); background: transparent; }
@@ -207,56 +193,56 @@
             .grid-item { min-height: 160px; }
             .grid-svg-container { height: 80px; }
         }
-        /* ════ 微塵迴向特效 CSS ════ */
-.dust-particle {
-    position: absolute;
-    width: 3px; height: 3px;
-    background: #8ba89c; /* 與您系統色調一致的琉璃色 */
-    border-radius: 50%;
-    pointer-events: none;
-    animation: drift 2s ease-out forwards;
-}
 
-@keyframes drift {
-    0% { transform: translate(0, 0); opacity: 1; }
-    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
-}
+        /* ════ Dedication Effects ════ */
+        .dust-particle {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: #8ba89c; 
+            border-radius: 50%;
+            pointer-events: none;
+            animation: drift 2s ease-out forwards;
+        }
 
-/* 迴向確認遮罩層 (抄襲月相結構) */
-#confirm-layer {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    display: none; opacity: 0; transition: opacity 0.5s;
-    justify-content: center; align-items: center; z-index: 999;
-}
-    /* ════ 新增：黑金彈框樣式 ════ */
-.modal-overlay { 
-    position: fixed; inset: 0; z-index: 999; background: rgba(1,2,4,0.85); backdrop-filter: blur(15px); 
-    display: none; flex-direction: column; justify-content: center; align-items: center; 
-    opacity: 0; transition: opacity 0.5s; 
-}
-.t-box { 
-    background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.12) 0%, rgba(1,2,4,0.95) 100%); 
-    border: 1px solid rgba(212,175,55,0.4); border-radius: 25px; padding: 40px; 
-    display: flex; flex-direction: column; align-items: center; max-width: 85%; text-align: center; 
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
-}  
+        @keyframes drift {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+        }
+
+        #confirm-layer {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; opacity: 0; transition: opacity 0.5s;
+            justify-content: center; align-items: center; z-index: 999;
+        }
+
+        .modal-overlay { 
+            position: fixed; inset: 0; z-index: 999; background: rgba(1,2,4,0.85); backdrop-filter: blur(15px); 
+            display: none; flex-direction: column; justify-content: center; align-items: center; 
+            opacity: 0; transition: opacity 0.5s; 
+        }
+        .t-box { 
+            background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.12) 0%, rgba(1,2,4,0.95) 100%); 
+            border: 1px solid rgba(212,175,55,0.4); border-radius: 25px; padding: 40px; 
+            display: flex; flex-direction: column; align-items: center; max-width: 85%; text-align: center; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }  
        
     </style>
 </head>
 <body>
 
     <div class="top-nav">
-        <div class="nav-btn" onclick="goHome()">歸返道場</div>
-        <div class="nav-title" id="display-name" onclick="enterGallery()" style="cursor: pointer; transition: all 0.3s;">八寶閣</div>
-        <div class="nav-btn" onclick="toggleHelp()">法寶說明</div>
+        <div class="nav-btn" onclick="goHome()">Dojo</div>
+        <div class="nav-title" id="display-name" onclick="enterGallery()" style="cursor: pointer; transition: all 0.3s;">Vault</div>
+        <div class="nav-btn" onclick="toggleHelp()">Info</div>
     </div>
 
     <canvas id="starCanvas"></canvas>
 
     <div id="draw-scene">
-        <div class="center-hint" id="center-hint">五萬功德聚<br>憑心擇一印</div>
+        <div class="center-hint" id="center-hint">Draws Available<br>Choose with your heart</div>
         <div class="bagua-container" id="bagua-container"></div>
-        <button class="btn-action" id="btn-collect" onclick="enterGallery()">合十收攝</button>
+        <button class="btn-action" id="btn-collect" onclick="enterGallery()">Collect</button>
     </div>
 
     <div id="gallery-scene">
@@ -507,176 +493,161 @@
     </svg>
 
     <script>
-        // 1. 讀取主系統資料庫與全面防護機制
-let db;
-try {
-    db = JSON.parse(localStorage.getItem('PX_V15.0'));
-    if (!db || typeof db !== 'object') db = null;
-    if (db && !db.dailyTasks) db.dailyTasks = [];
-    if (db && !db.visitedRealms) db.visitedRealms = [];
-    if (db && !db.treasures) {
-        db.treasures = { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 };
-    }
-    if (db && !db.bodhiRecords) {
-        db.bodhiRecords = [];
-    }
-    
-    // 般若智慧
-    if (db && db.lastMatrixDate === undefined) db.lastMatrixDate = "";
-    if (db && db.totalCorrect === undefined) db.totalCorrect = 0;
-    if (db && !db.clearedQ) db.clearedQ = [];
-    if (db && !db.failedQ) db.failedQ = {};
-    if (db && db.prajnaHints === undefined) db.prajnaHints = 0;
-    if (db && db.lastHintDate === undefined) db.lastHintDate = "";
-    
-    // 琉璃法水
-    if (db && db.waterLevel === undefined) db.waterLevel = 1;
-    if (db && db.waterLastDate === undefined) db.waterLastDate = "";
-    if (db && db.tempBag === undefined) db.tempBag = 0;
-    
-    // 雙軌戒壇
-    if (db && !db.preceptsData) db.preceptsData = { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 };
-    
-    // 觀相悟陣
-    if (db && db.visionLevel === undefined) db.visionLevel = 1;
-    if (db && db.visionLastFailed === undefined) db.visionLastFailed = "";
-    if (db && db.visionLastDate === undefined) db.visionLastDate = ""; 
+        // 1. Database Loading and Protection
+        let db;
+        try {
+            db = JSON.parse(localStorage.getItem('PX_EN_V15.0'));
+            if (!db || typeof db !== 'object') db = null;
+            if (db && !db.dailyTasks) db.dailyTasks = [];
+            if (db && !db.visitedRealms) db.visitedRealms = [];
+            if (db && !db.treasures) {
+                db.treasures = { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 };
+            }
+            if (db && !db.bodhiRecords) {
+                db.bodhiRecords = [];
+            }
+            
+            // Prajna Matrix
+            if (db && db.lastMatrixDate === undefined) db.lastMatrixDate = "";
+            if (db && db.totalCorrect === undefined) db.totalCorrect = 0;
+            if (db && !db.clearedQ) db.clearedQ = [];
+            if (db && !db.failedQ) db.failedQ = {};
+            if (db && db.prajnaHints === undefined) db.prajnaHints = 0;
+            if (db && db.lastHintDate === undefined) db.lastHintDate = "";
+            
+            // Dharma Water
+            if (db && db.waterLevel === undefined) db.waterLevel = 1;
+            if (db && db.waterLastDate === undefined) db.waterLastDate = "";
+            if (db && db.tempBag === undefined) db.tempBag = 0;
+            
+            // Precepts Platform
+            if (db && !db.preceptsData) db.preceptsData = { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 };
+            
+            // Vision Array
+            if (db && db.visionLevel === undefined) db.visionLevel = 1;
+            if (db && db.visionLastFailed === undefined) db.visionLastFailed = "";
+            if (db && db.visionLastDate === undefined) db.visionLastDate = ""; 
 
-    // 頂禮彌陀
-    if (db && !db.bowData) db.bowData = { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 };
+            // Bow to Amitabha
+            if (db && !db.bowData) db.bowData = { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 };
 
-    // 菩提淨室
-    if (db && !db.personalRoom) db.personalRoom = { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" };
-    
-    // 普賢十願
-    if (db && !db.puxianData) {
-        db.puxianData = {
-            startDate: new Date().setHours(0,0,0,0), 
-            lastLogin: "", 
-            weekRecord: [false, false, false, false, false, false, false],
-            poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
-        };
-    }
+            // Personal Room
+            if (db && !db.personalRoom) db.personalRoom = { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" };
+            
+            // Samantabhadra Vows
+            if (db && !db.puxianData) {
+                db.puxianData = {
+                    startDate: new Date().setHours(0,0,0,0), 
+                    lastLogin: "", 
+                    weekRecord: [false, false, false, false, false, false, false],
+                    poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
+                };
+            }
 
-    // 華藏月相
-    if (db && !db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0];
-    if (db && db.totalMerit === undefined) db.totalMerit = 0;
-    if (db && db.lastSettledMonth === undefined) db.lastSettledMonth = "";
-    if (db && (!db.lunar || !db.lunar.snapshot)) db.lunar = { snapshot: { bodhi: 0, puxian: 0, bow: 0 } };
+            // Lunar Settle
+            if (db && !db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0];
+            if (db && db.totalMerit === undefined) db.totalMerit = 0;
+            if (db && db.lastSettledMonth === undefined) db.lastSettledMonth = "";
+            if (db && (!db.lunar || !db.lunar.snapshot)) db.lunar = { snapshot: { bodhi: 0, puxian: 0, bow: 0 } };
 
-    // 💡 八寶閣專屬防護
-    if (db && !db.eightTreasures) db.eightTreasures = [0, 0, 0, 0, 0, 0, 0, 0];
-    if (db && db.treasureDrawnCount === undefined) db.treasureDrawnCount = 0;
+            // 💡 Eight Treasures Vault Protection
+            if (db && !db.eightTreasures) db.eightTreasures = [0, 0, 0, 0, 0, 0, 0, 0];
+            if (db && db.treasureDrawnCount === undefined) db.treasureDrawnCount = 0;
 
-} catch(e) {
-    console.error("法寶數據讀取異常", e);
-}
-
-// 新行者的預設值大禮包
-if (!db) {
-    db = { 
-        name: "行者", totalNian: 0, points: 0, dailyTasks: [], todayCount: 0, lastDate: new Date().toLocaleDateString(),
-        currentRank: "", streakDays: 0, lastNianDate: "",
-        treasures: { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 },
-        bodhiRecords: [],
-        lastMatrixDate: "", totalCorrect: 0, clearedQ: [], failedQ: {}, prajnaHints: 0, lastHintDate: "",
-        waterLevel: 1, waterLastDate: "", tempBag: 0,
-        visionLevel: 1, visionLastFailed: "", visionLastDate: "",
-        bowData: { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 },
-        preceptsData: { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 },
-        puxianData: {
-            startDate: new Date().setHours(0,0,0,0), 
-            lastLogin: "", weekRecord: [false, false, false, false, false, false, false],
-            poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
-        },
-        personalRoom: { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" },
-        mandalaVault: [0, 0, 0, 0, 0], totalMerit: 0, lastSettledMonth: "",
-        lunar: { snapshot: { bodhi: 0, puxian: 0, bow: 0 } },
-        eightTreasures: [0, 0, 0, 0, 0, 0, 0, 0],
-        treasureDrawnCount: 0
-    };
-}
-
-if (db.streakDays === undefined) db.streakDays = 0;
-if (db.lastNianDate === undefined) db.lastNianDate = "";
-if (db.musicList !== undefined) delete db.musicList;
-// 計算可抽卡次數：(總念佛數 / 100萬) 向下取整 - 已經抽過的次數
-function saveDB() {
-    localStorage.setItem('PX_V15.0', JSON.stringify(db));
-}
-const totalEarnedDraws = Math.floor((db.totalNian || 0) / 1000000);
-let remainingDraws = totalEarnedDraws - db.treasureDrawnCount;
-if (remainingDraws < 0) remainingDraws = 0;
-
-// 將 UI 初始化邏輯封裝，確保清淨無礙
-function initUI() {
-    const nameDisplay = document.getElementById('display-name');
-    if(nameDisplay) nameDisplay.innerText = `${db.name || '行者'} ‧ 八寶閣`;
-    
-    const centerHint = document.getElementById('center-hint');
-    if(centerHint) {
-        if (remainingDraws > 0) {
-            centerHint.innerHTML = `可抽卡次數：${remainingDraws}<br>憑心擇一印`;
-        } else {
-            centerHint.innerHTML = `百萬資糧聚<br>尚需精進念佛`;
-            centerHint.style.color = "rgba(139,168,156,0.8)"; 
+        } catch(e) {
+            console.error("Dharma data reading error", e);
         }
-    }
-}
 
-// 確保網頁 DOM 載入且 db 資料庫確實存在時，才執行介面渲染
-window.addEventListener('DOMContentLoaded', () => {
-    if (db) {
-        initUI();
-    }
-});
-        // --- 視覺腳本框架  ---
+        // New Practitioner Default Values
+        if (!db) {
+            db = { 
+                name: "Practitioner", totalNian: 0, points: 0, dailyTasks: [], todayCount: 0, lastDate: new Date().toLocaleDateString(),
+                currentRank: "", streakDays: 0, lastNianDate: "",
+                treasures: { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 },
+                bodhiRecords: [],
+                lastMatrixDate: "", totalCorrect: 0, clearedQ: [], failedQ: {}, prajnaHints: 0, lastHintDate: "",
+                waterLevel: 1, waterLastDate: "", tempBag: 0,
+                visionLevel: 1, visionLastFailed: "", visionLastDate: "",
+                bowData: { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 },
+                preceptsData: { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 },
+                puxianData: {
+                    startDate: new Date().setHours(0,0,0,0), 
+                    lastLogin: "", weekRecord: [false, false, false, false, false, false, false],
+                    poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
+                },
+                personalRoom: { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" },
+                mandalaVault: [0, 0, 0, 0, 0], totalMerit: 0, lastSettledMonth: "",
+                lunar: { snapshot: { bodhi: 0, puxian: 0, bow: 0 } },
+                eightTreasures: [0, 0, 0, 0, 0, 0, 0, 0],
+                treasureDrawnCount: 0
+            };
+        }
+
+        if (db.streakDays === undefined) db.streakDays = 0;
+        if (db.lastNianDate === undefined) db.lastNianDate = "";
+        if (db.musicList !== undefined) delete db.musicList;
+
+        function saveDB() {
+            localStorage.setItem('PX_EN_V15.0', JSON.stringify(db));
+        }
+
+        // Calculate available draws
+        const totalEarnedDraws = Math.floor((db.totalNian || 0) / 1000000);
+        let remainingDraws = totalEarnedDraws - db.treasureDrawnCount;
+        if (remainingDraws < 0) remainingDraws = 0;
+
+        // UI Initialization
+        function initUI() {
+            const nameDisplay = document.getElementById('display-name');
+            if(nameDisplay) nameDisplay.innerText = `${db.name || 'Practitioner'} ‧ Vault`;
+            
+            const centerHint = document.getElementById('center-hint');
+            if(centerHint) {
+                if (remainingDraws > 0) {
+                    centerHint.innerHTML = `Draws Available: ${remainingDraws}<br>Choose with your heart`;
+                } else {
+                    centerHint.innerHTML = `Millions gathered<br>Keep chanting diligently`;
+                    centerHint.style.color = "rgba(139,168,156,0.8)"; 
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (db) {
+                initUI();
+            }
+        });
+
+        // --- Visual Script Framework ---
         
         const TREASURES = [
-            { id: "banner", name: "吉祥寶幡", merit: "摧伏魔怨 ‧ 尊勝無礙", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
-            { id: "fish", name: "雙壽金魚", merit: "自在解脫 ‧ 慧眼明澈", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
-            { id: "umbrella", name: "妙寶傘蓋", merit: "淨化護身 ‧ 消災除障", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "float-knot", gAnime: "pulse-glow" }, // 已改為呼吸
-            { id: "knot", name: "吉祥長結", merit: "慈悲無盡 ‧ 圓滿相續", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
-            { id: "vase", name: "無盡寶瓶", merit: "福智圓滿 ‧ 健康長壽", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
-            { id: "wheel", name: "常轉法輪", merit: "正法久住 ‧ 摧破無明", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
-            { id: "lotus", name: "吉祥聖蓮", merit: "出污不染 ‧ 菩提清淨", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
-            { id: "conch", name: "右旋寶螺", merit: "法音遠播 ‧ 覺悟群生", svgId: "treasure-conch", viewBox: "0 0 1000 800", glow: "rgba(255, 179, 179, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" }
+            { id: "banner", name: "Auspicious Banner", merit: "Subdue demons ‧ Supreme and unhindered", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "fish", name: "Golden Fishes", merit: "Free & liberated ‧ Clear wisdom eyes", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
+            { id: "umbrella", name: "Precious Umbrella", merit: "Purify & protect ‧ Eliminate disasters", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "float-knot", gAnime: "pulse-glow" }, 
+            { id: "knot", name: "Endless Knot", merit: "Boundless compassion ‧ Continuous perfection", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "vase", name: "Treasure Vase", merit: "Perfect merit & wisdom ‧ Health & longevity", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "wheel", name: "Dharma Wheel", merit: "Everlasting Dharma ‧ Destroy ignorance", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
+            { id: "lotus", name: "Sacred Lotus", merit: "Untainted by mud ‧ Pure Bodhi", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
+            { id: "conch", name: "Right-Turning Conch", merit: "Dharma sound spreads ‧ Awaken all beings", svgId: "treasure-conch", viewBox: "0 0 1000 800", glow: "rgba(255, 179, 179, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" }
         ];
 
         let hasDrawn = false;
         
- function drawGacha() {
-    const rand = Math.random() * 100;
-    
-    // 獨立機率：2%
-    if (rand <= 2) return 0;   // 0: 吉祥寶幡 (最稀有)
-    
-    // 獨立機率：5% (7 - 2 = 5)
-    if (rand <= 7) return 5;   // 5: 常轉法輪
-    
-    // 獨立機率：8% (15 - 7 = 8)
-    if (rand <= 15) return 7;  // 7: 右旋寶螺
-    
-    // 獨立機率：15% (30 - 15 = 15)
-    if (rand <= 30) return 6;  // 6: 吉祥聖蓮
-    
-    // 獨立機率：15% (45 - 30 = 15)
-    if (rand <= 45) return 3;  // 3: 吉祥長結
-    
-    // 獨立機率：20% (65 - 45 = 20)
-    if (rand <= 65) return 2;  // 2: 妙寶傘蓋
-    
-    // 獨立機率：20% (85 - 65 = 20)
-    if (rand <= 85) return 4;  // 4: 無盡寶瓶
-    
-    // 獨立機率：剩餘的 15% (100 - 85 = 15)
-    return 1;                  // 1: 雙壽金魚 (保底基礎款)
-}
+        function drawGacha() {
+            const rand = Math.random() * 100;
+            if (rand <= 2) return 0;   
+            if (rand <= 7) return 5;   
+            if (rand <= 15) return 7;  
+            if (rand <= 30) return 6;  
+            if (rand <= 45) return 3;  
+            if (rand <= 65) return 2;  
+            if (rand <= 85) return 4;  
+            return 1;                  
+        }
         
         let drawnIndex = drawGacha();
-        let mockUnlocked = [1, 2, 4]; // 視覺展示用預設解鎖
 
-        // ════ 繪製增強版彩色星塵 ════
+        // ════ Star Dust Effects ════
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let width, height, stars = [];
@@ -684,7 +655,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
         function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
         window.addEventListener('resize', resize); resize();
-               // 💡 修正 3：數量增加至 800，並強化繪製時的亮度
+        
         for(let i=0; i<800; i++) { 
             stars.push({ x: (Math.random()-0.5)*2000, y: (Math.random()-0.5)*2000, z: Math.random()*1000, s: Math.random()*3.5 + 0.5, colorType: Math.floor(Math.random() * 3) });
         }
@@ -695,7 +666,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 s.z -= 0.3; if(s.z <= 0) s.z = 1000; 
                 let sc = 300 / (300 + s.z);
                 ctx.beginPath(); ctx.arc(width/2 + s.x*sc, height/2 + s.y*sc, s.s*sc, 0, Math.PI*2); 
-                // 將透明度倍率從 1.5 提升至 3.0
                 ctx.fillStyle = starColors[s.colorType] + (sc * 3.0) + ')'; 
                 ctx.fill(); 
             });
@@ -735,19 +705,12 @@ window.addEventListener('DOMContentLoaded', () => {
             for(let i=0; i<pts.length; i++) for(let j=i+1; j<pts.length; j++) html += `<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[j][0]}" y2="${pts[j][1]}"/>`;
             return html + `</g>`;
         }
-                        function getMandala() {
+        function getMandala() {
             let html = `<svg class="mandala-svg" viewBox="-115 -115 230 230"><g><animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="30s" repeatCount="indefinite"/>`;
             const p12 = poly(12, 102);
-            
-            // 1. 最外圈：拿掉青色，改用系統主色「華麗金 (#d4af37)」，內部填入極淡的金色
             html += `<polygon points="${ptStr(p12)}" fill="rgba(212,175,55,0.05)" stroke="#d4af37" stroke-width="1.2" opacity="0.8"/>` + getWeb(p12, '#d4af37', 0.6, 0.5);
-            
-            // 2. 內圈的雙八角星網格：改用柔和的「淺金/白 (#f3e5ab)」，讓層次分明
             html += getWeb([...poly(8, 55, 0), ...poly(8, 55, 22.5)], '#f3e5ab', 0.8, 0.7);
-            
-            // 3. 最中心：金色菱形，中間綴一顆純白色的明亮圓點，不再用突兀的顏色
             html += `<polygon points="${ptStr(poly(4, 20, 45))}" fill="rgba(243,229,171,0.1)" stroke="#f3e5ab" stroke-width="1.2" opacity="0.9"/><circle cx="0" cy="0" r="5" fill="#ffffff" opacity="0.9"/></g></svg>`;
-            
             return html;
         }
         const bagua = document.getElementById('bagua-container');
@@ -781,56 +744,51 @@ window.addEventListener('DOMContentLoaded', () => {
             bagua.appendChild(card);
         }
 
-        // 2. 抽卡邏輯與存檔
-function selectCard(selectedIndex, selectedCard) {
-    if (hasDrawn) return;
-    
-    // 🔒 檢查是否有次數可以抽
-    if (remainingDraws <= 0) {
-        showCustomAlert("因緣未具：需累積百萬聲佛號 (100法幣) 方能顯化一契印。");
-        return;
-    }
+        // 2. Gacha Logic
+        function selectCard(selectedIndex, selectedCard) {
+            if (hasDrawn) return;
+            
+            if (remainingDraws <= 0) {
+                showCustomAlert("Conditions unmet: Accumulate 1 million chants (100 Dharma coins) to manifest a seal.");
+                return;
+            }
 
-    hasDrawn = true;
-    document.getElementById('center-hint').style.opacity = 0;
-    
-// 扣除次數並將抽中的寶物存入 DB
-drawnIndex = drawGacha(); // 執行機率函數
+            hasDrawn = true;
+            document.getElementById('center-hint').style.opacity = 0;
+            
+            drawnIndex = drawGacha(); 
 
-// 增加防護：若數值異常則預設為 0 再加 1，徹底杜絕 NaN
-db.treasureDrawnCount = (db.treasureDrawnCount || 0) + 1;  
-db.eightTreasures[drawnIndex] = (db.eightTreasures[drawnIndex] || 0) + 1; 
+            db.treasureDrawnCount = (db.treasureDrawnCount || 0) + 1;  
+            db.eightTreasures[drawnIndex] = (db.eightTreasures[drawnIndex] || 0) + 1; 
 
-saveDB(); // 💾 先正式存檔，確保資料安穩落庫！
+            saveDB(); 
 
-// 隨後即時更新畫面狀態
-remainingDraws--; // 即時扣除畫面上的可用次數
-initUI();        // 同步更新中央提示文字與右上角名稱
+            remainingDraws--; 
+            initUI();        
 
-    const allCards = document.querySelectorAll('.card-wrapper');
-    allCards.forEach((c, idx) => {
-        if (idx === selectedIndex) {
-            c.classList.add('focused');
-            // 替換這張卡面的圖形為真正抽中的圖形
-            const t = TREASURES[drawnIndex];
-            const front = c.querySelector('.card-front');
-            front.innerHTML = `
-                <div class="treasure-glow" style="--glow-color: ${t.glow}; --glow-anime: ${t.gAnime};"></div>
-                <div class="treasure-svg-box">
-                    <svg viewBox="${t.viewBox}" style="--treasure-anime: ${t.tAnime};"><use href="#${t.svgId}"></use></svg>
-                </div>
-                <div class="treasure-info">
-                    <div class="t-name">${t.name}</div>
-                    <div class="t-merit">${t.merit}</div>
-                </div>
-            `;
-            setTimeout(() => c.classList.add('is-flipped'), 1000);
-        } else {
-            c.classList.add('scattered');
+            const allCards = document.querySelectorAll('.card-wrapper');
+            allCards.forEach((c, idx) => {
+                if (idx === selectedIndex) {
+                    c.classList.add('focused');
+                    const t = TREASURES[drawnIndex];
+                    const front = c.querySelector('.card-front');
+                    front.innerHTML = `
+                        <div class="treasure-glow" style="--glow-color: ${t.glow}; --glow-anime: ${t.gAnime};"></div>
+                        <div class="treasure-svg-box">
+                            <svg viewBox="${t.viewBox}" style="--treasure-anime: ${t.tAnime};"><use href="#${t.svgId}"></use></svg>
+                        </div>
+                        <div class="treasure-info">
+                            <div class="t-name">${t.name}</div>
+                            <div class="t-merit">${t.merit}</div>
+                        </div>
+                    `;
+                    setTimeout(() => c.classList.add('is-flipped'), 1000);
+                } else {
+                    c.classList.add('scattered');
+                }
+            });
+            setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
         }
-    });
-    setTimeout(() => document.getElementById('btn-collect').classList.add('show'), 2200);
-}
 
         function enterGallery() {
             document.getElementById('draw-scene').style.opacity = '0';
@@ -842,188 +800,179 @@ initUI();        // 同步更新中央提示文字與右上角名稱
             }, 1000);
         }
 
-        // 3. 圖鑑生成：讀取真實 DB 數量
-function buildGallery() {
-    const grid = document.getElementById('gallery-grid');
-    if (grid.innerHTML !== "") return;
+        // 3. Gallery Generation
+        function buildGallery() {
+            const grid = document.getElementById('gallery-grid');
+            if (grid.innerHTML !== "") return;
 
-    let html = "";
-    TREASURES.forEach((t, idx) => {
-        // 從 DB 讀取該寶物有幾個
-        const count = db.eightTreasures[idx]; 
-        const isUnlocked = count > 0;
-        const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
-        
-        // 💡 修正 5：直接完全替換成這行，利用 CSS 濾鏡做出黑白剪影效果
-        const svgContent = `<svg viewBox="${t.viewBox}" style="width:120%; height:120%; ${!isUnlocked ? 'opacity:0.2; filter:grayscale(100%) brightness(0.5);' : 'filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));'}"><use href="#${t.svgId}"></use></svg>`; 
+            let html = "";
+            TREASURES.forEach((t, idx) => {
+                const count = db.eightTreasures[idx]; 
+                const isUnlocked = count > 0;
+                const cls = isUnlocked ? "grid-item unlocked" : "grid-item locked";
+                
+                const svgContent = `<svg viewBox="${t.viewBox}" style="width:120%; height:120%; ${!isUnlocked ? 'opacity:0.2; filter:grayscale(100%) brightness(0.5);' : 'filter:drop-shadow(0 0 10px rgba(255,255,255,0.2));'}"><use href="#${t.svgId}"></use></svg>`; 
 
-        html += `
-            <div class="${cls}" onclick="handleDedicateClick(${idx})">
-                <div class="grid-svg-container">${svgContent}</div>
-                <div class="grid-info">
-                    <div class="grid-name">${t.name}</div>
-                    <div class="grid-count-tag">${isUnlocked ? '結緣：' + count + ' 尊' : '因緣未具'}</div>
-                </div>
-            </div>
-        `;
-    });
-    grid.innerHTML = html;
-}
-
-    // 💡 修正：引導回主系統的正確路徑
-function goHome() { 
-    window.location.href = 'index.html?screen=3'; 
-}
-
-// 💡 修正：八寶閣的專屬法寶說明與玄機文案
-function toggleHelp() { 
-    const helpContent = `
-        <div style="text-align: center; margin-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px;">
-            <span style="color: var(--gold-solid); font-size: 1.05rem; letter-spacing: 2px;">佛門八寶 ‧ 又稱八吉祥</span>
-        </div>
-        <div style="color: #ddd; font-size: 0.9rem; line-height: 1.8; text-align: justify; letter-spacing: 1px;">
-            乃象徵圓滿、清淨與無上福智的八件殊勝法物：<br>
-            <div style="color: var(--cyan-jade); text-align: center; margin: 10px 0; font-size: 0.95rem; letter-spacing: 3px;">
-                寶傘、雙魚、法螺、寶瓶<br>蓮花、吉祥結、法幢、法輪
-            </div>
-            
-            <div style="margin-top: 15px; color: var(--gold-light); font-size: 0.95rem;">【 百萬資糧 ‧ 法界迴響 】</div>
-            法界不虛，功不唐捐。行者每積累 <span style="color: var(--gold-solid); font-weight: bold;">一百萬聲佛號</span> 之深厚功德，虛空法界便會與之共振，於業鏡中相應顯化，賜予一次契印八寶的殊勝因緣。
-            <br><br>
-            願行者於此悲願化城中，勤修不輟。集滿八寶印記，不僅是功德聚足的具象，更是在菩提道上，步步生蓮、福慧雙修的真實見證。<br>
-            <span style="color: #aaa; font-size: 0.85rem;">莫向外求，但念彌陀，靜待自性寶光。</span>
-        </div>
-    `;
-    
-    // 呼叫現有的彈窗系統來顯示這段精美的 HTML
-    showCustomAlert(helpContent, "八寶閣 ‧ 修持指南"); 
-}
-// 💡 修正 6B：替換為完整爆發特效邏輯
-let pendingDedicateIdx = -1;
-
-function handleDedicateClick(idx) {
-    if (db.eightTreasures[idx] <= 0) return;
-    pendingDedicateIdx = idx;
-    
-    const t = TREASURES[idx];
-    document.getElementById('confirm-svg').innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%;"><use href="#${t.svgId}"></use></svg>`;
-    document.getElementById('confirm-name').innerText = t.name;
-    
-    const m = document.getElementById('confirm-layer');
-    m.style.display = 'flex';
-    setTimeout(() => m.style.opacity = 1, 10);
-}
-
-function executeDedicate(idx) {
-    // 關閉確認框
-    document.getElementById('confirm-layer').style.opacity = 0;
-    setTimeout(() => document.getElementById('confirm-layer').style.display = 'none', 500);
-
-    // 扣除並存檔
-    db.eightTreasures[idx]--; 
-    saveDB(); // 💾 統一呼叫存檔函數
-    
-    const t = TREASURES[idx];
-    const ov = document.getElementById('anim-overlay'), 
-          flash = document.getElementById('full-screen-flash'), 
-          txt = document.getElementById('anim-text'), 
-          btn = document.getElementById('close-anim-btn'),
-          svgCont = document.getElementById('anim-svg-container');
-
-    // 初始化動畫場景
-    ov.style.display = 'flex';
-    svgCont.innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%; filter: drop-shadow(0 0 25px ${t.glow});"><use href="#${t.svgId}"></use></svg>`;
-    txt.style.opacity = 0;
-    btn.style.opacity = 0;
-    btn.style.pointerEvents = 'none';
-
-    setTimeout(() => ov.style.opacity = 1, 50);
-
-    // 觸發閃光與微塵
-    setTimeout(() => {
-        flash.style.opacity = 1; 
-        svgCont.innerHTML = ''; // 實體消失，化為微塵
-        
-        for (let k = 0; k < 250; k++) {
-            let d = document.createElement('div');
-            d.className = 'dust-particle';
-            d.style.background = Math.random() > 0.5 ? '#f3e5ab' : '#FCF6D8'; 
-            d.style.width = Math.random() * 4 + 2 + 'px'; 
-            d.style.height = d.style.width;
-            d.style.position = 'absolute';
-            d.style.left = '50%'; d.style.top = '50%';
-            let a = Math.random() * Math.PI * 2, dist = 100 + Math.random() * 600;
-            d.style.setProperty('--dx', Math.cos(a) * dist + 'px');
-            d.style.setProperty('--dy', Math.sin(a) * dist + 'px');
-            d.style.animationDuration = (0.7 + Math.random() * 1.5) + 's';
-            ov.appendChild(d);
+                html += `
+                    <div class="${cls}" onclick="handleDedicateClick(${idx})">
+                        <div class="grid-svg-container">${svgContent}</div>
+                        <div class="grid-info">
+                            <div class="grid-name">${t.name}</div>
+                            <div class="grid-count-tag">${isUnlocked ? 'Acquired: ' + count : 'Not Yet Manifested'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
         }
-        
-        setTimeout(() => { 
-            flash.style.transition = 'opacity 1.5s ease-in'; 
-            flash.style.opacity = 0; 
-        }, 1200); 
 
-        txt.innerHTML = "【 因緣圓滿 ‧ 悉皆迴向 】<br><span style='font-size:0.95rem; color:var(--cyan-jade);'><br>寶物已化作無漏金剛光束，迴向虛空法界。</span>";
-        txt.style.opacity = 1;
-        
-        setTimeout(() => { btn.style.opacity = 1; btn.style.pointerEvents = 'auto'; }, 2500);
-    }, 1600);
-}
+        function goHome() { 
+            window.location.href = 'index_en.html?screen=3'; 
+        }
 
-function closeAnim() {
-    const ov = document.getElementById('anim-overlay');
-    ov.style.opacity = 0;
-    setTimeout(() => {
-        ov.style.display = 'none';
-        document.querySelectorAll('#anim-overlay .dust-particle').forEach(d => d.remove());
-        // 重新渲染圖鑑狀態
-        document.getElementById('gallery-grid').innerHTML = ""; 
-        buildGallery();
-    }, 500);
-}
-        // 新增：黑金彈窗控制函數
-function showCustomAlert(msg, title = "法界告示") {
-    document.getElementById('custom-alert-title').innerText = title;
-    document.getElementById('custom-alert-desc').innerHTML = msg;
-    const m = document.getElementById('custom-alert-modal');
-    m.style.display = 'flex';
-    setTimeout(() => m.style.opacity = 1, 50);
-}
-function closeCustomAlert() {
-    const m = document.getElementById('custom-alert-modal');
-    m.style.opacity = 0;
-    setTimeout(() => m.style.display = 'none', 500);
-}
+        function toggleHelp() { 
+            const helpContent = `
+                <div style="text-align: center; margin-bottom: 15px; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 10px;">
+                    <span style="color: var(--gold-solid); font-size: 1.05rem; letter-spacing: 2px;">Eight Auspicious Symbols</span>
+                </div>
+                <div style="color: #ddd; font-size: 0.9rem; line-height: 1.8; text-align: justify; letter-spacing: 1px;">
+                    Representing perfection, purity, and supreme merit and wisdom:<br>
+                    <div style="color: var(--cyan-jade); text-align: center; margin: 10px 0; font-size: 0.95rem; letter-spacing: 2px;">
+                        Umbrella, Fishes, Conch, Vase<br>Lotus, Knot, Banner, Wheel
+                    </div>
+                    
+                    <div style="margin-top: 15px; color: var(--gold-light); font-size: 0.95rem;">[ A Million Merits ‧ Cosmic Resonance ]</div>
+                    The Dharma Realm is true. For every <span style="color: var(--gold-solid); font-weight: bold;">1 million chants</span> accumulated, the universe resonates, manifesting a chance to acquire one of the Eight Treasures.
+                    <br><br>
+                    May practitioners cultivate diligently. Collecting all eight is a testament to perfect merit and wisdom on the Bodhi path.<br>
+                    <span style="color: #aaa; font-size: 0.85rem;">Seek not outside, but chant Amitabha, awaiting the inner light.</span>
+                </div>
+            `;
+            
+            showCustomAlert(helpContent, "Eight Treasures Vault ‧ Guide"); 
+        }
+
+        let pendingDedicateIdx = -1;
+
+        function handleDedicateClick(idx) {
+            if (db.eightTreasures[idx] <= 0) return;
+            pendingDedicateIdx = idx;
+            
+            const t = TREASURES[idx];
+            document.getElementById('confirm-svg').innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%;"><use href="#${t.svgId}"></use></svg>`;
+            document.getElementById('confirm-name').innerText = t.name;
+            
+            const m = document.getElementById('confirm-layer');
+            m.style.display = 'flex';
+            setTimeout(() => m.style.opacity = 1, 10);
+        }
+
+        function executeDedicate(idx) {
+            document.getElementById('confirm-layer').style.opacity = 0;
+            setTimeout(() => document.getElementById('confirm-layer').style.display = 'none', 500);
+
+            db.eightTreasures[idx]--; 
+            saveDB(); 
+            
+            const t = TREASURES[idx];
+            const ov = document.getElementById('anim-overlay'), 
+                  flash = document.getElementById('full-screen-flash'), 
+                  txt = document.getElementById('anim-text'), 
+                  btn = document.getElementById('close-anim-btn'),
+                  svgCont = document.getElementById('anim-svg-container');
+
+            ov.style.display = 'flex';
+            svgCont.innerHTML = `<svg viewBox="${t.viewBox}" style="width:100%; height:100%; filter: drop-shadow(0 0 25px ${t.glow});"><use href="#${t.svgId}"></use></svg>`;
+            txt.style.opacity = 0;
+            btn.style.opacity = 0;
+            btn.style.pointerEvents = 'none';
+
+            setTimeout(() => ov.style.opacity = 1, 50);
+
+            setTimeout(() => {
+                flash.style.opacity = 1; 
+                svgCont.innerHTML = ''; 
+                
+                for (let k = 0; k < 250; k++) {
+                    let d = document.createElement('div');
+                    d.className = 'dust-particle';
+                    d.style.background = Math.random() > 0.5 ? '#f3e5ab' : '#FCF6D8'; 
+                    d.style.width = Math.random() * 4 + 2 + 'px'; 
+                    d.style.height = d.style.width;
+                    d.style.position = 'absolute';
+                    d.style.left = '50%'; d.style.top = '50%';
+                    let a = Math.random() * Math.PI * 2, dist = 100 + Math.random() * 600;
+                    d.style.setProperty('--dx', Math.cos(a) * dist + 'px');
+                    d.style.setProperty('--dy', Math.sin(a) * dist + 'px');
+                    d.style.animationDuration = (0.7 + Math.random() * 1.5) + 's';
+                    ov.appendChild(d);
+                }
+                
+                setTimeout(() => { 
+                    flash.style.transition = 'opacity 1.5s ease-in'; 
+                    flash.style.opacity = 0; 
+                }, 1200); 
+
+                txt.innerHTML = "[ Conditions Perfected ‧ Merit Dedicated ]<br><span style='font-size:0.95rem; color:var(--cyan-jade);'><br>The treasure has transformed into a flawless vajra beam, dedicated to the boundless Dharma Realm.</span>";
+                txt.style.opacity = 1;
+                
+                setTimeout(() => { btn.style.opacity = 1; btn.style.pointerEvents = 'auto'; }, 2500);
+            }, 1600);
+        }
+
+        function closeAnim() {
+            const ov = document.getElementById('anim-overlay');
+            ov.style.opacity = 0;
+            setTimeout(() => {
+                ov.style.display = 'none';
+                document.querySelectorAll('#anim-overlay .dust-particle').forEach(d => d.remove());
+                document.getElementById('gallery-grid').innerHTML = ""; 
+                buildGallery();
+            }, 500);
+        }
+
+        // Custom Alerts
+        function showCustomAlert(msg, title = "Dharma Notice") {
+            document.getElementById('custom-alert-title').innerText = title;
+            document.getElementById('custom-alert-desc').innerHTML = msg;
+            const m = document.getElementById('custom-alert-modal');
+            m.style.display = 'flex';
+            setTimeout(() => m.style.opacity = 1, 50);
+        }
+        function closeCustomAlert() {
+            const m = document.getElementById('custom-alert-modal');
+            m.style.opacity = 0;
+            setTimeout(() => m.style.display = 'none', 500);
+        }
     </script>
-        <div id="confirm-layer" class="modal-overlay">
+
+    <div id="confirm-layer" class="modal-overlay">
         <div class="t-box">
-            <div style="color:var(--cyan-jade); font-size:1.1rem; margin-bottom:20px; letter-spacing:4px;">即將迴向法界</div>
+            <div style="color:var(--cyan-jade); font-size:1.1rem; margin-bottom:20px; letter-spacing:2px;">Dedicate to the Dharma Realm</div>
             <div id="confirm-svg" style="width:160px; height:160px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));"></div>
-            <div id="confirm-name" style="font-size:1.5rem; color:var(--gold-light); margin:20px 0; letter-spacing:3px;"></div>
-            <div style="color:#ddd; font-size:0.9rem; margin-bottom:25px;">確認將此寶物化作微塵，迴向虛空法界嗎？</div>
+            <div id="confirm-name" style="font-size:1.5rem; color:var(--gold-light); margin:20px 0; letter-spacing:2px;"></div>
+            <div style="color:#ddd; font-size:0.9rem; margin-bottom:25px;">Dedicate this treasure, turning it into stardust for the universe?</div>
             <div style="display:flex; gap:15px;">
-                <button class="nav-btn" onclick="document.getElementById('confirm-layer').style.display='none';">再留一陣</button>
-                <button class="nav-btn" style="border-color:var(--gold-solid); color:var(--gold-solid);" onclick="executeDedicate(pendingDedicateIdx)">確認迴向</button>
+                <button class="nav-btn" onclick="document.getElementById('confirm-layer').style.display='none';">Keep it</button>
+                <button class="nav-btn" style="border-color:var(--gold-solid); color:var(--gold-solid);" onclick="executeDedicate(pendingDedicateIdx)">Dedicate</button>
             </div>
         </div>
     </div>
 
-      <div id="anim-overlay" class="modal-overlay" style="z-index: 1000;">
+    <div id="anim-overlay" class="modal-overlay" style="z-index: 1000;">
         <div id="full-screen-flash" style="position:absolute; inset:0; background:#f3e5ab; opacity:0; transition:opacity 0.1s ease-out; box-shadow:inset 0 0 100px 50px rgba(255,255,255,0.3);"></div>
         <div id="anim-svg-container" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:250px; height:250px; transition:transform 1.5s ease-in, filter 1s; z-index:20;"></div>
-        <div id="anim-text" style="position:absolute; top:65%; left:50%; transform:translateX(-50%); width:90%; font-size:1.1rem; color:#fffce0; letter-spacing:4px; text-align:center; line-height:2.2; opacity:0; transition:1.5s; z-index:30;"></div>
-        <button class="nav-btn" id="close-anim-btn" style="position:absolute; top:85%; left:50%; transform:translateX(-50%); z-index:40; opacity:0; pointer-events:none;" onclick="closeAnim()">功德圓滿</button>
+        <div id="anim-text" style="position:absolute; top:65%; left:50%; transform:translateX(-50%); width:90%; font-size:1.1rem; color:#fffce0; letter-spacing:2px; text-align:center; line-height:2.2; opacity:0; transition:1.5s; z-index:30;"></div>
+        <button class="nav-btn" id="close-anim-btn" style="position:absolute; top:85%; left:50%; transform:translateX(-50%); z-index:40; opacity:0; pointer-events:none;" onclick="closeAnim()">Merit Perfected</button>
     </div>
 
     <div id="custom-alert-modal" class="modal-overlay" onclick="closeCustomAlert()">
         <div class="t-box" onclick="event.stopPropagation()">
-            <div id="custom-alert-title" style="color:var(--gold-light); font-size:1.3rem; margin-bottom:20px; letter-spacing:4px;">法界告示</div>
+            <div id="custom-alert-title" style="color:var(--gold-light); font-size:1.3rem; margin-bottom:20px; letter-spacing:2px;">Dharma Notice</div>
             <div id="custom-alert-desc" style="color:#ddd; font-size:0.95rem; line-height:2; text-align:justify; margin-bottom:25px; letter-spacing:1px;"></div>
-            <button class="nav-btn" style="width:120px; font-size:0.85rem;" onclick="closeCustomAlert()">確 認</button>
+            <button class="nav-btn" style="width:120px; font-size:0.85rem;" onclick="closeCustomAlert()">Confirm</button>
         </div>
     </div>
-
 
 </body>
 </html>
