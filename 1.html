@@ -157,19 +157,20 @@
             cursor: pointer; transition: 0.3s; outline: none; font-weight: bold;
         }
         .alert-btn:active { background: rgba(139,168,156,0.2); transform: scale(0.95); }
-/* ✨ 八寶閣專屬掃光按鈕 ✨ */
-               .sweep-btn {
+        /* ✨ 八寶閣專屬掃光按鈕 (單行並列優化版) ✨ */
+        .sweep-btn {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px; /* 稍微縮小間距 */
-            padding: 8px 24px; /* 縮小一點 padding，讓小手機也能輕鬆容納 */
+            gap: 6px; /* 縮小圖示與文字間距 */
+            padding: 8px 16px; /* 與左右按鈕高度一致 */
+            margin: 0; /* 移除多餘的外距，完美置中 */
             border-radius: 30px;
             background: linear-gradient(135deg, rgba(20,20,22,0.9), rgba(5,5,8,1));
             border: 1px solid var(--gold-solid);
             color: var(--gold-bright);
-            font-size: 0.9rem; /* 稍微調小字級，中英皆顯優雅 */
+            font-size: 0.9rem;
             font-weight: bold;
             letter-spacing: 2px;
             text-decoration: none;
@@ -178,7 +179,7 @@
             box-shadow: 0 5px 20px rgba(212,175,55,0.25), inset 0 0 10px rgba(212,175,55,0.15);
             transition: transform 0.3s, box-shadow 0.3s;
             z-index: 50;
-            white-space: nowrap; /* 關鍵：絕對禁止文字換行或被擠壓 */
+            white-space: nowrap; /* 絕對禁止文字換行 */
         }
         .sweep-btn:active {
             transform: scale(0.95);
@@ -191,7 +192,6 @@
             z-index: -1; pointer-events: none;
         }
         @keyframes sweep-light { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
-
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -205,24 +205,21 @@
             <button class="alert-btn" onclick="closeCustomAlert()">Acknowledge</button>
         </div>
     </div>
-
-
-       <div class="nav-header">
-        <a href="index_en.html" class="btn-glass" style="font-size: 0.8rem; padding: 6px 12px;">
+    <div class="nav-header">
+        <a href="index_en.html" class="btn-glass">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Return to Dojo
+            Dojo
         </a>
-        <div class="btn-glass" onclick="openTheoryDrawer()" style="border-color: rgba(139,168,156,0.6); color: var(--cyan); font-size: 0.8rem; padding: 6px 12px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            Explore Theory
-        </div>
-    </div>
-
-    <div style="text-align:center; width:100%; margin-top:-10px; margin-bottom:20px;">
+        
         <a href="8treasures_en.html" class="sweep-btn" style="letter-spacing: 1px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-solid)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-            Eight Treasures
+            Vault
         </a>
+
+        <div class="btn-glass" onclick="openTheoryDrawer()" style="border-color: rgba(139,168,156,0.6); color: var(--cyan);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Theory
+        </div>
     </div>
 
     <div style="text-align:center; margin-bottom: 15px; padding: 0 20px;">
