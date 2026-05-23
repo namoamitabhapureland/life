@@ -752,9 +752,7 @@ function buildGallery() {
 
     function goHome() { showCustomAlert('即將引導回主系統 (測試)'); }
 function toggleHelp() { showCustomAlert('即將展開法寶說明面板 (測試)'); }
-        // ════ 迴向核心邏輯 ════
-let pendingDedicateIdx = -1;
-
+        
 // 💡 修正 6B：替換為完整爆發特效邏輯
 let pendingDedicateIdx = -1;
 
@@ -872,6 +870,5 @@ function closeCustomAlert() {
         <div id="anim-text" style="position:absolute; top:65%; left:50%; transform:translateX(-50%); width:90%; font-size:1.1rem; color:#fffce0; letter-spacing:4px; text-align:center; line-height:2.2; opacity:0; transition:1.5s; z-index:30;"></div>
         <button class="nav-btn" id="close-anim-btn" style="position:absolute; top:85%; left:50%; transform:translateX(-50%); z-index:40; opacity:0; pointer-events:none;" onclick="closeAnim()">功德圓滿</button>
     </div>
-</div>
 </body>
 </html>
