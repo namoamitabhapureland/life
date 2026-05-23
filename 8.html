@@ -501,17 +501,99 @@
     </svg>
 
     <script>
-        // 1. 讀取主系統資料庫
+        // 1. 讀取主系統資料庫與全面防護機制
 let db;
 try {
     db = JSON.parse(localStorage.getItem('PX_V15.0'));
-} catch(e) {}
+    if (!db || typeof db !== 'object') db = null;
+    if (db && !db.dailyTasks) db.dailyTasks = [];
+    if (db && !db.visitedRealms) db.visitedRealms = [];
+    if (db && !db.treasures) {
+        db.treasures = { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 };
+    }
+    if (db && !db.bodhiRecords) {
+        db.bodhiRecords = [];
+    }
+    
+    // 般若智慧
+    if (db && db.lastMatrixDate === undefined) db.lastMatrixDate = "";
+    if (db && db.totalCorrect === undefined) db.totalCorrect = 0;
+    if (db && !db.clearedQ) db.clearedQ = [];
+    if (db && !db.failedQ) db.failedQ = {};
+    if (db && db.prajnaHints === undefined) db.prajnaHints = 0;
+    if (db && db.lastHintDate === undefined) db.lastHintDate = "";
+    
+    // 琉璃法水
+    if (db && db.waterLevel === undefined) db.waterLevel = 1;
+    if (db && db.waterLastDate === undefined) db.waterLastDate = "";
+    if (db && db.tempBag === undefined) db.tempBag = 0;
+    
+    // 雙軌戒壇
+    if (db && !db.preceptsData) db.preceptsData = { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 };
+    
+    // 觀相悟陣
+    if (db && db.visionLevel === undefined) db.visionLevel = 1;
+    if (db && db.visionLastFailed === undefined) db.visionLastFailed = "";
+    if (db && db.visionLastDate === undefined) db.visionLastDate = ""; 
 
-if (!db) db = { name: "行者", totalNian: 0 }; // 防呆機制
-// 建立八寶閣的專屬陣列 (8個寶物的數量) 與 已經抽卡次數
-if (!db.eightTreasures) db.eightTreasures = [0, 0, 0, 0, 0, 0, 0, 0];
-if (db.treasureDrawnCount === undefined) db.treasureDrawnCount = 0;
+    // 頂禮彌陀
+    if (db && !db.bowData) db.bowData = { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 };
 
+    // 菩提淨室
+    if (db && !db.personalRoom) db.personalRoom = { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" };
+    
+    // 普賢十願
+    if (db && !db.puxianData) {
+        db.puxianData = {
+            startDate: new Date().setHours(0,0,0,0), 
+            lastLogin: "", 
+            weekRecord: [false, false, false, false, false, false, false],
+            poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
+        };
+    }
+
+    // 華藏月相
+    if (db && !db.mandalaVault) db.mandalaVault = [0, 0, 0, 0, 0];
+    if (db && db.totalMerit === undefined) db.totalMerit = 0;
+    if (db && db.lastSettledMonth === undefined) db.lastSettledMonth = "";
+    if (db && (!db.lunar || !db.lunar.snapshot)) db.lunar = { snapshot: { bodhi: 0, puxian: 0, bow: 0 } };
+
+    // 💡 八寶閣專屬防護
+    if (db && !db.eightTreasures) db.eightTreasures = [0, 0, 0, 0, 0, 0, 0, 0];
+    if (db && db.treasureDrawnCount === undefined) db.treasureDrawnCount = 0;
+
+} catch(e) {
+    console.error("法寶數據讀取異常", e);
+}
+
+// 新行者的預設值大禮包
+if (!db) {
+    db = { 
+        name: "行者", totalNian: 0, points: 0, dailyTasks: [], todayCount: 0, lastDate: new Date().toLocaleDateString(),
+        currentRank: "", streakDays: 0, lastNianDate: "",
+        treasures: { sword: 0, vase: 0, jewel: 0, lotus_lamp: 0, dharma_wheel: 0, white_lotus: 0, indra_net: 0 },
+        bodhiRecords: [],
+        lastMatrixDate: "", totalCorrect: 0, clearedQ: [], failedQ: {}, prajnaHints: 0, lastHintDate: "",
+        waterLevel: 1, waterLastDate: "", tempBag: 0,
+        visionLevel: 1, visionLastFailed: "", visionLastDate: "",
+        bowData: { streakCount: 0, lastLoginDate: "", lastRewardStreak: 0 },
+        preceptsData: { active: false, track: null, startTime: null, countA: 0, countB: 0, cycleStart: null, cycleCount: 0 },
+        puxianData: {
+            startDate: new Date().setHours(0,0,0,0), 
+            lastLogin: "", weekRecord: [false, false, false, false, false, false, false],
+            poolPoints: 0, totalDays365: 0, totalYears108: 0, totalPracticedDays: 0
+        },
+        personalRoom: { sessionCounts:{}, othList:{}, avatar:"", memo:"", loginDays:0, lastLogin:"", treasureClaimed:"" },
+        mandalaVault: [0, 0, 0, 0, 0], totalMerit: 0, lastSettledMonth: "",
+        lunar: { snapshot: { bodhi: 0, puxian: 0, bow: 0 } },
+        eightTreasures: [0, 0, 0, 0, 0, 0, 0, 0],
+        treasureDrawnCount: 0
+    };
+}
+
+if (db.streakDays === undefined) db.streakDays = 0;
+if (db.lastNianDate === undefined) db.lastNianDate = "";
+if (db.musicList !== undefined) delete db.musicList;
 // 計算可抽卡次數：(總念佛數 / 100萬) 向下取整 - 已經抽過的次數
 const totalEarnedDraws = Math.floor((db.totalNian || 0) / 1000000);
 let remainingDraws = totalEarnedDraws - db.treasureDrawnCount;
@@ -533,13 +615,13 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-        // --- 視覺腳本框架 (待置入邏輯) ---
-        // 這些資料僅供視覺測試，等您解說 script 後我們再寫入 localStorage 與迴向功能
+        // --- 視覺腳本框架  ---
+        
         const TREASURES = [
             { id: "banner", name: "吉祥寶幡", merit: "摧伏魔怨 ‧ 尊勝無礙", svgId: "treasure-banner", viewBox: "0 0 1000 1000", glow: "rgba(239, 208, 123, 0.45)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "fish", name: "雙壽金魚", merit: "自在解脫 ‧ 慧眼明澈", svgId: "treasure-fish", viewBox: "0 0 1000 562", glow: "rgba(255, 179, 0, 0.35)", tAnime: "float-swim", gAnime: "pulse-glow" },
             { id: "umbrella", name: "妙寶傘蓋", merit: "淨化護身 ‧ 消災除障", svgId: "treasure-umbrella", viewBox: "0 0 1000 800", glow: "rgba(74, 168, 255, 0.35)", tAnime: "float-knot", gAnime: "pulse-glow" }, // 已改為呼吸
-            { id: "knot", name: "吉祥如意結", merit: "慈悲無盡 ‧ 圓滿相續", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
+            { id: "knot", name: "吉祥長結", merit: "慈悲無盡 ‧ 圓滿相續", svgId: "treasure-knot", viewBox: "0 0 1000 900", glow: "rgba(217, 54, 54, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
             { id: "vase", name: "無盡寶瓶", merit: "福智圓滿 ‧ 健康長壽", svgId: "treasure-vase", viewBox: "0 0 1000 800", glow: "rgba(128, 195, 255, 0.4)", tAnime: "float-knot", gAnime: "pulse-glow" },
             { id: "wheel", name: "常轉法輪", merit: "正法久住 ‧ 摧破無明", svgId: "treasure-wheel", viewBox: "0 0 1000 800", glow: "rgba(255, 153, 153, 0.4)", tAnime: "steady-rotate", gAnime: "pulse-glow" },
             { id: "lotus", name: "吉祥聖蓮", merit: "出污不染 ‧ 菩提清淨", svgId: "treasure-lotus", viewBox: "0 0 1000 900", glow: "rgba(252, 216, 115, 0.4)", tAnime: "float-swim", gAnime: "pulse-glow" },
