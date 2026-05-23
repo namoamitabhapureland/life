@@ -645,17 +645,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
         let hasDrawn = false;
         
-        function drawGacha() {
-            const rand = Math.random() * 100;
-            if (rand <= 0.01) return 0; 
-            if (rand <= 5.01) return 5; 
-            if (rand <= 10.01) return 7;
-            if (rand <= 25.01) return 6;
-            if (rand <= 40.01) return 3;
-            if (rand <= 60.01) return 2;
-            if (rand <= 80.01) return 4;
-            return 1; 
-        }
+ function drawGacha() {
+    const rand = Math.random() * 100;
+    
+    // 獨立機率：2%
+    if (rand <= 2) return 0;   // 0: 吉祥寶幡 (最稀有)
+    
+    // 獨立機率：5% (7 - 2 = 5)
+    if (rand <= 7) return 5;   // 5: 常轉法輪
+    
+    // 獨立機率：8% (15 - 7 = 8)
+    if (rand <= 15) return 7;  // 7: 右旋寶螺
+    
+    // 獨立機率：15% (30 - 15 = 15)
+    if (rand <= 30) return 6;  // 6: 吉祥聖蓮
+    
+    // 獨立機率：15% (45 - 30 = 15)
+    if (rand <= 45) return 3;  // 3: 吉祥長結
+    
+    // 獨立機率：20% (65 - 45 = 20)
+    if (rand <= 65) return 2;  // 2: 妙寶傘蓋
+    
+    // 獨立機率：20% (85 - 65 = 20)
+    if (rand <= 85) return 4;  // 4: 無盡寶瓶
+    
+    // 獨立機率：剩餘的 15% (100 - 85 = 15)
+    return 1;                  // 1: 雙壽金魚 (保底基礎款)
+}
         
         let drawnIndex = drawGacha();
         let mockUnlocked = [1, 2, 4]; // 視覺展示用預設解鎖
@@ -784,7 +800,12 @@ drawnIndex = drawGacha(); // 執行機率函數
 // 增加防護：若數值異常則預設為 0 再加 1，徹底杜絕 NaN
 db.treasureDrawnCount = (db.treasureDrawnCount || 0) + 1;  
 db.eightTreasures[drawnIndex] = (db.eightTreasures[drawnIndex] || 0) + 1; 
-saveDB(); // 💾 正式存檔！
+
+saveDB(); // 💾 先正式存檔，確保資料安穩落庫！
+
+// 隨後即時更新畫面狀態
+remainingDraws--; // 即時扣除畫面上的可用次數
+initUI();        // 同步更新中央提示文字與右上角名稱
 
     const allCards = document.querySelectorAll('.card-wrapper');
     allCards.forEach((c, idx) => {
@@ -1003,7 +1024,6 @@ function closeCustomAlert() {
         </div>
     </div>
 
-</body>
-</html>
+
 </body>
 </html>
