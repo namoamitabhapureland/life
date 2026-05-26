@@ -188,6 +188,37 @@
             color: #8ba89c; font-size: 0.9rem; letter-spacing: 1px; line-height: 1.8; 
             margin-bottom: 30px; font-weight: 300; 
         }
+        /* 統一的關閉按鈕，用於說明欄與 Origins */
+.close-btn {
+    position: absolute;
+    bottom: 40px;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    backdrop-filter: blur(10px);
+    z-index: 99999;
+}
+
+.close-btn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: rotate(180deg) scale(1.1);
+    border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* 按鈕內部的叉號 SVG */
+.close-x {
+    width: 20px;
+    height: 20px;
+    stroke: #d4af37;
+    stroke-width: 2;
+}
 
     </style>
 </head>
@@ -297,9 +328,11 @@
    <div id="info-overlay" onclick="toggleInfo(false)">
     <div id="info-content" onclick="event.stopPropagation()">
         
-        <div style="text-align: right; margin-top: -10px; margin-bottom: 10px;">
-            <span onclick="toggleInfo(false)" style="cursor: pointer; color: #8ba89c; font-size: 1.2rem; padding: 5px 10px; border: 1px solid rgba(139,168,156,0.3); border-radius: 4px;">✕ Close</span>
-        </div>
+            </div>
+    <div class="close-btn" onclick="toggleInfo(false)">
+        <svg class="close-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </div>
+</div>
             <div class="info-title">[ Prajna Matrix ‧ Shattering Illusions ]</div>
             <div class="info-text">
                 "All conditioned phenomena are like dreams, illusions, bubbles, and shadows."<br><br>
