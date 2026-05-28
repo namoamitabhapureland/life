@@ -213,8 +213,12 @@
             color: var(--cyan-jade); font-size: 0.5rem; letter-spacing: 0.5px; 
             margin-top: 4px; opacity: 0.85; line-height: 1.1;
         }
-        .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.2); z-index: 100 !important; animation: none; }
-.card-wrapper.scattered { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-250px) scale(0); animation: none; }
+      .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.2); z-index: 100 !important; animation: none !important; }
+.card-wrapper.scattered { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-250px) scale(0); animation: none !important; }
+
+/* ════ 核心效能優化：卡片翻轉後，強制停止背面光暈運算，釋放 CPU ════ */
+.card-wrapper.is-flipped .card-back { animation: none !important; }
+
 
         /* 合十收攝按鈕 */
         .btn-action {
@@ -258,13 +262,14 @@
         .grid-count-tag { font-size: 0.65rem; color: var(--gold-light); display: inline-block; border: 1px solid rgba(212, 175, 55, 0.3); padding: 4px 10px; border-radius: 8px; background: rgba(212, 175, 55, 0.08); }
         .grid-item.locked .grid-count-tag { color: #404a48; border-color: rgba(139,168,156,0.1); background: transparent; }
 
-        @media (max-width: 768px) {
+              @media (max-width: 768px) {
             .card-wrapper { width: 95px; height: 160px; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-90px) rotate(calc(-1 * var(--angle))); }
-            .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.5); }
+            .card-wrapper.focused { transform: translate(-50%, -50%) scale(2.5); animation: none !important; }
             .gallery-grid { gap: 10px; }
             .grid-item { min-height: 160px; }
             .grid-svg-container { height: 80px; }
         }
+
         /* ════ 微塵迴向特效 CSS ════ */
 .dust-particle {
     position: absolute;
