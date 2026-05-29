@@ -47,9 +47,9 @@
 
         /* ---------------- 3D 宇宙場景 ---------------- */
         #universe-container { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; perspective: 2000px; z-index: 2; }
-        #scene-3d { width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(75deg) scale(0.9); will-change: transform; }
+                #scene-3d { width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(75deg) scale(0.9); }
         
-        #lotus-ocean { position: absolute; transform-style: preserve-3d; will-change: transform; }
+        #lotus-ocean { position: absolute; transform-style: preserve-3d; }
 
         .svg-glow { position: absolute; width: 1200px; height: 1200px; left: -600px; top: -600px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.15)); z-index: 1; }
         .ocean-dot-animated { transform-origin: center; animation: ocean-breathe 6s infinite alternate ease-in-out; }
@@ -184,6 +184,30 @@
 
     <div class="vairocana-light"></div>
     <div id="stardust-overlay"></div>
+    <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
+        <defs>
+            <linearGradient id="ethereal-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(212,175,55, 0.65)" />
+                <stop offset="50%" stop-color="rgba(243,229,171, 0.25)" />
+                <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+            <linearGradient id="deep-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(212,175,55, 0.9)" />
+                <stop offset="55%" stop-color="rgba(243,229,171, 0.45)" />
+                <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
+            </linearGradient>
+            <linearGradient id="deep-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(139,168,156, 0.9)" />
+                <stop offset="55%" stop-color="rgba(212,175,55, 0.45)" />
+                <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
+            </linearGradient>
+            <linearGradient id="pure-white" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255, 0.85)" />
+                <stop offset="40%" stop-color="rgba(243,229,171, 0.35)" />
+                <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+        </defs>
+    </svg>
 
     <div id="universe-container">
         <div id="scene-3d">
@@ -482,42 +506,28 @@
         geometricMandala.appendChild(drawGeometricLayer(55, 10, `${gold}0.35)`, `${gold}0.05)`));
         geometricMandala.appendChild(drawGeometricLayer(30, 10, `${gold}0.6)`, `${gold}0.1)`));
 
-        // 3D 蓮花
+             // 3D 蓮花
         const standingLotus = document.getElementById('standing-lotus');
         function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
             let petal = document.createElement('div');
             petal.className = 'petal-3d';
-            petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg)`;
+            petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
             petal.style.width = `${w}px`; petal.style.height = `${h}px`; petal.style.left = `-${w/2}px`; 
+            
             petal.innerHTML = `
                 <svg viewBox="0 0 120 320" class="petal-svg" preserveAspectRatio="none">
-                    <defs>
-                        <linearGradient id="fade-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.6)" />
-                            <stop offset="40%" stop-color="rgba(243,229,171, 0.2)" />
-                            <stop offset="85%" stop-color="transparent" />
-                        </linearGradient>
-                        <linearGradient id="gold-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.8)" />
-                            <stop offset="60%" stop-color="rgba(255,255,255, 0.3)" />
-                            <stop offset="100%" stop-color="transparent" />
-                        </linearGradient>
-                        <linearGradient id="cyan-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(139,168,156, 0.8)" />
-                            <stop offset="50%" stop-color="rgba(212,175,55, 0.5)" />
-                            <stop offset="100%" stop-color="rgba(255,255,255, 0.1)" />
-                        </linearGradient>
-                    </defs>
                     <path d="M 60 320 C 60 320, 0 180, 0 80 C 0 30, 60 0, 60 0 C 60 0, 120 30, 120 80 C 120 180, 60 320, 60 320 Z" 
-                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1"/>
+                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1.5"/>
                 </svg>`;
             return petal;
         }
 
-        // 降低蓮花層數以優化效能，並提升透明質感
-        for(let i=0; i<16; i++) standingLotus.appendChild(create3DPetal(i * 22.5, -20, 'fade-grad', 150, 380, 0.15));
-        for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -30, 'gold-grad', 120, 280, 0.25));
-        for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -45, 'cyan-grad', 80, 160, 0.5));
+        // 同步生成蓮花，直接呼叫 HTML 中的靜態漸層字典
+        for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'ethereal-gold', 120, 160, 0.35));
+        for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'deep-gold', 110, 140, 0.6));
+        for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'deep-cyan', 90, 110, 0.75));
+        for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.9));
+
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
