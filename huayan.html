@@ -484,49 +484,53 @@
 
         // 3D 蓮花
         const standingLotus = document.getElementById('standing-lotus');
-        function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
+               function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
             let petal = document.createElement('div');
             petal.className = 'petal-3d';
-petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
+            // 💡 加上 translateZ(0.1px) 穩固蘋果 GPU 渲染
+            petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
             petal.style.width = `${w}px`; petal.style.height = `${h}px`; petal.style.left = `-${w/2}px`; 
             petal.innerHTML = `
                 <svg viewBox="0 0 120 320" class="petal-svg" preserveAspectRatio="none">
                     <defs>
-                        <linearGradient id="fade-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.6)" />
-                            <stop offset="40%" stop-color="rgba(243,229,171, 0.2)" />
-                            <stop offset="85%" stop-color="transparent" />
-                        </linearGradient>
-                        <linearGradient id="gold-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.8)" />
-                            <stop offset="60%" stop-color="rgba(255,255,255, 0.3)" />
+                        <linearGradient id="ethereal-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(212,175,55, 0.35)" />
+                            <stop offset="50%" stop-color="rgba(243,229,171, 0.1)" />
                             <stop offset="100%" stop-color="transparent" />
                         </linearGradient>
-                        <linearGradient id="cyan-grad" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(139,168,156, 0.8)" />
-                            <stop offset="50%" stop-color="rgba(212,175,55, 0.5)" />
-                            <stop offset="100%" stop-color="rgba(255,255,255, 0.1)" />
+                        
+                        <linearGradient id="glass-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(139,168,156, 0.35)" />
+                            <stop offset="50%" stop-color="rgba(212,175,55, 0.1)" />
+                            <stop offset="100%" stop-color="transparent" />
+                        </linearGradient>
+                        
+                        <linearGradient id="pure-white" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(255,255,255, 0.45)" />
+                            <stop offset="40%" stop-color="rgba(243,229,171, 0.15)" />
+                            <stop offset="100%" stop-color="transparent" />
                         </linearGradient>
                     </defs>
                     <path d="M 60 320 C 60 320, 0 180, 0 80 C 0 30, 60 0, 60 0 C 60 0, 120 30, 120 80 C 120 180, 60 320, 60 320 Z" 
-                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1"/>
+                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="0.8"/>
                 </svg>`;
             return petal;
         }
 
+      // 延遲一幀渲染，避開蘋果 Safari F5 刷新時的 3D 圖層丟失 Bug
+requestAnimationFrame(() => {
+    // 第一層：最外圍 10 片，使用淡金 (ethereal-gold)，極低邊線透明度
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'ethereal-gold', 120, 160, 0.1));
 
-       // 3D 蓮花 - 改為 10 瓣 (36度一瓣)，與底部曼陀羅完美對齊，並大幅縮小長度
-// 第一層：最外圍 10 片，角度壓到極低的 -10 度，模擬曼陀羅花瓣「立起來」的視覺延伸
-for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'fade-grad', 120, 160, 0.15));
+    // 第二層：交錯 10 片，同樣使用淡金，稍微加強邊線以區隔層次
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'ethereal-gold', 110, 140, 0.15));
 
-// 第二層：10 片，完美交錯 (偏移 18 度)，稍微拉高
-for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'fade-grad', 110, 140, 0.20));
+    // 第三層：向內包覆，使用琉璃青 (glass-cyan)，帶來色彩的微細變化
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'glass-cyan', 90, 110, 0.2));
 
-// 第三層：10 片，再次交錯，向內包覆
-for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'gold-grad', 90, 110, 0.25));
-
-// 第四層：最內層 10 片，最短且緊密包覆中心光柱
-for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'cyan-grad', 70, 80, 0.5));
+    // 第四層：最內層，使用純白光 (pure-white)，緊密包覆中心光柱
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.3));
+});
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
