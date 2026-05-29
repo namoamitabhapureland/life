@@ -1474,7 +1474,8 @@ function handleNian(event) {
             document.getElementById('big-seed').style.filter = "drop-shadow(0 0 15px var(--solid-gold))";
         }, 500);
 
-        speak("南無阿弥陀仏", 0.9);
+speak("ナムアミダブツ", 0.9);
+
         document.getElementById('progress-ring').style.strokeDashoffset = 892 - (nianCount * 89.2);
 
         document.getElementById('nian-num').innerText = nianCount + " / 10";
@@ -1525,11 +1526,30 @@ function handleNian(event) {
 }
 
 function speak(t, r) {
-    if (!window.speechSynthesis) return; window.speechSynthesis.cancel(); 
+    if (!window.speechSynthesis) return; 
+    window.speechSynthesis.cancel(); 
     const m = new SpeechSynthesisUtterance(t);
-    m.lang = 'ja-JP'; m.rate = r || 0.9; m.pitch = 1.0; m.volume = 1.0;
+    m.lang = 'ja-JP'; 
+    
+    // ✨ 新增：強制去系統裡翻出真正的「日文語音包」並綁定
+    const voices = window.speechSynthesis.getVoices();
+    const jpVoice = voices.find(voice => voice.lang === 'ja-JP' || voice.lang === 'ja_JP' || voice.lang.includes('ja'));
+    if (jpVoice) {
+        m.voice = jpVoice;
+    }
+    
+    m.rate = r || 0.9; 
+    m.pitch = 1.0; 
+    m.volume = 1.0;
     setTimeout(() => { window.speechSynthesis.speak(m); }, 50);
 }
+
+// ✨ 確保網頁載入時，提早把系統語音包喚醒準備好
+if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
 
 function getLotusSVG(rankType, nianCount = 0, overrideLevel = null) {
     const safeRank = rankType || ""; 
