@@ -184,6 +184,30 @@
 
     <div class="vairocana-light"></div>
     <div id="stardust-overlay"></div>
+    <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
+        <defs>
+            <linearGradient id="ethereal-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(212,175,55, 0.65)" />
+                <stop offset="50%" stop-color="rgba(243,229,171, 0.25)" />
+                <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+            <linearGradient id="deep-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(212,175,55, 0.9)" />
+                <stop offset="55%" stop-color="rgba(243,229,171, 0.45)" />
+                <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
+            </linearGradient>
+            <linearGradient id="deep-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(139,168,156, 0.9)" />
+                <stop offset="55%" stop-color="rgba(212,175,55, 0.45)" />
+                <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
+            </linearGradient>
+            <linearGradient id="pure-white" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255,255,255, 0.85)" />
+                <stop offset="40%" stop-color="rgba(243,229,171, 0.35)" />
+                <stop offset="100%" stop-color="transparent" />
+            </linearGradient>
+        </defs>
+    </svg>
 
     <div id="universe-container">
         <div id="scene-3d">
@@ -484,57 +508,31 @@
 
         // 3D 蓮花
         const standingLotus = document.getElementById('standing-lotus');
-                            function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
+                                    function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
             let petal = document.createElement('div');
             petal.className = 'petal-3d';
             petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
             petal.style.width = `${w}px`; petal.style.height = `${h}px`; petal.style.left = `-${w/2}px`; 
+            
+            // 💡 直接呼叫 HTML 已經準備好的 url(#gradientId)，省去 GPU 40 次的重複編譯
             petal.innerHTML = `
                 <svg viewBox="0 0 120 320" class="petal-svg" preserveAspectRatio="none">
-                    <defs>
-                        <linearGradient id="ethereal-gold" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.65)" />
-                            <stop offset="50%" stop-color="rgba(243,229,171, 0.25)" />
-                            <stop offset="100%" stop-color="transparent" />
-                        </linearGradient>
-                        
-                        <linearGradient id="deep-gold" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(212,175,55, 0.9)" />
-                            <stop offset="55%" stop-color="rgba(243,229,171, 0.45)" />
-                            <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
-                        </linearGradient>
-                        
-                        <linearGradient id="deep-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(139,168,156, 0.9)" />
-                            <stop offset="55%" stop-color="rgba(212,175,55, 0.45)" />
-                            <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
-                        </linearGradient>
-                        
-                        <linearGradient id="pure-white" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(255,255,255, 0.85)" />
-                            <stop offset="40%" stop-color="rgba(243,229,171, 0.35)" />
-                            <stop offset="100%" stop-color="transparent" />
-                        </linearGradient>
-                    </defs>
                     <path d="M 60 320 C 60 320, 0 180, 0 80 C 0 30, 60 0, 60 0 C 60 0, 120 30, 120 80 C 120 180, 60 320, 60 320 Z" 
                           fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1.5"/>
                 </svg>`;
             return petal;
         }
-// 延遲一幀渲染，避開蘋果 Safari F5 刷新時的 3D 圖層丟失 Bug
-requestAnimationFrame(() => {
-    // 第一層：外圍淡金，邊線 0.35
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'ethereal-gold', 120, 160, 0.35));
 
-    // 第二層：套用【深層純金】，邊線拉高至 0.6，對比外層會非常有立體感
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'deep-gold', 110, 140, 0.6));
+                // 💡 給予系統 50 毫秒的喘息時間，確保蘋果設備能穩固建立 3D 圖層
+        setTimeout(() => {
+            requestAnimationFrame(() => {
+                for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'ethereal-gold', 120, 160, 0.35));
+                for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'deep-gold', 110, 140, 0.6));
+                for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'deep-cyan', 90, 110, 0.75));
+                for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.9));
+            });
+        }, 50);
 
-    // 第三層：套用【深琉璃青】，邊線拉高至 0.75
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'deep-cyan', 90, 110, 0.75));
-
-    // 第四層：最內層，邊線拉高至 0.9，鞏固核心
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.9));
-});
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
