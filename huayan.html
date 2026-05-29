@@ -484,10 +484,9 @@
 
         // 3D 蓮花
         const standingLotus = document.getElementById('standing-lotus');
-                     function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
+                            function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
             let petal = document.createElement('div');
             petal.className = 'petal-3d';
-            // 💡 translateZ(0.1px) 穩固蘋果 GPU 渲染
             petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
             petal.style.width = `${w}px`; petal.style.height = `${h}px`; petal.style.left = `-${w/2}px`; 
             petal.innerHTML = `
@@ -499,37 +498,42 @@
                             <stop offset="100%" stop-color="transparent" />
                         </linearGradient>
                         
-                        <linearGradient id="glass-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(139,168,156, 0.65)" />
-                            <stop offset="50%" stop-color="rgba(212,175,55, 0.25)" />
-                            <stop offset="100%" stop-color="transparent" />
+                        <linearGradient id="deep-gold" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(212,175,55, 0.9)" />
+                            <stop offset="55%" stop-color="rgba(243,229,171, 0.45)" />
+                            <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
+                        </linearGradient>
+                        
+                        <linearGradient id="deep-cyan" x1="0%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(139,168,156, 0.9)" />
+                            <stop offset="55%" stop-color="rgba(212,175,55, 0.45)" />
+                            <stop offset="100%" stop-color="rgba(255,255,255, 0.05)" />
                         </linearGradient>
                         
                         <linearGradient id="pure-white" x1="0%" y1="100%" x2="0%" y2="0%">
-                            <stop offset="0%" stop-color="rgba(255,255,255, 0.75)" />
-                            <stop offset="40%" stop-color="rgba(243,229,171, 0.3)" />
+                            <stop offset="0%" stop-color="rgba(255,255,255, 0.85)" />
+                            <stop offset="40%" stop-color="rgba(243,229,171, 0.35)" />
                             <stop offset="100%" stop-color="transparent" />
                         </linearGradient>
                     </defs>
                     <path d="M 60 320 C 60 320, 0 180, 0 80 C 0 30, 60 0, 60 0 C 60 0, 120 30, 120 80 C 120 180, 60 320, 60 320 Z" 
-                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1.2"/>
+                          fill="url(#${gradientId})" stroke="rgba(212,175,55,${strokeOpacity})" stroke-width="1.5"/>
                 </svg>`;
             return petal;
         }
-
-     // 延遲一幀渲染，避開蘋果 Safari F5 刷新時的 3D 圖層丟失 Bug
+// 延遲一幀渲染，避開蘋果 Safari F5 刷新時的 3D 圖層丟失 Bug
 requestAnimationFrame(() => {
-    // 第一層：最外圍，邊線透明度拉高至 0.35，確保底層看得很清楚
+    // 第一層：外圍淡金，邊線 0.35
     for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'ethereal-gold', 120, 160, 0.35));
 
-    // 第二層：交錯層，邊線拉高至 0.45，與第一層形成明確對比
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'ethereal-gold', 110, 140, 0.45));
+    // 第二層：套用【深層純金】，邊線拉高至 0.6，對比外層會非常有立體感
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'deep-gold', 110, 140, 0.6));
 
-    // 第三層：琉璃青，邊線拉高至 0.6
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'glass-cyan', 90, 110, 0.6));
+    // 第三層：套用【深琉璃青】，邊線拉高至 0.75
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'deep-cyan', 90, 110, 0.75));
 
-    // 第四層：最內層，邊線拉高至 0.8，牢牢包覆光柱
-    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.8));
+    // 第四層：最內層，邊線拉高至 0.9，鞏固核心
+    for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'pure-white', 70, 80, 0.9));
 });
 
         // 二十重世界塔
