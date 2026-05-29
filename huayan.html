@@ -595,34 +595,55 @@ for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -
         let currentTilt = 75; let currentSpin = 0;    
 
         function spawnStardust() {
-            if (Math.random() > 0.05) return; 
+            // 稍微提高星塵生成的機率，營造更豐富的宇宙感
+            if (Math.random() > 0.08) return; 
+            
             let dust = document.createElement('div');
             dust.style.position = 'absolute';
-            dust.style.width = (Math.random() * 2 + 1.5) + 'px';
-            dust.style.height = dust.style.width;
-            dust.style.background = Math.random() > 0.5 ? 'var(--gold)' : 'var(--cyan)';
-            dust.style.borderRadius = '50%';
-            dust.style.boxShadow = `0 0 8px ${dust.style.background}`;
             
-            let dx = Math.random() * 100 - 50; 
-            let dy = Math.random() * 35 - 17.5;
+            // 讓星塵大小有明顯落差 (1px 到 4.5px)，創造景深
+            let size = Math.random() * 3.5 + 1;
+            dust.style.width = size + 'px';
+            dust.style.height = dust.style.width;
+            
+            // 融入淨土與華藏世界的柔和色彩
+            const stardustColors = [
+                '#d4af37', // 純金
+                '#f3e5ab', // 柔金
+                '#8ba89c', // 淡青
+                '#ffffff', // 純白
+                '#ffe6f0', // 微粉 (蓮光)
+                '#e6f7ff'  // 微藍 (琉璃光)
+            ];
+            let color = stardustColors[Math.floor(Math.random() * stardustColors.length)];
+            
+            dust.style.background = color;
+            dust.style.borderRadius = '50%';
+            // 依據星空大小給予不同程度的發光效果
+            dust.style.boxShadow = `0 0 ${size * 2.5}px ${color}`;
+            
+            // 擴大星塵生成的 X 軸範圍，讓整個畫面都有星空漂浮
+            let dx = Math.random() * window.innerWidth - (window.innerWidth / 2); 
+            let dy = Math.random() * 40 - 20;
             dust.style.left = `calc(50% + ${dx}px)`; 
             dust.style.top = `calc(65% + ${dy}px)`;
             dust.style.opacity = 0;
             
             document.getElementById('stardust-overlay').appendChild(dust);
             
-            let height = Math.random() * 400 + 300; 
-            let duration = Math.random() * 10000 + 8000; 
+            // 星塵上升的高度與時間也隨機化，增加自然無常的流動感
+            let height = Math.random() * 500 + 300; 
+            let duration = Math.random() * 12000 + 8000; 
             
             dust.animate([
                 { opacity: 0, transform: `translateY(0px) scale(0.5)` },
-                { opacity: 0.6, transform: `translateY(-${height * 0.4}px) scale(1.5)` },
+                { opacity: 0.7, transform: `translateY(-${height * 0.4}px) scale(1.2)` },
                 { opacity: 0, transform: `translateY(-${height}px) scale(0)` }
             ], { duration: duration, easing: 'ease-in-out', fill: 'forwards' });
             
             setTimeout(() => dust.remove(), duration);
         }
+
 
         function animateUniverse() {
             // ✨ 關鍵效能優化：當抽屜打開時，暫停所有 DOM 3D 變更與星塵生成，釋放 iOS 算力
