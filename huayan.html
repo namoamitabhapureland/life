@@ -160,8 +160,6 @@
         .world-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.15); padding: 12px; border-radius: 8px; font-size: 0.9rem; color: #ddd; display: flex; align-items: center; gap: 10px; }
         .world-num { color: var(--solid-gold); font-size: 0.8rem; font-weight: bold; opacity: 0.8; }
         .world-13 { border: 1px solid var(--solid-gold); background: rgba(212,175,55,0.15); box-shadow: 0 0 15px rgba(212,175,55,0.2); font-weight: bold;}
-        /* ---------------- 3D 穿梭星空背景 ---------------- */
-        #star-canvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; width: 100%; height: 100%; }
 
     </style>
 </head>
@@ -183,10 +181,10 @@
         </svg>
     </div>
 
-             <div class="vairocana-light"></div>
-    <canvas id="star-canvas"></canvas>
 
- 
+    <div class="vairocana-light"></div>
+    <div id="stardust-overlay"></div>
+
     <div id="universe-container">
         <div id="scene-3d">
             <div id="lotus-ocean">
@@ -489,7 +487,7 @@
         function create3DPetal(angle, tiltX, gradientId, w, h, strokeOpacity) {
             let petal = document.createElement('div');
             petal.className = 'petal-3d';
-            petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg)`;
+petal.style.transform = `rotateZ(${angle}deg) rotateX(${tiltX}deg) translateZ(0.1px)`;
             petal.style.width = `${w}px`; petal.style.height = `${h}px`; petal.style.left = `-${w/2}px`; 
             petal.innerHTML = `
                 <svg viewBox="0 0 120 320" class="petal-svg" preserveAspectRatio="none">
@@ -516,8 +514,8 @@
             return petal;
         }
 
-        // 新的寫法：優化立體交錯感與盛開弧度
-        // 3D 蓮花 - 改為 10 瓣 (36度一瓣)，與底部曼陀羅完美對齊，並大幅縮小長度
+
+       // 3D 蓮花 - 改為 10 瓣 (36度一瓣)，與底部曼陀羅完美對齊，並大幅縮小長度
 // 第一層：最外圍 10 片，角度壓到極低的 -10 度，模擬曼陀羅花瓣「立起來」的視覺延伸
 for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'fade-grad', 120, 160, 0.15));
 
@@ -529,7 +527,6 @@ for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'go
 
 // 第四層：最內層 10 片，最短且緊密包覆中心光柱
 for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'cyan-grad', 70, 80, 0.5));
-
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
@@ -596,76 +593,62 @@ for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -
         let isDragging = false; let startX, startY;
         let currentTilt = 75; let currentSpin = 0;    
 
-                // ================= 3D 穿梭星空 (Canvas) =================
-        const canvas = document.getElementById('star-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let stars = [];
-        const FOV = 800; 
-
-        function resizeCanvas() {
-            width = window.innerWidth; height = window.innerHeight;
-            canvas.width = width; canvas.height = height;
+                function spawnStardust() {
+            // 稍微提高星塵生成的機率，營造更豐富的宇宙感
+            if (Math.random() > 0.08) return; 
+            
+            let dust = document.createElement('div');
+            dust.style.position = 'absolute';
+            
+            // 讓星塵大小有明顯落差 (1px 到 4.5px)，創造景深
+            let size = Math.random() * 3.5 + 1;
+            dust.style.width = size + 'px';
+            dust.style.height = dust.style.width;
+            
+            // 融入淨土與華藏世界的柔和色彩
+            const stardustColors = [
+                '#d4af37', // 純金
+                '#f3e5ab', // 柔金
+                '#8ba89c', // 淡青
+                '#ffffff', // 純白
+                '#ffe6f0', // 微粉 (蓮光)
+                '#e6f7ff'  // 微藍 (琉璃光)
+            ];
+            let color = stardustColors[Math.floor(Math.random() * stardustColors.length)];
+            
+            dust.style.background = color;
+            dust.style.borderRadius = '50%';
+            // 依據星空大小給予不同程度的發光效果
+            dust.style.boxShadow = `0 0 ${size * 2.5}px ${color}`;
+            
+            // 擴大星塵生成的 X 軸範圍，讓整個畫面都有星空漂浮
+            let dx = Math.random() * window.innerWidth - (window.innerWidth / 2); 
+            let dy = Math.random() * 40 - 20;
+            dust.style.left = `calc(50% + ${dx}px)`; 
+            dust.style.top = `calc(65% + ${dy}px)`;
+            dust.style.opacity = 0;
+            
+            document.getElementById('stardust-overlay').appendChild(dust);
+            
+            // 星塵上升的高度與時間也隨機化，增加自然無常的流動感
+            let height = Math.random() * 500 + 300; 
+            let duration = Math.random() * 12000 + 8000; 
+            
+            dust.animate([
+                { opacity: 0, transform: `translateY(0px) scale(0.5)` },
+                { opacity: 0.7, transform: `translateY(-${height * 0.4}px) scale(1.2)` },
+                { opacity: 0, transform: `translateY(-${height}px) scale(0)` }
+            ], { duration: duration, easing: 'ease-in-out', fill: 'forwards' });
+            
+            setTimeout(() => dust.remove(), duration);
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        // 產生初始星空陣列
-        for (let i = 0; i < 350; i++) {
-            stars.push({
-                x: (Math.random() - 0.5) * 3000,
-                y: (Math.random() - 0.5) * 3000,
-                z: Math.random() * 2000,
-                size: Math.random() * 1.5 + 0.5,
-                speed: Math.random() * 1.5 + 0.5,
-                color: Math.random() > 0.5 ? '#f3e5ab' : '#87cefa'
-            });
-        }
-
-        let time = 0;
-        function animateStarfield() {
-            // 當玉簡抽屜打開時暫停星空穿梭，保留效能給文字閱讀
-            if (!isDrawerOpen) {
-                ctx.fillStyle = 'rgba(1, 1, 3, 0.6)'; 
-                ctx.fillRect(0, 0, width, height);
-                time += 0.015;
-
-                ctx.globalCompositeOperation = 'screen';
-                stars.forEach(s => {
-                    s.z -= s.speed; 
-                    if (s.z <= 0) { 
-                        s.z = 2000; 
-                        s.x = (Math.random() - 0.5) * 3000; 
-                        s.y = (Math.random() - 0.5) * 3000; 
-                    }
-                    let sc = FOV / (FOV + s.z); 
-                    let sx = (width / 2) + s.x * sc; 
-                    let sy = (height / 2) + s.y * sc - 50;
-                    
-                    // 只渲染畫面內的星點，維持系統絕對乾淨的效能
-                    if (sx > 0 && sx < width && sy > 0 && sy < height) {
-                        ctx.beginPath(); 
-                        ctx.arc(sx, sy, Math.max(0.1, s.size * sc), 0, Math.PI * 2);
-                        // 依據妳的設計：粉紅/粉綠 與 粉藍
-                        ctx.fillStyle = s.color === '#f3e5ab' 
-                            ? `rgba(255,183,197, ${Math.min(1, sc * 2)})` 
-                            : `rgba(135,206,250, ${Math.min(1, sc * 2)})`; 
-                        ctx.fill();
-                    }
-                });
-                ctx.globalCompositeOperation = 'source-over';
-            }
-            requestAnimationFrame(animateStarfield);
-        }
-        animateStarfield(); // 啟動星空
-
 
 
         function animateUniverse() {
             // ✨ 關鍵效能優化：當抽屜打開時，暫停所有 DOM 3D 變更與星塵生成，釋放 iOS 算力
             if(!isDrawerOpen) {
                 if(!isDragging) {
-                   
+
                     lotusOcean.style.transform = `rotateZ(${currentSpin}deg)`;
                     for(let i=0; i<labels.length; i++) {
                         labels[i].style.transform = `rotateX(-90deg) rotateY(${-currentSpin}deg)`;
