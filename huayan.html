@@ -122,12 +122,13 @@ body {
         /* 光相呼吸與恆常發光 */
         .halo-pulse { transform-origin: 500px 245px; animation: halo-anim 4s infinite alternate ease-in-out; }
         @keyframes halo-anim { 0% { transform: scale(0.95); opacity: 0.6; stroke-width: 1.5; filter: drop-shadow(0 0 15px rgba(255,215,0,0.4)); } 100% { transform: scale(1.02); opacity: 1; stroke-width: 3.0; filter: drop-shadow(0 0 35px rgba(255,215,0,0.8)); } }
-              /* ✨ 頂光背後的五色微光 (6秒不同步呼吸，收斂體積、提高明度) */
+                      /* ✨ 頂光背後的彩色能量圈 (6秒不同步呼吸) */
         .aura-pulse { transform-origin: 500px 245px; animation: aura-breathe 6s infinite alternate ease-in-out; }
         @keyframes aura-breathe { 
-            0% { transform: scale(0.95); opacity: 0.6; } 
+            0% { transform: scale(0.96); opacity: 0.6; } 
             100% { transform: scale(1.02); opacity: 1; } 
         }
+
 
         /* ✨ 佛尊法身背後的五色微光呼吸 (6秒不同步頻率) */
         .body-aura-pulse { 
@@ -500,14 +501,28 @@ body {
                     <stop offset="90%" stop-color="#FFD700" stop-opacity="0.8"/> 
                     <stop offset="100%" stop-color="#8B6508" stop-opacity="0"/> 
                 </radialGradient>
-                             <radialGradient id="bodyFiveColorAura" cx="50%" cy="50%" r="50%">
-                 <stop offset="0%" stop-color="transparent" />
-                 <stop offset="45%" stop-color="transparent" />
-                 <stop offset="55%" stop-color="rgba(255, 255, 255, 0.25)" /> <stop offset="70%" stop-color="rgba(255, 182, 193, 0.15)" /> <stop offset="85%" stop-color="rgba(139, 168, 156, 0.15)" /> <stop offset="100%" stop-color="rgba(135, 206, 250, 0)" />   </radialGradient>
+                
+                                <radialGradient id="ringFadeMask" cx="50%" cy="50%" r="50%">
+                    <stop offset="60%" stop-color="black" /> <stop offset="75%" stop-color="white" /> <stop offset="90%" stop-color="white" /> <stop offset="100%" stop-color="black" /> </radialGradient>
+                <mask id="color-ring-mask">
+                    <circle cx="500" cy="245" r="225" fill="url(#ringFadeMask)" />
+                </mask>
 
-                                                             <radialGradient id="fiveColorAura" cx="50%" cy="50%" r="50%">
-                    <stop offset="60%" stop-color="transparent" />
-                    <stop offset="70%" stop-color="rgba(255, 255, 255, 0.55)" /> <stop offset="78%" stop-color="rgba(255, 215, 0, 0.45)" />   <stop offset="85%" stop-color="rgba(255, 153, 204, 0.4)" />  <stop offset="92%" stop-color="rgba(102, 255, 204, 0.35)" /> <stop offset="98%" stop-color="rgba(102, 178, 255, 0.25)" /> <stop offset="100%" stop-color="rgba(102, 178, 255, 0)" />   </radialGradient>
+                <linearGradient id="colorMix1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f3e5ab" /> 
+                    <stop offset="50%" stop-color="#ffffff" /> 
+                    <stop offset="100%" stop-color="#8ba89c" /> 
+                </linearGradient>
+                <linearGradient id="colorMix2" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" /> 
+                    <stop offset="50%" stop-color="transparent" /> 
+                    <stop offset="100%" stop-color="#d4af37" /> 
+                </linearGradient>
+                <linearGradient id="colorMix3" x1="50%" y1="0%" x2="50%" y2="100%">
+                    <stop offset="0%" stop-color="#ffb6c1" /> 
+                    <stop offset="50%" stop-color="transparent" /> 
+                    <stop offset="100%" stop-color="#f3e5ab" /> 
+                </linearGradient>
 
                 
                 <linearGradient id="bodyFill" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -605,7 +620,13 @@ body {
         
         </g>
 </g>
-            <circle class="aura-pulse" cx="500" cy="245" r="225" fill="url(#fiveColorAura)" mask="url(#halo-mask)" />
+                       <g class="aura-pulse" mask="url(#halo-mask)">
+                <g mask="url(#color-ring-mask)">
+                    <circle cx="500" cy="245" r="225" fill="url(#colorMix1)" />
+                    <circle cx="500" cy="245" r="225" fill="url(#colorMix2)" opacity="0.8" />
+                    <circle cx="500" cy="245" r="225" fill="url(#colorMix3)" opacity="0.7" />
+                </g>
+            </g>
             
             <circle class="halo-pulse" cx="500" cy="245" r="215" fill="url(#haloFillDef)" stroke="url(#haloGlow)" stroke-width="2" opacity="0.8" mask="url(#halo-mask)" />
             <circle class="halo-pulse" cx="500" cy="245" r="160" fill="none" stroke="url(#haloGlow)" stroke-width="2" mask="url(#halo-mask)" />
