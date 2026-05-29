@@ -1290,7 +1290,8 @@ function checkNewDay() {
     }
     let d = new Date(); let mmdd = String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     
-    if (festivalMap[mmdd]) {
+    // ✨ 加入 typeof 防護，就算 config 讀取失敗，程式也絕對不會當機！
+    if (typeof festivalMap !== 'undefined' && festivalMap[mmdd]) {
         let banner = document.getElementById('festival-banner');
         let msg = festivalMap[mmdd];
         
@@ -1303,6 +1304,7 @@ function checkNewDay() {
         banner.style.display = 'block';
     }
 }
+
 
 function updateClock() {
     const now = new Date();
