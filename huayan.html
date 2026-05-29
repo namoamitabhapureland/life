@@ -515,10 +515,19 @@
         }
 
         // 新的寫法：優化立體交錯感與盛開弧度
-for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -15, 'fade-grad', 140, 240, 0.15));
-for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -30, 'fade-grad', 130, 220, 0.20));
-for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -45, 'gold-grad', 110, 180, 0.25));
-for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -65, 'cyan-grad', 80, 140, 0.5));
+        // 3D 蓮花 - 改為 10 瓣 (36度一瓣)，與底部曼陀羅完美對齊，並大幅縮小長度
+// 第一層：最外圍 10 片，角度壓到極低的 -10 度，模擬曼陀羅花瓣「立起來」的視覺延伸
+for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -10, 'fade-grad', 120, 160, 0.15));
+
+// 第二層：10 片，完美交錯 (偏移 18 度)，稍微拉高
+for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -25, 'fade-grad', 110, 140, 0.20));
+
+// 第三層：10 片，再次交錯，向內包覆
+for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal(i * 36, -45, 'gold-grad', 90, 110, 0.25));
+
+// 第四層：最內層 10 片，最短且緊密包覆中心光柱
+for(let i=0; i<10; i++) standingLotus.appendChild(create3DPetal((i * 36) + 18, -65, 'cyan-grad', 70, 80, 0.5));
+
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
@@ -619,7 +628,7 @@ for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, 
             // ✨ 關鍵效能優化：當抽屜打開時，暫停所有 DOM 3D 變更與星塵生成，釋放 iOS 算力
             if(!isDrawerOpen) {
                 if(!isDragging) {
-                    currentSpin -= 0.05;
+                   
                     lotusOcean.style.transform = `rotateZ(${currentSpin}deg)`;
                     for(let i=0; i<labels.length; i++) {
                         labels[i].style.transform = `rotateX(-90deg) rotateY(${-currentSpin}deg)`;
