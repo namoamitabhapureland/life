@@ -514,10 +514,11 @@
             return petal;
         }
 
-        // 降低蓮花層數以優化效能，並提升透明質感
-        for(let i=0; i<16; i++) standingLotus.appendChild(create3DPetal(i * 22.5, -20, 'fade-grad', 150, 380, 0.15));
-        for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -30, 'gold-grad', 120, 280, 0.25));
-        for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -45, 'cyan-grad', 80, 160, 0.5));
+        // 新的寫法：優化立體交錯感與盛開弧度
+for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -15, 'fade-grad', 140, 240, 0.15));
+for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -30, 'fade-grad', 130, 220, 0.20));
+for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal(i * 45, -45, 'gold-grad', 110, 180, 0.25));
+for(let i=0; i<8; i++) standingLotus.appendChild(create3DPetal((i * 45) + 22.5, -65, 'cyan-grad', 80, 140, 0.5));
 
         // 二十重世界塔
         const tower = document.getElementById('world-tower');
