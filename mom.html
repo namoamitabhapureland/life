@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <title>淨息流 ． 孕母育兒</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #FDFDFD, #F6EFEF);
+            --glass-bg: rgba(255, 255, 255, 0.65); --glass-border: rgba(255, 255, 255, 0.9);
+            --text-main: #58504A; --text-light: #968E86;
+            --accent-rose: #CFA4A4; --accent-rose-light: rgba(207, 164, 164, 0.15);
+            --accent-gold: #CBA37A; --accent-jade: #82968C; --accent-red: #D29498;
+            --shadow-soft: 0 10px 40px rgba(207, 164, 164, 0.12);
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-gradient); color: var(--text-main); font-family: -apple-system, sans-serif; overflow-x: hidden; -webkit-user-select: none; user-select: none; }
+
+        /* --- 側邊選單 (琉璃懸浮統一升級) --- */
+        .side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); backdrop-filter: blur(5px); z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .side-menu-overlay.open { opacity: 1; pointer-events: auto; }
+        .side-menu { position: fixed; top: 0; left: 0; width: 80%; max-width: 320px; height: 100%; background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border); box-shadow: 10px 0 40px rgba(0,0,0,0.08); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 901; display: flex; flex-direction: column; padding-top: max(40px, env(safe-area-inset-top)); }
+        .side-menu.open { transform: translateX(0); }
+        .menu-profile { padding: 0 25px 25px; border-bottom: 1px solid rgba(92,84,78,0.06); margin-bottom: 15px; }
+        .menu-title { font-size: 1.6rem; font-weight: 300; letter-spacing: 3px; }
+        .menu-subtitle { font-size: 0.75rem; color: var(--accent-gold); letter-spacing: 1px; margin-top: 8px; }
+        
+        .menu-list { flex: 1; overflow-y: auto; padding: 0 20px 20px; display: flex; flex-direction: column; gap: 12px; }
+        
+        /* 選單按鈕琉璃化 */
+        .menu-item { 
+            padding: 16px 20px; border-radius: 20px; border: 1px solid var(--glass-border); 
+            display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-weight: 500; 
+            cursor: pointer; background: rgba(255,255,255,0.4); color: var(--text-main); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.2s; 
+        }
+        .menu-item:active { transform: scale(0.97); background: rgba(255,255,255,0.9); }
+        .menu-item.active { background: linear-gradient(135deg, rgba(255,255,255,0.9), var(--accent-rose-light)); border-color: var(--accent-rose); color: var(--accent-rose); box-shadow: 0 4px 15px var(--accent-rose-light); }
+        
+        .menu-icon-wrap { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .menu-item svg { stroke: currentColor; fill: none; stroke-width: 1.8; width: 16px; height: 16px; }
+
+        /* 底部設定區 (預留全局) */
+        .menu-bottom-links { display: flex; justify-content: space-around; padding: 20px 0; border-top: 1px solid rgba(92,84,78,0.06); }
+        .menu-sub-link { font-size: 0.8rem; color: var(--text-light); cursor: pointer; padding: 5px 15px; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+        .menu-sub-link:active { color: var(--accent-gold); }
+        .menu-sub-link svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* --- 頂部導航與雙生切換 --- */
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 800; padding: max(15px, env(safe-area-inset-top)) 20px 10px; display: flex; flex-direction: column; align-items: center; background: rgba(253,253,253,0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.5); }
+        .nav-content { width: 100%; max-width: 720px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .nav-btn { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); box-shadow: var(--shadow-soft); cursor: pointer; transition: all 0.2s; }
+        .nav-btn:active { transform: scale(0.92); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .page-title { font-size: 1.15rem; font-weight: 500; letter-spacing: 3px; color: var(--accent-rose); }
+
+        .module-tabs { width: 100%; max-width: 720px; display: flex; justify-content: center; gap: 15px; padding-bottom: 5px; }
+        .mod-tab { padding: 8px 25px; border-radius: 20px; font-size: 0.95rem; font-weight: 500; color: var(--text-light); border: 1px solid transparent; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .mod-tab svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .mod-tab.active { background: var(--glass-bg); color: var(--accent-rose); border-color: var(--accent-rose); box-shadow: 0 4px 15px var(--accent-rose-light); }
+
+        /* --- 主要內容區 --- */
+        .main-container { width: 100%; max-width: 720px; margin: 0 auto; padding: calc(130px + env(safe-area-inset-top)) 20px 100px; display: none; flex-direction: column; gap: 20px; animation: fadeIn 0.4s ease; }
+        .main-container.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .health-card { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 24px; padding: 22px; box-shadow: var(--shadow-soft); position: relative; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column; }
+        .health-card.clickable { cursor: pointer; }
+        .health-card.clickable:active { transform: scale(0.98); background: rgba(255,255,255,0.9); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 500; letter-spacing: 1px; color: var(--text-main); }
+        .card-icon { width: 22px; height: 22px; stroke: var(--accent-rose); fill: none; stroke-width: 1.8; }
+        .status-tag { font-size: 0.8rem; color: var(--text-light); text-align: right; background: rgba(255,255,255,0.5); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        
+        .value-display { display: flex; align-items: flex-end; gap: 8px; }
+        .main-value { font-size: 2.2rem; font-weight: 300; line-height: 1; color: var(--text-main); transition: color 0.3s;}
+        .sub-value { font-size: 1rem; color: var(--text-light); margin-bottom: 4px; }
+        .dual-value-box { display: flex; gap: 30px; margin-top: 10px; }
+
+        /* 孕期推算圓環 */
+        .preg-progress-wrap { display: flex; align-items: center; gap: 25px; margin-top: 10px; }
+        .preg-ring-box { width: 90px; height: 90px; position: relative; }
+        .preg-ring-box svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+        .preg-ring-bg { fill: none; stroke: var(--accent-rose-light); stroke-width: 4; }
+        .preg-ring-fill { fill: none; stroke: var(--accent-rose); stroke-width: 4; stroke-linecap: round; transition: stroke-dasharray 1s ease-out; }
+        .preg-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .preg-ring-text .w { font-size: 1.6rem; font-weight: 300; color: var(--accent-rose); line-height: 1; }
+        .preg-ring-text .lbl { font-size: 0.7rem; color: var(--text-light); letter-spacing: 1px; margin-top: 2px; }
+        
+        .preg-info { flex: 1; }
+        .preg-info-row { margin-bottom: 8px; }
+        .preg-info-lbl { font-size: 0.75rem; color: var(--text-light); margin-bottom: 2px; }
+        .preg-info-val { font-size: 1.1rem; color: var(--text-main); font-weight: 500; border-bottom: 1px solid var(--accent-gold); display: inline-block; padding-bottom: 2px; cursor: pointer; }
+
+        /* 胎動漣漪 */
+        .fetal-box { display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
+        .fetal-btn { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, #fdf4f4 100%); border: 2px solid var(--accent-rose); display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; position: relative; box-shadow: 0 10px 30px var(--accent-rose-light); outline: none; -webkit-tap-highlight-color: transparent; }
+        .fetal-btn:active { transform: scale(0.92); }
+        .fetal-btn svg { width: 36px; height: 36px; stroke: var(--accent-rose); fill: none; stroke-width: 1.5; margin-bottom: 4px; }
+        .fetal-btn span { font-size: 0.85rem; color: var(--accent-rose); font-weight: 500; letter-spacing: 2px; }
+        .ripple { position: absolute; border: 2px solid var(--accent-rose); border-radius: 50%; animation: rippleAnim 1.2s ease-out forwards; pointer-events: none; }
+        @keyframes rippleAnim { 0% { width: 100px; height: 100px; opacity: 1; } 100% { width: 200px; height: 200px; opacity: 0; } }
+
+        /* 疫苗清單 (隱形滾動條) */
+        .vax-container { max-height: 380px; overflow-y: auto; padding-right: 5px; margin-top: 10px; -ms-overflow-style: none; scrollbar-width: none; display: flex; flex-direction: column; gap: 10px;}
+        .vax-container::-webkit-scrollbar { display: none; }
+        .vax-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 15px; background: rgba(255,255,255,0.4); border: 1px solid var(--glass-border); border-radius: 16px; cursor: pointer; transition: all 0.2s; }
+        .vax-item:active { transform: scale(0.98); background: rgba(255,255,255,0.8); }
+        .vax-info { display: flex; flex-direction: column; gap: 6px; }
+        .vax-name { font-size: 0.95rem; color: var(--text-main); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .vax-type-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 6px; border: 1px solid currentColor; letter-spacing: 1px; }
+        .type-pub { color: var(--accent-jade); } .type-pri { color: var(--accent-gold); }
+        .vax-time { font-size: 0.75rem; color: var(--text-light); }
+        .vax-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--glass-border); background: var(--glass-bg); display: flex; justify-content: center; align-items: center; transition: all 0.3s; flex-shrink: 0; }
+        .vax-check svg { width: 14px; height: 14px; stroke: white; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transform: scale(0.5); transition: all 0.3s; }
+        .vax-item.done { border-color: var(--accent-jade); background: rgba(130,150,140,0.05); }
+        .vax-item.done .vax-check { background: var(--accent-jade); border-color: var(--accent-jade); }
+        .vax-item.done .vax-check svg { opacity: 1; transform: scale(1); }
+        .vax-divider { font-size: 0.8rem; color: var(--accent-rose); font-weight: 500; margin: 10px 0 5px 5px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .vax-divider::after { content: ''; flex: 1; height: 1px; background: rgba(207, 164, 164, 0.3); }
+
+        /* --- 智慧輸入抽屜 (加入日期選擇區塊) --- */
+        .bottom-drawer { position: fixed; bottom: 0; left: 0; width: 100vw; background: rgba(253, 252, 252, 0.95); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border); border-radius: 35px 35px 0 0; box-shadow: 0 -15px 50px rgba(207, 164, 164, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 2000; display: flex; flex-direction: column; align-items: center; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+        .bottom-drawer.open { transform: translateY(0); }
+        .drawer-content { width: 100%; max-width: 720px; padding: 0 25px; display: flex; flex-direction: column; }
+        .drawer-handle { width: 40px; height: 4px; background: rgba(150,142,134,0.3); border-radius: 2px; margin: 15px auto 10px; cursor: pointer; }
+        
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .drawer-title { font-size: 1.15rem; color: var(--text-main); letter-spacing: 2px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        
+        /* 琉璃時間徽章 (綁定滾輪) */
+        .datetime-badge { font-size: 0.85rem; background: rgba(255,255,255,0.6); border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s; }
+        .datetime-badge:active { transform: scale(0.95); }
+        .datetime-badge svg { width: 12px; height: 12px; stroke: var(--accent-rose); fill: none; stroke-width: 2; }
+
+        .sub-tags-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; justify-content: center; }
+        .sub-tag { background: rgba(255, 255, 255, 0.5); border: 1px solid var(--glass-border); color: var(--text-light); padding: 6px 14px; border-radius: 16px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .sub-tag.selected { background: var(--glass-bg); color: var(--accent-rose); border-color: var(--accent-rose); font-weight: 500; box-shadow: 0 2px 8px var(--accent-rose-light); }
+
+        .input-display-area { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin-bottom: 20px; min-height: 70px; }
+        .bp-input-group { display: flex; align-items: flex-end; gap: 10px; }
+        .input-box { font-size: 3.2rem; font-weight: 300; color: var(--text-light); border-bottom: 1px solid transparent; padding: 0 5px; min-width: 70px; text-align: center; transition: all 0.3s; cursor: pointer; }
+        .input-box.active { color: var(--accent-rose); border-bottom: 2px solid var(--accent-rose); }
+        .input-box.warning { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+        .input-slash { font-size: 2.5rem; font-weight: 300; color: var(--text-light); padding-bottom: 5px; }
+        .input-unit { font-size: 1rem; color: var(--text-light); padding-bottom: 10px; }
+        
+        .medical-hint { font-size: 0.85rem; text-align: center; color: var(--text-light); min-height: 20px; margin-bottom: 15px; letter-spacing: 1px; transition: color 0.3s; }
+        .medical-hint.warning { color: var(--accent-red); font-weight: 500; }
+
+        /* 經期專屬：開始與結束日期框 */
+        .period-input-group { display: none; flex-direction: column; gap: 15px; width: 100%; align-items: center; margin-bottom: 20px; }
+        .period-date-btn { background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); padding: 12px 20px; border-radius: 12px; width: 80%; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .period-date-btn span { color: var(--accent-rose); font-weight: 500; }
+
+        .key-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .key { background: rgba(255,255,255,0.7); border: 1px solid var(--glass-border); border-radius: 20px; height: 55px; font-size: 1.6rem; color: var(--text-main); font-weight: 300; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.1s; }
+        .key:active { transform: scale(0.92); background: rgba(255,255,255,1); }
+        .key-submit { grid-column: span 3; background: var(--accent-rose); color: white; border: none; font-weight: 400; letter-spacing: 4px; box-shadow: 0 4px 15px var(--accent-rose-light); margin-top: 5px; border-radius: 20px; font-size: 1.1rem; height: 55px; cursor: pointer; }
+
+        /* --- 彈窗系統 --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 3000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .glass-modal { background: rgba(253, 252, 252, 0.95); width: 85%; max-width: 320px; border-radius: 25px; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); border: 1px solid var(--glass-border); text-align: center; }
+        .modal-input { width: 100%; padding: 12px; margin: 10px 0 20px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.8); color: var(--text-main); text-align: center; font-size: 16px !important; outline: none; font-family: inherit; }
+        .modal-input:focus { border-color: var(--accent-rose); }
+        .modal-btn-group { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
+        .m-btn { flex: 1; padding: 12px; border-radius: 16px; font-size: 0.95rem; cursor: pointer; border: none; transition: all 0.2s; }
+        .m-btn-cancel { background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); color: var(--text-main); }
+        .m-btn-confirm { background: var(--accent-rose); color: white; box-shadow: 0 4px 15px var(--accent-rose-light); }
+
+        /* 琉璃時間滾輪 (整合自 health) */
+        .roller-container { width: 100%; height: 150px; display: flex; position: relative; justify-content: center; gap: 20px; background: rgba(255,255,255,0.3); border-radius: 16px; border: 1px solid var(--glass-border); margin-top: 15px; overflow: hidden; }
+        .roller-highlight { position: absolute; top: 50px; left: 0; width: 100%; height: 50px; border-top: 1px solid rgba(207, 164, 164, 0.5); border-bottom: 1px solid rgba(207, 164, 164, 0.5); background: rgba(207, 164, 164, 0.05); pointer-events: none; }
+        .roller-col { height: 100%; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; -ms-overflow-style: none; scrollbar-width: none; }
+        .roller-col::-webkit-scrollbar { display: none; }
+        .roller-item { height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: 300; color: var(--text-main); scroll-snap-align: center; opacity: 0.3; transition: opacity 0.2s; }
+        .roller-pad { height: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="side-menu-overlay" id="side-menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="menu-profile">
+            <div class="menu-title">淨息流</div>
+            <div class="menu-subtitle">萬法唯心造，身心皆觀照</div>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="window.location.href='index.html'"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>淨息流大廳</div>
+            <div class="menu-item" onclick="window.location.href='accounting.html'"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>財務記帳</div>
+            <div class="menu-item" onclick="window.location.href='health.html'"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>健康日誌</div>
+            
+            <div class="menu-item active" onclick="toggleMenu()"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 22c0-5.5-4.5-10-10-10 5.5 0 10-4.5 10-10 0 5.5 4.5 10 10 10-5.5 0-10 4.5-10 10z"/></svg></div>孕母育兒</div>
+            
+            <div class="menu-item" onclick="window.location.href='pet.html'"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm4 0h-2v-2h2v2zm-2-4q-2 0-3-1.5T9 8h2q0 1 1 1.5t2 0V12z"/></svg></div>毛孩手冊</div>
+            <div class="menu-item" onclick="window.location.href='dashboard.html'"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>大數據統計</div>
+            
+            <div class="menu-item" onclick="toggleMenu(); document.getElementById('backup-modal').classList.add('show');" style="border-color: rgba(203, 163, 122, 0.5);"><div class="menu-icon-wrap"><svg viewBox="0 0 24 24" stroke="var(--accent-gold)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>資料匯出與保全</div>
+ <div class="menu-item" onclick="window.location.href='https://namoamitabhapureland.github.io/bodhicitta/index.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="font-size: 0.95rem; font-weight: 500; color: var(--text-main);">彌陀淨土系統</div>
+                    <div style="font-size: 0.7rem; color: var(--text-light); font-weight: 400; letter-spacing: 0.5px;">請以瀏覽器開啟並加入主畫面</div>
+                </div>
+            </div>
+                </div>
+            </div>
+
+
+    <div class="top-nav">
+        <div class="nav-content">
+            <div class="nav-btn" onclick="toggleMenu()"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div>
+            <div class="page-title">孕母與育兒</div>
+            <div class="nav-btn" onclick="window.location.href='dashboard.html'"><svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+        </div>
+        <div class="module-tabs">
+            <div class="mod-tab active" id="tab-preg" onclick="switchStage('preg')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> 孕母觀照</div>
+            <div class="mod-tab" id="tab-baby" onclick="switchStage('baby')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 寶寶日誌</div>
+        </div>
+    </div>
+
+    <div class="main-container active" id="view-preg">
+        
+        <div class="health-card clickable" onclick="openDrawer('經期觀照')">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 經期觀照</div>
+                <div class="status-tag" id="mom-period-tag">點擊紀錄</div>
+            </div>
+            <div class="preg-info-row">
+                <div class="preg-info-lbl">上回經期</div>
+                <div style="font-size:1.1rem; color:var(--text-main); font-weight:500;" id="mom-period-disp">尚無紀錄</div>
+            </div>
+        </div>
+
+        <div class="health-card">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 孕期觀照</div>
+                <div class="status-tag">平安順產</div>
+            </div>
+            <div class="preg-progress-wrap">
+                <div class="preg-ring-box">
+                    <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" class="preg-ring-bg"></circle><circle cx="18" cy="18" r="15.9" class="preg-ring-fill" id="preg-ring" stroke-dasharray="0, 100"></circle></svg>
+                    <div class="preg-ring-text"><div class="w" id="preg-week">--</div><div class="lbl">週數</div></div>
+                </div>
+                <div class="preg-info">
+                    <div class="preg-info-row">
+                        <div class="preg-info-lbl">預產期 (EDD)</div>
+                        <div class="preg-info-val" onclick="openDateModal('edd')" id="disp-edd">點擊設定日期</div>
+                    </div>
+                    <div class="preg-info-row" style="margin-top: 10px;">
+                        <div class="preg-info-lbl">目前天數</div>
+                        <div style="font-size:0.9rem; color:var(--text-main);"><span id="preg-day">--</span> 天</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="health-card">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/></svg> 胎動觀照</div>
+                <div class="status-tag" id="fetal-count-disp">今日: 0 次</div>
+            </div>
+            <div class="fetal-box">
+                <div class="fetal-btn" id="fetal-btn" onclick="recordFetalMovement()">
+                    <svg viewBox="0 0 24 24"><path d="M12 22c0-5.5-4.5-10-10-10 5.5 0 10-4.5 10-10 0 5.5 4.5 10 10 10-5.5 0-10 4.5-10 10z"/></svg><span>紀錄胎動</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 15px; letter-spacing: 1px;">寶寶每動一次，輕觸一次按鈕</div>
+            </div>
+        </div>
+
+        <div class="health-card clickable" onclick="openDrawer('妊娠血糖')">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg> 妊娠血糖觀照</div>
+                <div class="status-tag" id="mom-gdm-tag">24-28週重點</div>
+            </div>
+            <div class="value-display"><div class="main-value" id="mom-gdm-val">--</div><div class="sub-value">mg/dL</div></div>
+            <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 8px;">醫學指引：空腹 < 95，飯後2H < 120</div>
+        </div>
+
+        <div class="health-card clickable" onclick="openDrawer('產檢血壓')">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg> 產檢血壓</div>
+                <div class="status-tag" id="mom-bp-tag">尚未紀錄</div>
+            </div>
+            <div class="value-display"><div class="main-value" id="mom-bp-sys">--</div><div class="sub-value">/ <span id="mom-bp-dia">--</span> mmHg</div></div>
+        </div>
+        
+        <div class="health-card clickable" onclick="openDrawer('孕期體重')">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg> 孕期體重</div>
+                <div class="status-tag" id="mom-wt-tag">點擊紀錄</div>
+            </div>
+            <div class="value-display"><div class="main-value" id="mom-wt-val">--</div><div class="sub-value">kg</div></div>
+        </div>
+    </div>
+
+    <div class="main-container" id="view-baby">
+        
+        <div class="health-card">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg> 寶寶資料</div>
+                <div class="status-tag">健康長大</div>
+            </div>
+            <div class="preg-info-row" style="margin-bottom: 15px;">
+                <div class="preg-info-lbl">出生日期 (DOB)</div>
+                <div class="preg-info-val" onclick="openDateModal('dob')" id="disp-dob">點擊設定日期</div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-main);">日齡：<span id="baby-days" style="font-weight:500;">--</span> 天</div>
+        </div>
+
+        <div class="health-card clickable" onclick="openDrawer('寶寶生長')">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> 生長曲線</div>
+                <div class="status-tag" id="baby-grow-tag">點擊紀錄</div>
+            </div>
+            <div class="dual-value-box">
+                <div><div style="font-size:0.8rem; color:var(--text-light);">體重</div><div class="value-display"><div class="main-value" id="baby-wt">--</div><div class="sub-value">kg</div></div></div>
+                <div><div style="font-size:0.8rem; color:var(--text-light);">身高</div><div class="value-display"><div class="main-value" id="baby-ht">--</div><div class="sub-value">cm</div></div></div>
+            </div>
+            <div style="margin-top: 15px;"><div style="font-size:0.8rem; color:var(--text-light);">頭圍</div><div class="value-display"><div class="main-value" style="font-size:1.8rem;" id="baby-hc">--</div><div class="sub-value">cm</div></div></div>
+        </div>
+
+        <div class="health-card">
+            <div class="card-header">
+                <div class="card-title"><svg class="card-icon" viewBox="0 0 24 24"><path d="M2 12h10M12 2v20M22 12h-4"/></svg> 預防接種清單</div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px;">同種疫苗(除水痘、MMR)至少間隔28天</div>
+            
+            <div class="vax-container">
+                <div class="vax-divider">出生 ~ 滿 1 個月</div>
+                <div class="vax-item" id="vax-b1" onclick="toggleVax('b1')">
+                    <div class="vax-info"><div class="vax-name">B型肝炎 (第1劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">出生 24 小時內</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-b2" onclick="toggleVax('b2')">
+                    <div class="vax-info"><div class="vax-name">B型肝炎 (第2劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">出生滿 1 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+
+                <div class="vax-divider">滿 2 個月</div>
+                <div class="vax-item" id="vax-5in1_1" onclick="toggleVax('5in1_1')">
+                    <div class="vax-info"><div class="vax-name">五合一 (第1劑) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-pcv1" onclick="toggleVax('pcv1')">
+                    <div class="vax-info"><div class="vax-name">13價肺炎鏈球菌 (第1劑) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-rota" onclick="toggleVax('rota')">
+                    <div class="vax-info"><div class="vax-name">輪狀病毒疫苗 <span class="vax-type-badge type-pri">自費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+
+                <div class="vax-divider">滿 4 個月</div>
+                <div class="vax-item" id="vax-5in1_2" onclick="toggleVax('5in1_2')">
+                    <div class="vax-info"><div class="vax-name">五合一 (第2劑) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-pcv2" onclick="toggleVax('pcv2')">
+                    <div class="vax-info"><div class="vax-name">13價肺炎鏈球菌 (第2劑) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+
+                <div class="vax-divider">滿 5 ~ 8 個月</div>
+                <div class="vax-item" id="vax-bcg" onclick="toggleVax('bcg')">
+                    <div class="vax-info"><div class="vax-name">卡介苗 (BCG) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-5in1_3" onclick="toggleVax('5in1_3')">
+                    <div class="vax-info"><div class="vax-name">五合一 (第3劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 6 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-b3" onclick="toggleVax('b3')">
+                    <div class="vax-info"><div class="vax-name">B型肝炎 (第3劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 6 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-flu" onclick="toggleVax('flu')">
+                    <div class="vax-info"><div class="vax-name">流感疫苗 <span class="vax-type-badge type-pri">自費</span></div><div class="vax-time">滿 6 個月起</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+
+                <div class="vax-divider">滿 1 歲起</div>
+                <div class="vax-item" id="vax-mmr1" onclick="toggleVax('mmr1')">
+                    <div class="vax-info"><div class="vax-name">MMR 混合疫苗 (第1劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 12 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-pcv3" onclick="toggleVax('pcv3')">
+                    <div class="vax-info"><div class="vax-name">13價肺炎鏈球菌 (第3劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 12 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-varicella" onclick="toggleVax('varicella')">
+                    <div class="vax-info"><div class="vax-name">水痘疫苗 <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 12-15 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-je1" onclick="toggleVax('je1')">
+                    <div class="vax-info"><div class="vax-name">日本腦炎 (第1劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 15 個月</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-mmr2_15m" onclick="toggleVax('mmr2_15m')">
+                    <div class="vax-info"><div class="vax-name">MMR (第2劑) <span class="vax-type-badge type-pub">公費</span></div><div class="vax-time">滿 15 個月 (依公告)</div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+
+                <div class="vax-divider">滿 5 歲 ~ 國小前</div>
+                <div class="vax-item" id="vax-5in1_4" onclick="toggleVax('5in1_4')">
+                    <div class="vax-info"><div class="vax-name">五合一追加 <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+                <div class="vax-item" id="vax-je2" onclick="toggleVax('je2')">
+                    <div class="vax-info"><div class="vax-name">日本腦炎 (第2劑) <span class="vax-type-badge type-pub">公費</span></div></div>
+                    <div class="vax-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-drawer" id="action-drawer">
+        <div class="drawer-content">
+            <div class="drawer-handle" onclick="closeDrawer()"></div>
+            
+            <div class="drawer-header">
+                <div class="drawer-title" id="drawer-title">觀測項目</div>
+                <div class="datetime-badge" onclick="openTimePicker()">
+                    <span id="current-time-display">今天</span>
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+            </div>
+            
+            <div class="sub-tags-wrapper" id="drawer-tags"></div>
+
+            <div class="input-display-area" id="drawer-input-area"></div>
+            
+            <div class="period-input-group" id="period-input-area">
+                <div class="period-date-btn" onclick="openDateModal('period-start')">開始日：<span id="p-start-disp">點擊選擇</span></div>
+                <div class="period-date-btn" onclick="openDateModal('period-end')">結束日：<span id="p-end-disp">點擊選擇</span></div>
+            </div>
+            
+            <div class="medical-hint" id="medical-hint">請輸入數值</div>
+
+            <div class="key-grid" id="number-keyboard">
+                <div class="key" onclick="inputChar('1')">1</div><div class="key" onclick="inputChar('2')">2</div><div class="key" onclick="inputChar('3')">3</div>
+                <div class="key" onclick="inputChar('4')">4</div><div class="key" onclick="inputChar('5')">5</div><div class="key" onclick="inputChar('6')">6</div>
+                <div class="key" onclick="inputChar('7')">7</div><div class="key" onclick="inputChar('8')">8</div><div class="key" onclick="inputChar('9')">9</div>
+                <div class="key" onclick="clearInput()" style="color:var(--accent-red); font-size:1.2rem;">AC</div><div class="key" onclick="inputChar('0')">0</div><div class="key" onclick="inputChar('.')">.</div>
+            </div>
+            
+            <button class="key-submit" onclick="submitData()">寫入紀錄</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="date-modal">
+        <div class="glass-modal">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; letter-spacing: 1px;" id="date-modal-title">設定日期</h3>
+            <input type="date" id="date-input-box" class="modal-input">
+            <div class="modal-btn-group">
+                <button class="m-btn m-btn-cancel" onclick="document.getElementById('date-modal').classList.remove('show')">取消</button>
+                <button class="m-btn m-btn-confirm" onclick="confirmDate()">確認</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="backup-modal">
+        <div class="glass-modal" style="max-width: 340px;">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; letter-spacing: 2px;">資料匯出與保全</h3>
+            <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 20px;">一鍵匯出四大法界 (財務/健康/母嬰/毛孩) 所有紀錄，資料完全由您掌握。</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="m-btn m-btn-cancel" onclick="exportEcosystemData('csv')" style="background: rgba(255,255,255,0.8); border-color: var(--accent-jade); color: var(--accent-jade);">匯出全紀錄 CSV 報表</button>
+                <button class="m-btn m-btn-confirm" onclick="exportEcosystemData('json')">一鍵打包系統 JSON</button>
+            </div>
+            
+            <button class="m-btn m-btn-cancel" style="width: 100%; margin-top: 15px; background: transparent; border: none; font-size: 0.85rem;" onclick="document.getElementById('backup-modal').classList.remove('show')">關閉視窗</button>
+        </div>
+    </div>
+
+    <script>
+            // ================= 全局匯出與保全引擎 (超級 CSV / JSON) =================
+        function exportEcosystemData(type) {
+            let ecoData = {
+                accounting: JSON.parse(localStorage.getItem('joy_accounting_app_data')) || {},
+                health: JSON.parse(localStorage.getItem('joy_health_history')) || {},
+                mom: JSON.parse(localStorage.getItem('joy_mom_data')) || {},
+                pet: JSON.parse(localStorage.getItem('joy_pet_data')) || {}
+            };
+
+            if (type === 'json') {
+                let content = JSON.stringify(ecoData, null, 2); 
+                let filename = `JoyEcosystem_Backup_${new Date().getTime()}.json`;
+                let blob = new Blob([content], { type: 'application/json' }); 
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob); link.download = filename; 
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            } else {
+                let csvContent = "\uFEFF模組,紀錄類型,日期,時間,分類/項目,數值/狀態,備註\n";
+                if(ecoData.accounting.transactions) ecoData.accounting.transactions.forEach(t => csvContent += `財務記帳,${t.type === 'income'?'收入':'支出'},${t.date},,${t.cat}-${t.sub},${t.amt},${t.memo||''}\n`);
+                if(ecoData.health.bp) ecoData.health.bp.forEach(t => csvContent += `健康日誌,血壓,${t.date},,${t.tag||''},${t.sys}/${t.dia},${t.memo||''}\n`);
+                if(ecoData.health.bs) ecoData.health.bs.forEach(t => csvContent += `健康日誌,血糖,${t.date},,${t.tag||''},${t.val},${t.memo||''}\n`);
+                if(ecoData.health.wt) ecoData.health.wt.forEach(t => csvContent += `健康日誌,體重,${t.date},,,${t.val},${t.memo||''}\n`);
+                if(ecoData.health.med) ecoData.health.med.forEach(t => csvContent += `健康日誌,服藥,${t.date},${t.time||''},,${t.status},${t.memo||''}\n`);
+                if(ecoData.health.periods) ecoData.health.periods.forEach(t => csvContent += `健康日誌,一般經期,${t.startDate}~${t.endDate},,週期長度,${t.length}天,\n`);
+                if(ecoData.mom.bp) ecoData.mom.bp.forEach(t => csvContent += `孕母育兒,產檢血壓,${t.date},,,${t.sys}/${t.dia},\n`);
+                if(ecoData.mom.gdm) ecoData.mom.gdm.forEach(t => csvContent += `孕母育兒,妊娠血糖,${t.date},,${t.tag||''},${t.val},${t.memo||''}\n`);
+                if(ecoData.mom.wt) ecoData.mom.wt.forEach(t => csvContent += `孕母育兒,孕期體重,${t.date},,,${t.val},\n`);
+                if(ecoData.mom.periods) ecoData.mom.periods.forEach(t => csvContent += `孕母育兒,備孕經期,${t.startDate}~${t.endDate},,週期長度,${t.length}天,\n`);
+                if(ecoData.pet.wt) ecoData.pet.wt.forEach(t => csvContent += `毛孩手冊,體重,${t.date},,,${t.val},${t.memo||''}\n`);
+                if(ecoData.pet.actions) ecoData.pet.actions.forEach(t => csvContent += `毛孩手冊,日常照護,${t.date},${t.time||''},${t.type},完成,${t.memo||''}\n`);
+                if(ecoData.pet.medical) ecoData.pet.medical.forEach(t => csvContent += `毛孩手冊,醫療防護,${t.date},${t.time||''},${t.type},完成,${t.memo||''}\n`);
+
+                let filename = `JoyEcosystem_Full_Export_${new Date().getTime()}.csv`;
+                let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); 
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob); link.download = filename; 
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            }
+            document.getElementById('backup-modal').classList.remove('show');
+        }
+
+        // ================= 雙生切換與介面邏輯 =================
+        let currentStage = 'preg';
+        function switchStage(stage) {
+            currentStage = stage;
+            document.getElementById('tab-preg').classList.remove('active'); 
+            document.getElementById('tab-baby').classList.remove('active');
+            document.getElementById('tab-' + stage).classList.add('active');
+            
+            document.getElementById('view-preg').classList.remove('active'); 
+            document.getElementById('view-baby').classList.remove('active');
+            document.getElementById('view-' + stage).classList.add('active');
+        }
+
+        function toggleMenu() { 
+            document.getElementById('side-menu').classList.toggle('open'); 
+            document.getElementById('side-menu-overlay').classList.toggle('open'); 
+        }
+
+        // ================= 萬法歸一：本機藏識 (DB) 引擎 =================
+        const DB_KEY = 'joy_mom_data';
+        
+        // 陣列化資料結構：為了讓 dashboard 能畫出歷史曲線
+        let momDB = { 
+            edd: "", dob: "", fetalCount: 0, 
+            vax: {}, 
+            periods: [], // [{startDate: 'MM/DD', endDate: 'MM/DD', length: 28}]
+            bp: [],      // [{date: 'MM/DD', sys: 110, dia: 70}]
+            wt: [],      // [{date: 'MM/DD', val: 55.5}]
+            gdm: [],     // [{date: 'MM/DD', val: 92, tag: '空腹'}]
+            baby: {ht:0, wt:0, hc:0} 
+        };
+        
+        let currentDateType = ""; // 判斷日期彈窗的用途: 'edd', 'dob', 'record', 'period-start', 'period-end'
+        let inputData = { sys: "0", dia: "0", single: "0", h: "0", w: "0", c: "0" };
+        let activeInput = "single"; 
+        let currentDrawerMode = ""; 
+        let currentTag = "";
+        
+        // 日期暫存
+        let recordDateStr = ""; // 用於補登歷史的日期 (MM/DD)
+        let tempPeriodStart = ""; 
+        let tempPeriodEnd = "";
+
+        const gdmTags = ['空腹 (<95)', '早餐後2H (<120)', '午餐後2H (<120)', '晚餐後2H (<120)'];
+
+        window.onload = () => {
+            let stored = localStorage.getItem(DB_KEY);
+            if (stored) {
+                let parsed = JSON.parse(stored);
+                // 確保舊版結構轉換為陣列，避免報錯
+                momDB = { ...momDB, ...parsed };
+                if (!Array.isArray(momDB.bp)) momDB.bp = [];
+                if (!Array.isArray(momDB.wt)) momDB.wt = [];
+                if (!Array.isArray(momDB.gdm)) momDB.gdm = [];
+                if (!Array.isArray(momDB.periods)) momDB.periods = [];
+            }
+            updateUIFromDB();
+        };
+
+        function saveData() { 
+            localStorage.setItem(DB_KEY, JSON.stringify(momDB)); 
+            updateUIFromDB(); 
+        }
+
+        // 取得今日 MM/DD 格式
+        function getTodayMD() {
+            let d = new Date();
+            return `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+        }
+        function formatMD(yyyy_mm_dd) {
+            if(!yyyy_mm_dd) return "";
+            let parts = yyyy_mm_dd.split('-');
+            if(parts.length === 3) return `${parts[1]}/${parts[2]}`;
+            return yyyy_mm_dd;
+        }
+
+        // ================= 更新介面觀照 =================
+        function updateUIFromDB() {
+            // 1. 孕期推算
+            if(momDB.edd) { 
+                document.getElementById('disp-edd').innerText = momDB.edd; 
+                calculatePregnancyProgress(momDB.edd); 
+            }
+            // 2. 寶寶日齡
+            if(momDB.dob) { 
+                document.getElementById('disp-dob').innerText = momDB.dob; 
+                let diffDays = Math.floor(Math.abs(new Date() - new Date(momDB.dob)) / 86400000); 
+                document.getElementById('baby-days').innerText = diffDays; 
+            }
+            // 3. 胎動
+            document.getElementById('fetal-count-disp').innerText = `今日: ${momDB.fetalCount} 次`;
+            
+            // 4. 經期顯示 (抓取最後一筆)
+            if(momDB.periods.length > 0) {
+                let lastP = momDB.periods[momDB.periods.length - 1];
+                document.getElementById('mom-period-disp').innerText = `${lastP.startDate} ~ ${lastP.endDate} (${lastP.length}天)`;
+                document.getElementById('mom-period-tag').innerText = "已記";
+            } else {
+                document.getElementById('mom-period-disp').innerText = "尚無紀錄";
+                document.getElementById('mom-period-tag').innerText = "點擊紀錄";
+            }
+
+            // 5. 妊娠血糖 (抓取最後一筆)
+            if(momDB.gdm.length > 0) {
+                let lastGDM = momDB.gdm[momDB.gdm.length - 1];
+                document.getElementById('mom-gdm-val').innerText = lastGDM.val; 
+                document.getElementById('mom-gdm-tag').innerText = lastGDM.tag;
+                let limit = lastGDM.tag.includes('空腹') ? 95 : 120;
+                document.getElementById('mom-gdm-val').style.color = lastGDM.val >= limit ? 'var(--accent-red)' : 'var(--text-main)';
+            }
+            
+            // 6. 產檢血壓 (抓取最後一筆)
+            if(momDB.bp.length > 0) { 
+                let lastBP = momDB.bp[momDB.bp.length - 1];
+                document.getElementById('mom-bp-sys').innerText = lastBP.sys; 
+                document.getElementById('mom-bp-dia').innerText = lastBP.dia; 
+                document.getElementById('mom-bp-tag').innerText = lastBP.date; 
+            }
+            
+            // 7. 孕期體重 (抓取最後一筆)
+            if(momDB.wt.length > 0) { 
+                let lastWT = momDB.wt[momDB.wt.length - 1];
+                document.getElementById('mom-wt-val').innerText = lastWT.val; 
+                document.getElementById('mom-wt-tag').innerText = lastWT.date; 
+            }
+            
+            // 8. 寶寶生長
+            if(momDB.baby.ht > 0) document.getElementById('baby-ht').innerText = momDB.baby.ht;
+            if(momDB.baby.wt > 0) document.getElementById('baby-wt').innerText = momDB.baby.wt;
+            if(momDB.baby.hc > 0) document.getElementById('baby-hc').innerText = momDB.baby.hc;
+
+            // 9. 疫苗打勾狀態
+            const allVax = ['b1', 'b2', 'b3', '5in1_1', '5in1_2', '5in1_3', '5in1_4', 'pcv1', 'pcv2', 'pcv3', 'bcg', 'mmr1', 'mmr2_15m', 'je1', 'je2', 'varicella', 'rota', 'flu'];
+            allVax.forEach(v => {
+                let el = document.getElementById('vax-' + v);
+                if(el) { if(momDB.vax[v]) el.classList.add('done'); else el.classList.remove('done'); }
+            });
+        }
+
+        // 預產期演算法
+        function calculatePregnancyProgress(eddStr) {
+            let edd = new Date(eddStr); let lmp = new Date(edd.getTime() - (280 * 86400000)); 
+            let diffDays = Math.floor((new Date() - lmp) / 86400000);
+            if (diffDays < 0) diffDays = 0; if (diffDays > 280) diffDays = 280;
+            let percent = (diffDays / 280) * 100;
+            document.getElementById('preg-week').innerText = `${Math.floor(diffDays / 7)}w${diffDays % 7}d`;
+            document.getElementById('preg-day').innerText = diffDays;
+            document.getElementById('preg-ring').style.strokeDasharray = `${percent}, 100`;
+        }
+
+        function recordFetalMovement() {
+            const btn = document.getElementById('fetal-btn'); const ripple = document.createElement('div');
+            ripple.className = 'ripple'; btn.appendChild(ripple);
+            setTimeout(() => { ripple.remove(); }, 1200);
+            momDB.fetalCount += 1; saveData();
+        }
+        
+        function toggleVax(type) { momDB.vax[type] = !momDB.vax[type]; saveData(); }
+
+        // ================= 彈窗與日期選擇 (歷史補登) =================
+        function openDateModal(type) { 
+            currentDateType = type; 
+            let title = '選擇日期';
+            let defaultVal = '';
+            
+            if(type === 'edd') { title = '設定預產期 (EDD)'; defaultVal = momDB.edd; }
+            else if(type === 'dob') { title = '設定出生日期 (DOB)'; defaultVal = momDB.dob; }
+            else if(type === 'record-date') { title = '設定觀測日期'; defaultVal = new Date().toISOString().split('T')[0]; }
+            else if(type === 'period-start') { title = '經期開始日'; }
+            else if(type === 'period-end') { title = '經期結束日'; }
+
+            document.getElementById('date-modal-title').innerText = title; 
+            document.getElementById('date-input-box').value = defaultVal; 
+            document.getElementById('date-modal').classList.add('show'); 
+        }
+
+        // 開啟日期選擇器 (取代原本的滾輪，統一日曆輸入)
+        function openTimePicker() {
+            openDateModal('record-date');
+        }
+
+        function confirmDate() { 
+            let val = document.getElementById('date-input-box').value; 
+            if(val) { 
+                if(currentDateType === 'edd') { momDB.edd = val; saveData(); }
+                else if(currentDateType === 'dob') { momDB.dob = val; saveData(); }
+                else if(currentDateType === 'record-date') {
+                    recordDateStr = formatMD(val);
+                    document.getElementById('current-time-display').innerText = recordDateStr;
+                }
+                else if(currentDateType === 'period-start') {
+                    tempPeriodStart = val;
+                    document.getElementById('p-start-disp').innerText = formatMD(val);
+                }
+                else if(currentDateType === 'period-end') {
+                    tempPeriodEnd = val;
+                    document.getElementById('p-end-disp').innerText = formatMD(val);
+                }
+            } 
+            document.getElementById('date-modal').classList.remove('show'); 
+        }
+
+        // ================= 智慧抽屜與醫學邏輯 =================
+        function openDrawer(mode) {
+            currentDrawerMode = mode; 
+            document.getElementById('drawer-title').innerText = mode;
+            
+            // 預設日期為今天
+            recordDateStr = getTodayMD();
+            document.getElementById('current-time-display').innerText = "今天";
+            
+            const inputArea = document.getElementById('drawer-input-area');
+            const tagsBox = document.getElementById('drawer-tags'); tagsBox.innerHTML = '';
+            const periodArea = document.getElementById('period-input-area');
+            const kbArea = document.getElementById('number-keyboard');
+            
+            // 重置顯示狀態
+            periodArea.style.display = 'none';
+            inputArea.style.display = 'flex';
+            kbArea.style.display = 'grid';
+            document.getElementById('medical-hint').style.display = 'block';
+
+            if (mode === '經期觀照') {
+                inputArea.style.display = 'none';
+                kbArea.style.display = 'none';
+                document.getElementById('medical-hint').style.display = 'none';
+                periodArea.style.display = 'flex';
+                tempPeriodStart = ""; tempPeriodEnd = "";
+                document.getElementById('p-start-disp').innerText = "點擊選擇";
+                document.getElementById('p-end-disp').innerText = "點擊選擇";
+            } 
+            else if (mode === '妊娠血糖') {
+                currentTag = gdmTags[0];
+                gdmTags.forEach(tag => {
+                    let el = document.createElement('div'); el.className = `sub-tag ${tag === currentTag ? 'selected' : ''}`; el.innerText = tag;
+                    el.onclick = () => { currentTag = tag; Array.from(el.parentNode.children).forEach(c => c.classList.remove('selected')); el.classList.add('selected'); checkMedicalLogic(); };
+                    tagsBox.appendChild(el);
+                });
+                inputData.single = "0"; activeInput = "single";
+                inputArea.innerHTML = `<div class="input-box active" id="in-single">0</div><div class="input-unit">mg/dL</div>`;
+            } 
+            else if (mode === '產檢血壓') {
+                inputData.sys = "0"; inputData.dia = "0"; activeInput = "sys";
+                inputArea.innerHTML = `<div class="bp-input-group"><div class="input-box active" id="in-sys" onclick="setActiveInput('sys')">0</div><div class="input-slash">/</div><div class="input-box" id="in-dia" onclick="setActiveInput('dia')">0</div></div><div class="input-unit">mmHg</div>`;
+            } 
+            else if (mode === '孕期體重') {
+                inputData.single = "0"; activeInput = "single";
+                inputArea.innerHTML = `<div class="input-box active" id="in-single">0</div><div class="input-unit">kg</div>`;
+            } 
+            else if (mode === '寶寶生長') {
+                inputData.h = "0"; inputData.w = "0"; inputData.c = "0"; activeInput = "w";
+                inputArea.innerHTML = `<div style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:250px;"><div style="display:flex; justify-content:space-between; align-items:flex-end;"><div style="font-size:0.8rem; color:var(--text-light);">體重</div><div class="bp-input-group"><div class="input-box active" id="in-w" onclick="setActiveInput('w')">0</div><div class="input-unit">kg</div></div></div><div style="display:flex; justify-content:space-between; align-items:flex-end;"><div style="font-size:0.8rem; color:var(--text-light);">身高</div><div class="bp-input-group"><div class="input-box" id="in-h" onclick="setActiveInput('h')">0</div><div class="input-unit">cm</div></div></div><div style="display:flex; justify-content:space-between; align-items:flex-end;"><div style="font-size:0.8rem; color:var(--text-light);">頭圍</div><div class="bp-input-group"><div class="input-box" id="in-c" onclick="setActiveInput('c')">0</div><div class="input-unit">cm</div></div></div></div>`;
+            }
+            checkMedicalLogic();
+            document.getElementById('action-drawer').classList.add('open');
+        }
+
+        function closeDrawer() { document.getElementById('action-drawer').classList.remove('open'); }
+        
+        function setActiveInput(target) { 
+            activeInput = target; 
+            document.querySelectorAll('.input-box').forEach(el => el.classList.remove('active')); 
+            let targetEl = document.getElementById('in-' + target);
+            if(targetEl) targetEl.classList.add('active'); 
+        }
+        
+        function inputChar(char) { 
+            let val = inputData[activeInput]; 
+            if (val === "0" && char !== ".") val = char; 
+            else if (char === "." && val.includes(".")) return; 
+            else if (val.length < 5) val += char; 
+            inputData[activeInput] = val; 
+            document.getElementById('in-' + activeInput).innerText = val; 
+            if (currentDrawerMode === '產檢血壓' && activeInput === 'sys' && val.length >= 3) { setTimeout(() => setActiveInput('dia'), 200); } 
+            checkMedicalLogic(); 
+        }
+        
+        function clearInput() { 
+            inputData[activeInput] = "0"; 
+            document.getElementById('in-' + activeInput).innerText = "0"; 
+            checkMedicalLogic(); 
+        }
+
+        // ================= 妊娠專屬醫學警示邏輯 =================
+        function checkMedicalLogic() {
+            if(currentDrawerMode === '經期觀照') return; // 經期無數字鍵盤警示
+            
+            const hint = document.getElementById('medical-hint'); hint.className = 'medical-hint'; 
+            if(currentDrawerMode === '妊娠血糖') {
+                let val = parseFloat(inputData.single) || 0;
+                let box = document.getElementById('in-single'); box.classList.remove('warning');
+                if (val === 0) { hint.innerText = currentTag.includes('空腹') ? "嚴格目標: 空腹 < 95" : "嚴格目標: 飯後2H < 120"; return; }
+                let limit = currentTag.includes('空腹') ? 95 : 120;
+                if (val >= limit) { box.classList.add('warning'); hint.innerText = `已達標線！請遵從醫囑控制飲食。`; hint.classList.add('warning'); } 
+                else { hint.innerText = "數值控制良好，繼續保持！"; }
+            } 
+            else if (currentDrawerMode === '產檢血壓') {
+                let sys = parseInt(inputData.sys) || 0; let dia = parseInt(inputData.dia) || 0;
+                let sysBox = document.getElementById('in-sys'); let diaBox = document.getElementById('in-dia');
+                sysBox.classList.remove('warning'); diaBox.classList.remove('warning');
+                if (sys === 0 && dia === 0) { hint.innerText = "留意子癲前症風險: < 140/90"; return; }
+                let isWarn = false; if (sys >= 140) { sysBox.classList.add('warning'); isWarn = true; } if (dia >= 90) { diaBox.classList.add('warning'); isWarn = true; }
+                if (isWarn) { hint.innerText = "血壓偏高！請盡速告知產檢醫師。"; hint.classList.add('warning'); } else { hint.innerText = "血壓平穩。"; }
+            } 
+            else { hint.innerText = "請輸入數值"; }
+        }
+
+        // ================= 大數據寫入引擎 (寫入陣列供 dashboard 讀取) =================
+        function submitData() {
+            let dDate = recordDateStr === "" ? getTodayMD() : recordDateStr;
+
+            if (currentDrawerMode === '經期觀照') {
+                if(tempPeriodStart && tempPeriodEnd) {
+                    let d1 = new Date(tempPeriodStart); let d2 = new Date(tempPeriodEnd);
+                    if(d2 >= d1) {
+                        let lengthDays = Math.round((d2 - d1) / 86400000) + 1; // 包含頭尾天數
+                        momDB.periods.push({
+                            startDate: formatMD(tempPeriodStart),
+                            endDate: formatMD(tempPeriodEnd),
+                            length: lengthDays
+                        });
+                    } else {
+                        alert("結束日不能早於開始日喔！"); return;
+                    }
+                } else {
+                    alert("請完整選擇開始與結束日期。"); return;
+                }
+            }
+            else if (currentDrawerMode === '妊娠血糖') { 
+                let val = parseFloat(inputData.single);
+                if(val > 0) momDB.gdm.push({ date: dDate, val: val, tag: currentTag.split(' ')[0] }); 
+            } 
+            else if (currentDrawerMode === '產檢血壓') { 
+                let sys = parseInt(inputData.sys); let dia = parseInt(inputData.dia);
+                if(sys > 0 || dia > 0) momDB.bp.push({ date: dDate, sys: sys, dia: dia }); 
+            } 
+            else if (currentDrawerMode === '孕期體重') { 
+                let wt = parseFloat(inputData.single);
+                if(wt > 0) momDB.wt.push({ date: dDate, val: wt }); 
+            } 
+            else if (currentDrawerMode === '寶寶生長') { 
+                let w = parseFloat(inputData.w); let h = parseFloat(inputData.h); let c = parseFloat(inputData.c);
+                if(w > 0) momDB.baby.wt = w;
+                if(h > 0) momDB.baby.ht = h;
+                if(c > 0) momDB.baby.hc = c;
+                // 寶寶生長目前記錄為最新狀態，若未來需繪製曲線可改為 push array
+            }
+            
+            saveData(); 
+            closeDrawer();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>彌陀淨土系統名片</title>
+    <style>
+        @page {
+            size: 54mm 90mm;
+            margin: 0;
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "PingFang TC", "Noto Sans CJK TC", "Microsoft JhengHei", serif;
+            background-color: #080a12;
+            color: #dfdfdf;
+        }
+        .card {
+            width: 54mm;
+            height: 90mm;
+            position: relative;
+            background: linear-gradient(135deg, #05060a 0%, #101420 100%);
+            overflow: hidden;
+            page-break-inside: avoid;
+            page-break-after: always;
+        }
+        
+        :root {
+            --foil-gold: #dcb66a; /* 特調溫潤燙金色 */
+            --foil-gold-dim: rgba(220, 182, 106, 0.35);
+        }
+        
+        .stars-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .content-layer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 正面排版 */
+        .front-hands {
+            position: absolute;
+            top: 8mm;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .front-hands svg {
+            width: 34mm;
+            height: auto;
+            margin: 0 auto;
+        }
+        
+        .front-info {
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .title-ch {
+            font-size: 13pt;
+            font-weight: 500;
+            color: var(--foil-gold);
+            letter-spacing: 3px;
+            margin: 0;
+            padding-left: 3px;
+        }
+        .subtitle-ch {
+            font-size: 8.5pt;
+            color: var(--foil-gold);
+            letter-spacing: 5px;
+            margin: 4px 0 0 0;
+            padding-left: 5px;
+            opacity: 0.9;
+        }
+        .divider-line {
+            width: 20mm;
+            height: 0.5pt;
+            background-color: var(--foil-gold-dim);
+            margin: 7px auto;
+        }
+        .title-en {
+            font-size: 5.2pt;
+            color: var(--foil-gold);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin: 0;
+            opacity: 0.7;
+        }
+
+        /* 背面排版 */
+        .back-top {
+            position: absolute;
+            top: 10mm;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 0 4mm;
+        }
+        .instruction-title {
+            font-size: 8pt;
+            color: var(--foil-gold);
+            letter-spacing: 1.5px;
+            margin: 0 0 6px 0;
+        }
+        .instruction-step {
+            font-size: 7.5pt;
+            color: #c9d1d9;
+            letter-spacing: 1px;
+            margin: 0;
+            opacity: 0.85;
+        }
+        
+        .back-qr-zone {
+            position: absolute;
+            top: 27mm;
+            left: 11mm;
+            width: 32mm;
+            height: 32mm;
+            border: 0.5pt solid var(--foil-gold-dim);
+            background: rgba(255,255,255,0.01);
+            padding: 2mm;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .back-qr-zone img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .back-bottom {
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 0 3mm;
+        }
+        .share-text {
+            font-size: 7pt;
+            color: #c9d1d9;
+            letter-spacing: 1px;
+            margin: 0 0 7px 0;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .bless-text {
+            font-size: 8.5pt;
+            color: var(--foil-gold);
+            letter-spacing: 2.5px;
+            margin: 0;
+            font-weight: 500;
+            padding-left: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <svg class="stars-bg" viewBox="0 0 54 90">
+            <radialGradient id="front-glow" cx="50%" cy="35%" r="50%">
+                <stop offset="0%" stop-color="rgba(220,182,106,0.05)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+            </radialGradient>
+            <rect width="54" height="90" fill="url(#front-glow)"/>
+        </svg>
+
+        <div class="content-layer">
+            <div class="front-hands">
+                <svg class="hands-svg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M 100 25 C 97 18, 93 20, 92 30 L 62 165 C 55 190, 40 230, 10 245 L 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275 L 190 245 C 160 230, 145 190, 138 165 L 108 30 C 107 20, 103 18, 100 25 Z" fill="none"/>
+                    <path d="M 138 165 L 108 30 C 107 20, 103 18, 100 25 C 97 18, 93 20, 92 30 L 62 165 M 30 275 C 65 265, 85 245, 100 225 C 115 245, 135 265, 170 275" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linejoin="round"/>
+                    <path d="M 62 165 C 55 190, 40 230, 10 245" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 138 165 C 145 190, 160 230, 190 245" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 0 240 Q 37.5 265, 75 240" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
+                    <path d="M 5 232 Q 41.5 257, 78 232" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" transform="rotate(40, 37.5, 240)"/>
+                    <path d="M 200 240 Q 162.5 265, 125 240" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
+                    <path d="M 195 232 Q 158.5 257, 122 232" fill="none" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" transform="rotate(-40, 162.5, 240)"/>
+                    <path d="M 96 23 C 98 25, 98 32, 94 34" stroke="#dcb66a" stroke-width="0.8" fill="none"/>
+                    <path d="M 104 23 C 102 25, 102 32, 106 34" stroke="#dcb66a" stroke-width="0.8" fill="none"/>
+                    <path d="M 100 25 L 100 160" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                    <path d="M 100 195 L 100 225" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                    <path d="M 136 175 C 125 155, 110 152, 102 155" stroke="#dcb66a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    <path d="M 63 170 C 80 155, 95 152, 112 158 C 118 160, 120 170, 115 175 C 95 188, 75 198, 63 215" stroke="#dcb66a" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+                    <path d="M 103 162 C 109 159, 113 161, 113 166 C 109 169, 103 167, 103 162 Z" stroke="#dcb66a" stroke-width="0.8" fill="none"/>
+                    <path d="M 105 182 Q 125 218 138 210" stroke="#dcb66a" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
+            
+            <div class="front-info">
+                <h1 class="title-ch">阿彌陀佛</h1>
+                <div class="subtitle-ch">淨土系統</div>
+                <div class="divider-line"></div>
+                <p class="title-en">Amitabha Buddha Pure Land</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <svg class="stars-bg" viewBox="0 0 54 90">
+            <radialGradient id="back-glow" cx="50%" cy="45%" r="45%">
+                <stop offset="0%" stop-color="rgba(220,182,106,0.03)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+            </rect>
+        </svg>
+
+        <div class="content-layer">
+            <div class="back-top">
+                <h2 class="instruction-title">掃描開啟系統 ‧ 加入手機主畫面</h2>
+                <p class="instruction-step">即可隨時單機使用</p>
+            </div>
+            
+            <div class="back-qr-zone">
+                <img src="https://api.qrcode-monkey.com//qr/custom?download=true&file=svg&data=https%3A%2F%2Fnamoamitabhapureland.github.io%2Fbodhicitta%2Findex.html&size=500&config=%7B%22body%22%3A%22square%22%2C%22eye%22%3A%22frame0%22%2C%22eyeBall%22%3A%22ball0%22%2C%22bodyColor%22%3A%22%23dcb66a%22%2C%22bgColor%22%3A%22%23080a12%22%2C%22eye1Color%22%3A%22%23dcb66a%22%2C%22eye2Color%22%3A%22%23dcb66a%22%2C%22eye3Color%22%3A%22%23dcb66a%22%2C%22eyeBall1Color%22%3A%22%23dcb66a%22%2C%22eyeBall2Color%22%3A%22%23dcb66a%22%2C%22eyeBall3Color%22%3A%22%23dcb66a%22%7D" alt="QR Code">
+            </div>
+            
+            <div class="back-bottom">
+                <p class="share-text">名片於系統安裝後<br>將這份清淨轉贈予需要的人</p>
+                <p class="bless-text">法緣流傳 ‧ 功德無量</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>淨息房屋 ‧ 去中心化媒合</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        :root {
+            /* 沿用淨息流主色系 */
+            --bg-gradient: linear-gradient(135deg, #FDFDFD, #F5F2EF);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --text-main: #58504A; --text-light: #968E86;
+            --accent-gold: #CBA37A; --accent-jade: #82968C; --accent-rose: #CFA4A4; --accent-amber: #C1A583;
+            --shadow-soft: 0 10px 40px rgba(160, 155, 150, 0.12);
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        
+        /* 調整為 min-height 並允許垂直滾動，以容納大量貼文 */
+        html, body { 
+            margin: 0; padding: 0; width: 100%; min-height: 100dvh; 
+            background: var(--bg-gradient); color: var(--text-main); 
+            font-family: -apple-system, sans-serif; overflow-x: hidden; 
+            display: flex; flex-direction: column; align-items: center; 
+        }
+
+        /* 大廳核心區 (太極與標題) */
+        .hero-section { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; max-width: 720px; padding: 40px 20px 20px; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .taichi-logo { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.4)); border: 1px solid var(--glass-border); box-shadow: 0 15px 45px rgba(203, 163, 122, 0.15), inset 0 0 20px rgba(203, 163, 122, 0.05); display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 20px; animation: floatLogo 4s infinite ease-in-out; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 15px 45px rgba(203, 163, 122, 0.15); } 50% { transform: translateY(-10px); box-shadow: 0 25px 55px rgba(203, 163, 122, 0.25); } }
+        .taichi-logo::after { content: ''; position: absolute; width: 65px; height: 65px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 90 C 110 70, 100 20, 70 45 C 60 50, 50 65, 50 90' stroke='%23CBA37A' fill='none' stroke-width='1.5'/%3E%3Cpath d='M50 90 C -10 70, 0 20, 30 45 C 40 50, 50 65, 50 90' stroke='%23CBA37A' fill='none' stroke-width='1.5'/%3E%3Cpath d='M50 85 C 80 50, 70 10, 55 30 C 52 40, 50 55, 50 85' stroke='%2382968C' fill='none' stroke-width='2'/%3E%3Cpath d='M50 85 C 20 50, 30 10, 45 30 C 48 40, 50 55, 50 85' stroke='%2382968C' fill='none' stroke-width='2'/%3E%3Cpath d='M50 85 C 65 45, 60 5, 50 20 C 40 5, 35 45, 50 85' stroke='%23CFA4A4' fill='none' stroke-width='2.5'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.8; }
+
+        .sys-title { font-size: 1.8rem; font-weight: 300; letter-spacing: 4px; color: var(--text-main); margin-bottom: 5px; }
+        .sys-subtitle { font-size: 0.85rem; color: var(--text-light); letter-spacing: 2px; font-weight: 300; margin-bottom: 20px; text-align: center; line-height: 1.6; }
+
+        /* 內容區寬度限制 */
+        .content-wrapper { width: 100%; max-width: 720px; padding: 0 20px 40px; display: flex; flex-direction: column; gap: 20px; }
+
+        /* 表單區域 (玻璃質感) */
+        .form-box { background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); border-radius: 24px; padding: 25px; }
+        .custom-input, .custom-textarea { width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(203, 163, 122, 0.3); color: var(--text-main); padding: 14px 16px; margin-bottom: 15px; border-radius: 16px; font-size: 0.95rem; outline: none; transition: 0.3s; font-family: inherit; }
+        .custom-input::placeholder, .custom-textarea::placeholder { color: var(--text-light); opacity: 0.7; }
+        .custom-input:focus, .custom-textarea:focus { border-color: var(--accent-gold); box-shadow: 0 0 10px rgba(203, 163, 122, 0.15); background: white; }
+        
+        .btn-submit { width: 100%; padding: 15px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(193, 165, 131, 0.2)); border: 1px solid rgba(193, 165, 131, 0.5); border-radius: 16px; color: var(--text-main); font-size: 1rem; font-weight: 500; letter-spacing: 2px; cursor: pointer; box-shadow: var(--shadow-soft); transition: all 0.3s; }
+        .btn-submit:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.9); border-color: var(--accent-gold); }
+        .btn-submit:disabled { opacity: 0.6; pointer-events: none; }
+
+        /* 貼文列表與卡片 */
+        #board { display: flex; flex-direction: column; gap: 15px; }
+        .post-card { background: rgba(255, 255, 255, 0.8); border: 1px solid var(--glass-border); border-left: 4px solid var(--accent-jade); box-shadow: var(--shadow-soft); border-radius: 16px; padding: 20px; animation: fadeIn 0.5s ease-out; }
+        .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px dashed rgba(0,0,0,0.05); padding-bottom: 10px; }
+        .post-area { font-weight: bold; color: var(--text-main); font-size: 1.05rem; }
+        .post-price { color: var(--accent-gold); font-weight: 500; }
+        .post-time { font-size: 0.7rem; color: var(--text-light); }
+        .post-desc { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); margin-bottom: 12px; white-space: pre-wrap; }
+        .post-contact { display: inline-block; background: rgba(203, 163, 122, 0.1); border: 1px solid rgba(203, 163, 122, 0.2); padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; color: var(--accent-gold); }
+    </style>
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="taichi-logo"></div>
+        <h1 class="sys-title">淨息房屋</h1>
+        <div class="sys-subtitle">免帳號 ‧ 零抽成 ‧ 純粹媒合<br>世間居所，三十日自然隱滅</div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="form-box">
+            <input type="text" id="p-area" class="custom-input" placeholder="地區 (例：新北中和區)">
+            <input type="text" id="p-price" class="custom-input" placeholder="價格或租金 (例：1200萬 / 20000/月)">
+            <input type="text" id="p-contact" class="custom-input" placeholder="聯絡方式 (Line ID 或 Email)">
+            <textarea id="p-desc" class="custom-textarea" rows="4" placeholder="房屋簡介 (坪數、格局、樓層等...)"></textarea>
+            <button id="btn-post" class="btn-submit" onclick="submitPost()">結緣發布</button>
+        </div>
+
+        <div id="board">
+            <div style="text-align: center; color: var(--text-light); font-size: 0.85rem; padding: 20px;">
+                系統準備中...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 請在此處替換為你專屬的 Firebase 設定 ---
+        const firebaseConfig = {
+            // apiKey: "你的API_KEY",
+            // authDomain: "你的AUTH_DOMAIN",
+            // databaseURL: "你的DATABASE_URL",
+            // projectId: "你的PROJECT_ID"
+        };
+        
+        // 為了方便你預覽版面，如果還沒填入金鑰，我先放假資料展示
+        let isPreviewMode = !firebaseConfig.apiKey; 
+
+        if (!isPreviewMode && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const dbRef = isPreviewMode ? null : firebase.database().ref('real_estate_posts');
+
+        // 匿名登入 (確保 Firebase 安全規則可使用 auth != null)
+        if (!isPreviewMode) {
+            firebase.auth().signInAnonymously().catch(err => console.error("登入失敗:", err));
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) loadPosts();
+            });
+        } else {
+            // 預覽模式：直接載入假資料
+            loadPosts();
+        }
+
+        // --- 2. 發布貼文 ---
+        function submitPost() {
+            const area = document.getElementById('p-area').value.trim();
+            const price = document.getElementById('p-price').value.trim();
+            const contact = document.getElementById('p-contact').value.trim();
+            const desc = document.getElementById('p-desc').value.trim();
+
+            if (!area || !price || !contact || !desc) {
+                alert("請填寫完整的結緣資訊");
+                return;
+            }
+
+            const btn = document.getElementById('btn-post');
+            btn.innerText = "發布中...";
+            btn.disabled = true;
+
+            const postData = {
+                area: area,
+                price: price,
+                contact: contact,
+                desc: desc,
+                timestamp: Date.now()
+            };
+
+            if (isPreviewMode) {
+                alert("目前為版面預覽模式，請填入 Firebase 金鑰即可真實發布！");
+                btn.innerText = "結緣發布";
+                btn.disabled = false;
+                return;
+            }
+
+            dbRef.push(postData).then(() => {
+                document.getElementById('p-area').value = "";
+                document.getElementById('p-price').value = "";
+                document.getElementById('p-contact').value = "";
+                document.getElementById('p-desc').value = "";
+                alert("發布成功！資訊將於30日後自然隱滅。");
+            }).catch(err => {
+                alert("發布失敗：" + err.message);
+            }).finally(() => {
+                btn.innerText = "結緣發布";
+                btn.disabled = false;
+            });
+        }
+
+        // --- 3. 讀取並過濾貼文 (核心：30天自動銷毀邏輯) ---
+        function loadPosts() {
+            const board = document.getElementById('board');
+            
+            if (isPreviewMode) {
+                // 產生預覽假資料
+                board.innerHTML = createCardHTML({
+                    area: "新北市 中和區", price: "1,200 萬", contact: "Line ID: zen_house", 
+                    desc: "清幽雅房，格局方正。近捷運站，採光極佳，適合修行與自住。", timestamp: Date.now() - 86400000
+                });
+                return;
+            }
+
+            // 限制只抓最新的 100 筆，避免效能問題
+            dbRef.orderByChild('timestamp').limitToLast(100).on('value', snap => {
+                board.innerHTML = "";
+                const data = snap.val();
+                if (!data) {
+                    board.innerHTML = `<div style="text-align:center; color:var(--text-light);">目前無待結緣的居所</div>`;
+                    return;
+                }
+
+                const now = Date.now();
+                const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+                let validPostsCount = 0;
+
+                // 反轉順序讓最新發布在最上面
+                Object.keys(data).reverse().forEach(id => {
+                    const item = data[id];
+                    
+                    // 💡 核心邏輯：如果現在時間減去發布時間「小於」30天，才顯示在畫面上
+                    if (now - item.timestamp < thirtyDays) {
+                        board.innerHTML += createCardHTML(item);
+                        validPostsCount++;
+                    }
+                });
+
+                if (validPostsCount === 0) {
+                    board.innerHTML = `<div style="text-align:center; color:var(--text-light);">目前無待結緣的居所</div>`;
+                }
+            });
+        }
+
+        // --- 產生卡片 HTML ---
+        function createCardHTML(item) {
+            const dateStr = new Date(item.timestamp).toLocaleDateString('zh-TW');
+            // 防止 XSS 攻擊的簡單替換
+            const safeDesc = item.desc.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            return `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div>
+                            <div class="post-area">${item.area.replace(/</g, "&lt;")}</div>
+                            <div class="post-time">發布日：${dateStr} (30日後隱滅)</div>
+                        </div>
+                        <div class="post-price">${item.price.replace(/</g, "&lt;")}</div>
+                    </div>
+                    <div class="post-desc">${safeDesc}</div>
+                    <div class="post-contact">聯絡：${item.contact.replace(/</g, "&lt;")}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+
+    <title>淨息流 ． 財務記帳</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #F9FAF9, #E6EBE9);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --glass-shadow: 0 10px 40px rgba(160, 155, 150, 0.12);
+            --text-main: #58504A; --text-light: #968E86;
+            --accent-gold: #CBA37A; --accent-jade: #82968C; --accent-red: #D29498;
+            --cat-food: #D9AEAD; --cat-trans: #B5AFA6; --cat-house: #CBA37A;
+            --cat-ent: #9BAA9D; --cat-beauty: #D3A9A7; --cat-other: #C2BAC6;
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg-gradient); color: var(--text-main); 
+            font-family: -apple-system, sans-serif; overflow-x: hidden; -webkit-user-select: none; user-select: none; 
+        }
+
+        /* --- 側邊選單 (全局統一版) --- */
+        .side-menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.25); backdrop-filter: blur(5px); z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .side-menu-overlay.open { opacity: 1; pointer-events: auto; }
+        .side-menu { position: fixed; top: 0; left: 0; width: 80%; max-width: 320px; height: 100%; background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border); box-shadow: 10px 0 40px rgba(0,0,0,0.08); transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 901; display: flex; flex-direction: column; padding-top: max(40px, env(safe-area-inset-top)); }
+        .side-menu.open { transform: translateX(0); }
+        .menu-profile { padding: 0 25px 25px; border-bottom: 1px solid rgba(92,84,78,0.06); margin-bottom: 15px; flex-shrink: 0; }
+        .menu-title { font-size: 1.6rem; font-weight: 300; letter-spacing: 3px; color: var(--text-main); }
+        .menu-subtitle { font-size: 0.75rem; color: var(--accent-gold); letter-spacing: 1px; margin-top: 8px; }
+        
+        .menu-list { flex: 1; overflow-y: auto; padding: 0 20px 20px; display: flex; flex-direction: column; gap: 12px; }
+        .menu-item { flex-shrink: 0; padding: 16px 20px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; align-items: center; gap: 15px; font-size: 0.95rem; font-weight: 500; cursor: pointer; background: rgba(255,255,255,0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.2s; color: var(--text-main); text-decoration: none; }
+        .menu-item:active { transform: scale(0.97); background: rgba(255,255,255,0.9); }
+        .menu-item.active { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(203, 163, 122, 0.12)); border-color: var(--accent-gold); color: var(--accent-gold); box-shadow: 0 4px 15px rgba(203, 163, 122, 0.12); }
+        .menu-icon-wrap { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); flex-shrink: 0; }
+        .menu-item svg { stroke: currentColor; fill: none; stroke-width: 1.8; width: 16px; height: 16px; }
+        
+        .menu-bottom-links { display: flex; flex-direction: column; gap: 8px; padding: 20px 0; border-top: 1px solid rgba(92,84,78,0.06); flex-shrink: 0; background: rgba(252, 251, 249, 0.95); }
+        .menu-sub-link { font-size: 0.85rem; color: var(--text-light); cursor: pointer; padding: 8px 25px; display: flex; align-items: center; justify-content: flex-start; gap: 10px; transition: color 0.2s; }
+        .menu-sub-link:active { color: var(--accent-gold); }
+        .menu-sub-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+        /* --- 頂部導航 --- */
+        .top-nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 800; padding: max(15px, env(safe-area-inset-top)) 20px 15px; display: flex; justify-content: center; background: linear-gradient(to bottom, rgba(249,250,249,0.95), rgba(249,250,249,0)); }
+        .nav-content { width: 100%; max-width: 720px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-btn { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); color: var(--text-main); box-shadow: var(--glass-shadow); cursor: pointer; transition: all 0.2s; }
+        .nav-btn:active { transform: scale(0.92); background: rgba(255,255,255,0.9); }
+        .nav-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .page-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.15rem; font-weight: 500; letter-spacing: 3px; color: var(--accent-gold); cursor: pointer; }
+
+
+        /* --- 記帳主視圖 --- */
+        .main-container { width: 100%; max-width: 720px; margin: 0 auto; padding: calc(85px + env(safe-area-inset-top)) 20px 100px; display: flex; flex-direction: column; align-items: center; gap: 30px; transition: transform 0.4s; }
+        
+        .balance-section { width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 10px; position: relative; }
+        .balance-label { font-size: 0.95rem; letter-spacing: 2px; color: var(--text-light); margin-bottom: 5px; }
+        .balance-amount { font-size: 4rem; font-weight: 300; color: var(--accent-gold); text-shadow: 0 4px 20px rgba(203, 163, 122, 0.15); transition: opacity 0.3s;}
+        
+        /* 置中專屬載具按鈕 */
+        .center-carrier-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 16px; background: rgba(255,255,255,0.6); border: 1px solid var(--glass-border); border-radius: 20px; color: var(--accent-gold); font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; cursor: pointer; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: all 0.2s; }
+        .center-carrier-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.9); }
+        .center-carrier-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* --- 今日明細與搜尋區塊 --- */
+        .today-section { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-top: -10px; margin-bottom: -5px; transition: all 0.3s; }
+        .today-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 5px; }
+        .today-title { font-size: 0.9rem; font-weight: 500; color: var(--text-main); letter-spacing: 1px; display: flex; align-items: baseline; gap: 8px; }
+        .today-title span { font-size: 1.3rem; color: var(--accent-gold); font-weight: 300; }
+        
+        .search-wrap { display: flex; align-items: center; background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 20px; padding: 6px 12px; width: 130px; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .search-wrap:focus-within { width: 180px; background: rgba(255,255,255,0.95); border-color: var(--accent-gold); box-shadow: 0 4px 15px rgba(203,163,122,0.15); }
+        .search-wrap svg { width: 14px; height: 14px; stroke: var(--text-light); fill: none; stroke-width: 2; margin-right: 6px; flex-shrink: 0; }
+        .search-input { border: none; background: transparent; width: 100%; font-size: 0.85rem; color: var(--text-main); outline: none; letter-spacing: 0.5px; }
+        .search-input::placeholder { color: var(--text-light); }
+        
+        .today-list { max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 2px; scrollbar-width: none; }
+        .today-list::-webkit-scrollbar { display: none; }
+        .t-item { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 18px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); animation: fadeIn 0.3s ease; cursor: pointer; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .t-item-left { display: flex; align-items: center; gap: 12px; }
+        .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .t-info { display: flex; flex-direction: column; }
+        .t-cat { font-size: 0.9rem; font-weight: 500; color: var(--text-main); letter-spacing: 0.5px; }
+        .t-memo { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .t-amt { font-size: 1.1rem; font-weight: 500; }
+        .t-income { color: var(--accent-jade); }
+        .t-expense { color: var(--text-main); }
+        
+        /* 分類按鈕網格 */
+        .category-grid { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .cat-btn { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 24px; aspect-ratio: 1.1/1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+        .cat-btn:active, .cat-btn.active { background: rgba(255, 255, 255, 0.95); transform: scale(0.95); border-color: var(--accent-gold); box-shadow: 0 4px 15px rgba(203, 163, 122, 0.2); }
+        .cat-btn svg { width: 28px; height: 28px; stroke: var(--text-main); fill: none; stroke-width: 1.2; transition: stroke 0.2s; }
+        .cat-btn.active svg { stroke: var(--accent-gold); stroke-width: 1.5; }
+        .cat-btn span { font-size: 0.85rem; color: var(--text-main); font-weight: 500; letter-spacing: 0.5px; transition: color 0.2s; }
+        .cat-btn.active span { color: var(--accent-gold); }
+
+        .cat-btn-income.active { border-color: var(--accent-jade); box-shadow: 0 4px 15px rgba(130, 150, 140, 0.2); }
+        .cat-btn-income.active svg { stroke: var(--accent-jade); }
+        .cat-btn-income.active span { color: var(--accent-jade); }
+
+        /* --- 數字鍵盤抽屜 --- */
+        .keyboard-panel { position: fixed; bottom: 0; left: 0; width: 100vw; background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(25px); border-top: 1px solid var(--glass-border); box-shadow: 0 -15px 50px rgba(160, 155, 150, 0.1); border-radius: 35px 35px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.4s; z-index: 2000; display: flex; flex-direction: column; align-items: center; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+        .keyboard-panel.open { transform: translateY(0); }
+        .keyboard-panel.income-mode { background: rgba(246, 248, 246, 0.95); }
+        
+        .kb-content { width: 100%; max-width: 720px; padding: 0 25px; display: flex; flex-direction: column; }
+        
+        .kb-toolbar { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; margin-bottom: 12px; opacity: 0; transition: opacity 0.3s; }
+        .kb-toolbar.show { opacity: 1; }
+        .date-display { font-size: 0.85rem; color: var(--text-light); display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; background: rgba(255,255,255,0.6); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        
+        .invoice-toggle { width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-light); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .invoice-toggle.active { background: var(--accent-gold); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(203, 163, 122, 0.3); }
+
+        .sub-tags-wrapper { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; opacity: 0; transition: opacity 0.3s; }
+        .sub-tags-wrapper.show { opacity: 1; }
+        .sub-tag { background: rgba(255, 255, 255, 0.5); border: 1px solid var(--glass-border); color: var(--text-light); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; }
+        .sub-tag.selected { background: rgba(255, 255, 255, 0.95); color: var(--text-main); border-color: var(--accent-gold); font-weight: 500; transform: scale(0.96); box-shadow: 0 2px 8px rgba(203, 163, 122, 0.1); }
+        .sub-tag-income.selected { border-color: var(--accent-jade); box-shadow: 0 2px 8px rgba(130, 150, 140, 0.1); }
+
+        .input-display-area { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; border-bottom: 1px solid rgba(150, 142, 134, 0.2); padding-bottom: 5px; }
+        .memo-btn { font-size: 0.85rem; color: var(--text-light); cursor: pointer; padding: 6px 12px; max-width: 45%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.5); border-radius: 12px; border: 1px solid var(--glass-border); transition: all 0.2s; }
+        .memo-btn:active { background: rgba(255,255,255,0.9); transform: scale(0.97); }
+        .memo-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .input-display { flex: 1; text-align: right; font-size: 2.8rem; color: var(--text-main); height: 50px; line-height: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 300; }
+        
+        .key-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .key { background: rgba(255,255,255,0.6); border: 1px solid var(--glass-border); border-radius: 20px; height: 60px; font-size: 1.6rem; color: var(--text-main); font-weight: 300; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.15s; }
+        .key:active { transform: scale(0.92); background: rgba(255,255,255,0.95); }
+        .key-enter { grid-row: span 2; background: var(--accent-gold); color: white; border-radius: 20px; font-size: 1.8rem; border: none; transition: background 0.3s; box-shadow: 0 4px 15px rgba(203, 163, 122, 0.25); }
+        .income-mode .key-enter { background: var(--accent-jade); box-shadow: 0 4px 15px rgba(130, 150, 140, 0.25); }
+
+        /* --- 掃描視窗 (琉璃風格) --- */
+        .scanner-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(249,250,249,0.85); backdrop-filter: blur(25px); z-index: 3000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; animation: modalFade 0.4s ease; }
+        @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+        .scanner-viewport { width: 100%; max-width: 400px; aspect-ratio: 1/1; border-radius: 35px; border: 2px solid var(--glass-border); overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.1); background: #000; }
+        #preview-video { width: 100%; height: 100%; object-fit: cover; }
+        .scan-laser { position: absolute; width: 100%; height: 2px; background: var(--accent-gold); top: 0; left: 0; animation: laser 3s infinite linear; box-shadow: 0 0 15px var(--accent-gold); }
+        @keyframes laser { 0% { top: 0% } 100% { top: 100% } }
+
+        /* --- 掃描進度燈 --- */
+        .scan-guide-wrap { margin-top: 25px; display: flex; gap: 12px; }
+        .guide-step { font-size: 0.75rem; padding: 6px 15px; border-radius: 15px; border: 1px solid #ddd; color: #999; transition: 0.3s; }
+        .guide-step.active { border-color: var(--accent-gold); color: var(--accent-gold); background: #fff; box-shadow: 0 2px 10px rgba(203, 163, 122, 0.15); font-weight: bold; }
+        #scan-status { margin-top: 15px; font-size: 0.85rem; color: var(--accent-gold); letter-spacing: 1px; font-weight: 500; }
+
+        #scan-canvas { display: none; }
+
+        /* --- 彈窗 (統一風格) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 3000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .glass-modal { background: rgba(252, 251, 249, 0.95); width: 85%; max-width: 320px; border-radius: 25px; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.9); text-align: center; display: flex; flex-direction: column; align-items: center; }
+        
+        .modal-input { width: 100%; padding: 12px; margin: 10px 0 20px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.7); color: var(--text-main); box-sizing: border-box; text-align: center; transition: all 0.3s ease; font-size: 16px !important; outline: none; }
+        .modal-input:focus { border-color: var(--accent-gold); background: rgba(255, 255, 255, 0.95); }
+        
+        .modal-btn-group { display: flex; gap: 10px; width: 100%; margin-top: 10px; }
+        .m-btn { flex: 1; padding: 12px; border-radius: 16px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; border: none; }
+        .m-btn-cancel { background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); color: var(--text-main); }
+        .m-btn-cancel:active { background: rgba(255,255,255,0.9); }
+        .m-btn-confirm { background: var(--accent-gold); color: white; box-shadow: 0 4px 15px rgba(203, 163, 122, 0.2); }
+        .m-btn-confirm:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <div class="side-menu-overlay" id="side-menu-overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="menu-profile">
+            <div class="menu-title">淨息流</div>
+            <div class="menu-subtitle">萬法唯心造，身心皆觀照</div>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="window.location.href='index.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>淨息流大廳
+            </div>
+            <div class="menu-item active" onclick="toggleMenu()">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>財務記帳（掃描）
+            </div>
+            <div class="menu-item" onclick="window.location.href='health.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>健康日誌
+            </div>
+            <div class="menu-item" onclick="window.location.href='mom.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 22c0-5.5-4.5-10-10-10 5.5 0 10-4.5 10-10 0 5.5 4.5 10 10 10-5.5 0-10 4.5-10 10z"/></svg></div>孕母育兒
+            </div>
+            <div class="menu-item" onclick="window.location.href='pet.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm4 0h-2v-2h2v2zm-2-4q-2 0-3-1.5T9 8h2q0 1 1 1.5t2 0V12z"/></svg></div>毛孩手冊
+            </div>
+            <div class="menu-item" onclick="window.location.href='dashboard.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>大數據統計
+            </div>
+                        <div class="menu-item" onclick="window.location.href='https://namoamitabhapureland.github.io/bodhicitta/index.html'">
+                <div class="menu-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg></div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="font-size: 0.95rem; font-weight: 500; color: var(--text-main);">彌陀淨土系統</div>
+                    <div style="font-size: 0.7rem; color: var(--text-light); font-weight: 400; letter-spacing: 0.5px;">請以瀏覽器開啟並加入主畫面</div>
+                </div>
+            </div>
+ </div> 
+
+        <div class="menu-bottom-links">
+            <div class="menu-sub-link" onclick="toggleMenu(); document.getElementById('global-settings-modal').classList.add('show');">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                偏好設定
+            </div>
+            <div class="menu-sub-link" onclick="toggleMenu(); document.getElementById('backup-modal').classList.add('show');" style="color: var(--accent-gold);">
+                <svg viewBox="0 0 24 24" stroke="var(--accent-gold)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                資料匯出與保全
+            </div>
+        </div>
+    </div>
+
+    <div class="top-nav">
+        <div class="nav-content">
+            <div class="nav-btn" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </div>
+            <div class="page-title" onclick="window.location.href='index.html'">財務記帳</div>
+            <div style="display: flex; gap: 12px;">
+                <div class="nav-btn" onclick="openScanner()">
+                    <svg viewBox="0 0 24 24"><path d="M4 7V5a2 2 0 0 1 2-2h2M20 7V5a2 2 0 0 0-2-2h-2M4 17v2a2 2 0 0 0 2 2h2M20 17v2a2 2 0 0 1-2 2h-2"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="nav-btn" onclick="window.location.href='dashboard.html'">
+                    <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="main-container">
+        <div class="balance-section">
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 10px;">
+                <div class="center-carrier-btn" style="margin-bottom: 0;" onclick="showCarrier()">
+                    <svg viewBox="0 0 24 24"><path d="M4 5v14M8 5v14M12 5v14M16 5v14M20 5v14"/></svg> 發票載具
+                </div>
+                <div class="center-carrier-btn" style="margin-bottom: 0; color: var(--accent-jade); border-color: rgba(130, 150, 140, 0.3);" onclick="openLotteryModal()">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L14.5 8.5L21 11L14.5 13.5L12 20L9.5 13.5L3 11L9.5 8.5Z"/></svg> 發票對獎
+                </div>
+            </div>
+
+            <div class="balance-label">目前結餘</div>
+            <div class="balance-amount" id="main-balance">$0</div>
+        </div>
+
+        <div class="today-section">
+            <div class="today-header">
+                <div class="today-title">今日支出 <span id="today-total-amt">$0</span></div>
+                <div class="search-wrap">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="today-search" class="search-input" placeholder="搜尋今日..." onkeyup="renderTodayList()">
+                </div>
+            </div>
+            <div class="today-list" id="today-list-container"></div>
+        </div>
+
+        <div class="category-grid">
+            <div class="cat-btn" onclick="openKeyboard(this, '飲食')"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1z"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg><span>飲食</span></div>
+            <div class="cat-btn" onclick="openKeyboard(this, '服飾美容')"><svg viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg><span>服飾美容</span></div>
+            <div class="cat-btn" onclick="openKeyboard(this, '交通')"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="22" height="13" rx="2"/><path d="M4 16v4M20 16v4M1 9h22M6 3v2M18 3v2"/></svg><span>交通</span></div>
+            <div class="cat-btn" onclick="openKeyboard(this, '居住')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg><span>居住</span></div>
+            <div class="cat-btn" onclick="openKeyboard(this, '育樂進修')"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 22V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v17M12 7v15M7 11h10M7 15h10M7 19h10"/></svg><span>育樂進修</span></div>
+            <div class="cat-btn" onclick="openKeyboard(this, '其他生活')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg><span>其他生活</span></div>
+            
+            <div class="cat-btn cat-btn-income" style="grid-column: span 3; aspect-ratio: auto; height: 50px; flex-direction: row; gap: 15px; border-color: rgba(130, 150, 140, 0.3);" onclick="openKeyboard(this, '收入', true)">
+                <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                <span style="font-size: 0.95rem; letter-spacing: 2px;">記一筆收入</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="scanner-modal" class="scanner-modal">
+        <div class="scanner-viewport">
+            <video id="preview-video" playsinline></video>
+            <canvas id="scan-canvas"></canvas>
+            <div class="scan-laser"></div>
+        </div>
+        <div class="scan-guide-wrap">
+            <div class="guide-step active" id="step-l">1. 掃左側(總額)</div>
+            <div class="guide-step" id="step-r">2. 掃右側(完整明細或沒有)</div>
+        </div>
+        <p id="scan-status">對準發票左方 QR 碼</p>
+        <button class="m-btn m-btn-cancel" style="margin-top: 30px; width: 160px; border-radius: 25px; flex: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05);" onclick="closeScanner()">結束</button>
+    </div>
+
+    <div class="modal-overlay" id="edit-modal">
+        <div class="glass-modal">
+            <h3 style="margin:0 0 15px; color:var(--text-main); font-weight:500;">修正紀錄</h3>
+            <div style="text-align:left; font-size:0.75rem; color:var(--text-light); margin-bottom:5px;">金額</div>
+            <input type="number" id="edit-amt" class="modal-input">
+            <div style="text-align:left; font-size:0.75rem; color:var(--text-light); margin-bottom:5px; margin-top:10px;">明細與備註</div>
+            <textarea id="edit-memo" class="modal-input" style="height: 100px; text-align: left;"></textarea>
+            <div class="modal-btn-group">
+                <button class="m-btn m-btn-cancel" onclick="deleteEntry()" style="background:#fff1f1; color:var(--accent-red); border:1px solid #ffebeb;">刪除</button>
+                <button class="m-btn m-btn-confirm" onclick="saveEdit()">儲存</button>
+            </div>
+            <button class="m-btn" style="margin-top:15px; width:100%; color:var(--text-light); background:transparent;" onclick="document.getElementById('edit-modal').classList.remove('show')">關閉</button>
+        </div>
+    </div>
+
+    <div class="keyboard-panel" id="keyboard">
+        <div class="kb-content">
+            <div class="kb-toolbar" id="kb-tools">
+                <div class="date-display"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="date-str">今天</span></div>
+                <div class="invoice-toggle" id="invoice-btn" onclick="toggleInvoice()"><svg viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><path d="M16 8h-8M16 12h-8M16 16h-8"/></svg></div>
+            </div>
+            <div class="sub-tags-wrapper" id="sub-tags-container"></div>
+            <div class="input-display-area">
+                <div class="memo-btn" id="memo-display-btn" onclick="document.getElementById('memo-modal').classList.add('show');">
+                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span id="memo-text-span">輸入備註</span>
+                </div>
+                <div class="input-display" id="input-amt">0</div>
+            </div>
+            <div class="key-grid">
+                <button class="key" onclick="inputNum(1)">1</button><button class="key" onclick="inputNum(2)">2</button><button class="key" onclick="inputNum(3)">3</button>
+                <button class="key" onclick="clearNum()" style="color: var(--accent-red); font-weight: 400;">AC</button>
+                <button class="key" onclick="inputNum(4)">4</button><button class="key" onclick="inputNum(5)">5</button><button class="key" onclick="inputNum(6)">6</button>
+                <button class="key key-enter" onclick="submitEntry()">✓</button>
+                <button class="key" onclick="inputNum(7)">7</button><button class="key" onclick="inputNum(8)">8</button><button class="key" onclick="inputNum(9)">9</button>
+                <button class="key" onclick="closeKeyboard()">取消</button><button class="key" onclick="inputNum(0)">0</button><button class="key" onclick="inputNum('00')">00</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="memo-modal">
+        <div class="glass-modal">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; font-size: 1.1rem; letter-spacing: 1px;">輸入備註</h3>
+            <input type="text" id="memo-input" class="modal-input" placeholder="明細或備註..." maxlength="15">
+            <div class="modal-btn-group">
+                <button class="m-btn m-btn-cancel" onclick="document.getElementById('memo-modal').classList.remove('show');">取消</button>
+                <button class="m-btn m-btn-confirm" onclick="confirmMemo()">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="custom-tag-modal">
+        <div class="glass-modal">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; font-size: 1.1rem; letter-spacing: 1px;">新增專屬細項</h3>
+            <input type="text" id="custom-tag-input" class="modal-input" placeholder="細項名稱..." maxlength="10">
+            <div class="modal-btn-group">
+                <button class="m-btn m-btn-cancel" onclick="document.getElementById('custom-tag-modal').classList.remove('show');">取消</button>
+                <button class="m-btn m-btn-confirm" onclick="confirmCustomTag()">確定</button>
+            </div>
+        </div>
+    </div>
+
+        <div class="modal-overlay" id="carrier-modal">
+        <div class="glass-modal" style="max-width: 340px; padding: 30px 20px;">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; letter-spacing: 2px;">手機條碼載具</h3>
+            
+            <div style="margin: 15px 0; background: #FFFFFF; padding: 25px 15px 15px; border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div id="barcode-svg-container" style="width: 100%; height: 80px; display: flex; justify-content: center; align-items: center;"></div>
+                <div id="modal-carrier-txt" style="font-size: 1.8rem; font-weight: bold; letter-spacing: 3px; color: var(--text-main); margin-top: 10px;">尚未設定</div>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px;" id="carrier-hint">請至左側「偏好設定」綁定載具</div>
+            
+            <div style="background: rgba(203, 163, 122, 0.08); border: 1px solid rgba(203, 163, 122, 0.2); border-radius: 12px; padding: 12px; margin-bottom: 20px; text-align: left;">
+                <div style="font-size: 0.8rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 6px; letter-spacing: 1px;">💡 觀照提醒</div>
+                <div style="font-size: 0.75rem; color: var(--text-main); line-height: 1.6; letter-spacing: 0.5px;">
+                    本系統為保護隱私之<b>「免綁定軟體」</b>，不下載財政部資料庫發票明細。<br>
+                    此條碼僅供結帳出示。嗶完載具後，發票存入財政部。<b>請手動記下花費</b>，保持對金錢的流動的觀照。
+                </div>
+            </div>
+
+            <button class="m-btn m-btn-confirm" style="width: 100%;" onclick="document.getElementById('carrier-modal').classList.remove('show')">明白，關閉</button>
+        </div>
+    </div>
+
+
+    <div class="modal-overlay" id="global-settings-modal">
+        <div class="glass-modal" style="max-width: 360px;">
+            <h3 style="margin-top:0; color:var(--accent-gold); font-weight: 500; letter-spacing: 2px;">全局偏好設定</h3>
+            <div style="text-align: left; font-size: 0.85rem; color: var(--text-light); margin-left: 5px;">心靈預算</div>
+            <input type="number" id="setting-budget" class="modal-input" style="width: 100%; margin-bottom: 15px;" placeholder="例如：15000">
+            <div style="text-align: left; font-size: 0.85rem; color: var(--text-light); margin-left: 5px;">發票載具</div>
+            <input type="text" id="setting-carrier" class="modal-input" style="width: 100%; margin-bottom: 20px; text-transform: uppercase;" placeholder="例如：/12ABCDE">
+            <div class="modal-btn-group" style="margin-top: 15px;">
+                <button class="m-btn m-btn-cancel" onclick="document.getElementById('global-settings-modal').classList.remove('show')">關閉</button>
+                <button class="m-btn m-btn-confirm" onclick="saveGlobalSettings()">儲存設定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="backup-modal">
+        <div class="glass-modal" style="max-width: 340px;">
+            <h3 style="margin-top:0; color:var(--text-main); font-weight: 500; letter-spacing: 2px;">資料匯出與保全</h3>
+            <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 20px;">資料完全由您掌握。</div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="m-btn m-btn-cancel" onclick="exportEcosystemData('csv')" style="background: rgba(255,255,255,0.8); border-color: var(--accent-jade); color: var(--accent-jade);">匯出全紀錄 CSV 報表</button>
+                <button class="m-btn m-btn-confirm" onclick="exportEcosystemData('json')">一鍵打包系統 JSON</button>
+            </div>
+            <button class="m-btn m-btn-cancel" style="width: 100%; margin-top: 15px; background: transparent; border: none; font-size: 0.85rem;" onclick="document.getElementById('backup-modal').classList.remove('show')">關閉視窗</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="lottery-modal">
+        <div class="glass-modal" style="max-width: 380px; padding: 25px 20px;">
+            <h3 style="margin-top:0; color:var(--accent-gold); font-weight: 500; letter-spacing: 2px;">本期發票對獎</h3>
+            
+            <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 15px; line-height: 1.6;">
+                請參考官方開獎號碼，填入下方欄位。<br>系統將於本地端光速比對您曾掃描過的發票紀錄。
+            </div>
+            <a href="https://invoice.etax.nat.gov.tw/" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(255,255,255,0.6); border: 1px solid var(--glass-border); border-radius: 20px; color: var(--accent-jade); font-size: 0.85rem; text-decoration: none; margin-bottom: 20px; transition: all 0.2s;">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                財政部開獎號碼
+            </a>
+
+            <div style="text-align: left; font-size: 0.8rem; color: var(--text-main); margin-left: 5px; margin-bottom: 4px;">特別獎 (1000萬)</div>
+            <input type="tel" id="prize-special" class="modal-input" style="letter-spacing: 2px;" placeholder="8位數字" maxlength="8">
+            
+            <div style="text-align: left; font-size: 0.8rem; color: var(--text-main); margin-left: 5px; margin-bottom: 4px;">特獎 (200萬)</div>
+            <input type="tel" id="prize-grand" class="modal-input" style="letter-spacing: 2px;" placeholder="8位數字" maxlength="8">
+            
+            <div style="text-align: left; font-size: 0.8rem; color: var(--text-main); margin-left: 5px; margin-bottom: 4px;">頭獎至六獎 (共三組)</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                <input type="tel" id="prize-first-1" class="modal-input" style="margin: 0; flex: 1; padding: 10px 5px; font-size: 0.9rem;" placeholder="第一組" maxlength="8">
+                <input type="tel" id="prize-first-2" class="modal-input" style="margin: 0; flex: 1; padding: 10px 5px; font-size: 0.9rem;" placeholder="第二組" maxlength="8">
+                <input type="tel" id="prize-first-3" class="modal-input" style="margin: 0; flex: 1; padding: 10px 5px; font-size: 0.9rem;" placeholder="第三組" maxlength="8">
+            </div>
+
+            <div id="lottery-result-area" style="display: none; flex-direction: column; align-items: center; padding: 15px; background: rgba(255,255,255,0.8); border-radius: 16px; border: 1px solid var(--accent-gold); margin-bottom: 15px;">
+            </div>
+
+            <div class="modal-btn-group" style="display: flex; gap: 10px; width: 100%;">
+                <button class="m-btn m-btn-cancel" style="flex: 1; width: auto; margin: 0;" onclick="document.getElementById('lottery-modal').classList.remove('show'); document.getElementById('lottery-result-area').style.display='none';">關閉</button>
+                <button class="m-btn m-btn-confirm" style="flex: 1; width: auto; margin: 0;" onclick="runLotteryEngine()">一鍵對獎</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const STORAGE_KEY = 'joy_accounting_app_data';
+        let appData = { budget: 15000, carrier: "", transactions: [] };
+        let currentInput = "0", activeBtn = null, currentSubTag = "", isIncomeMode = false, hasInvoice = false, currentMemo = "", editingId = null;
+        const colorMap = { '飲食': 'var(--cat-food)', '服飾美容': 'var(--cat-beauty)', '居住': 'var(--cat-house)', '交通': 'var(--cat-trans)', '育樂進修': 'var(--cat-ent)', '其他生活': 'var(--cat-other)', '收入': 'var(--accent-jade)' };
+        const categoryData = { '飲食': ['早餐','午餐','晚餐','飲料','便利商店'], '服飾美容': ['衣服','鞋包','保養品','理髮','醫美'], '交通': ['捷運公車','計程車','加油/充電','停車費','車保養'], '居住': ['房租/房貸','水電瓦斯','管理費','網路費','居家用品'], '育樂進修': ['電影展覽','數位訂閱','旅遊','書籍','3C產品'], '其他生活': ['電話費','保險費','醫療','交際孝親','信用卡'], '收入': ['薪水','獎金','投資收益','政府回饋','其他收入'] };
+
+        window.onload = () => {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) appData = JSON.parse(stored);
+            let today = new Date();
+            document.getElementById('date-str').innerText = `${today.getMonth()+1}月${today.getDate()}日`;
+            loadGlobalSettings();
+            updateSystemUI();
+        };
+
+        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); updateSystemUI(); }
+
+        function loadGlobalSettings() {
+            document.getElementById('setting-budget').value = appData.budget || "";
+            document.getElementById('setting-carrier').value = appData.carrier || "";
+        }
+
+        function saveGlobalSettings() {
+            appData.budget = Number(document.getElementById('setting-budget').value) || 0;
+            appData.carrier = document.getElementById('setting-carrier').value.trim().toUpperCase() || "";
+            saveData(); 
+            document.getElementById('global-settings-modal').classList.remove('show');
+            alert("全局設定已儲存！");
+        }
+
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('side-menu-overlay').classList.toggle('open'); }
+
+        function updateSystemUI() {
+            let bal = appData.transactions.reduce((acc, t) => t.type === 'income' ? acc + t.amt : acc - t.amt, 0);
+            document.getElementById('main-balance').innerText = "$" + bal.toLocaleString();
+            renderTodayList(); 
+        }
+
+        function renderTodayList() {
+            const listObj = document.getElementById('today-list-container');
+            const totalObj = document.getElementById('today-total-amt');
+            const keyword = document.getElementById('today-search').value.toLowerCase().trim();
+            const todayStr = document.getElementById('date-str').innerText;
+            
+            let todayTxs = appData.transactions.filter(t => t.date === todayStr);
+            if (keyword) todayTxs = todayTxs.filter(t => t.cat.toLowerCase().includes(keyword) || (t.memo && t.memo.toLowerCase().includes(keyword)));
+
+            let dailyExpense = 0; listObj.innerHTML = '';
+            if (todayTxs.length === 0) { listObj.innerHTML = `<div style="text-align:center; font-size:0.85rem; color:var(--text-light); padding:15px;">清淨無痕，尚無紀錄</div>`; totalObj.innerText = "$0"; return; }
+
+            todayTxs.forEach(t => {
+                if(t.type === 'expense') dailyExpense += t.amt;
+                let isInc = t.type === 'income';
+                let amtStr = isInc ? `+$${t.amt.toLocaleString()}` : `-$${t.amt.toLocaleString()}`;
+                let memoHtml = t.memo ? `<div class="t-memo">${t.memo}</div>` : '';
+                
+                // 結合編輯紀錄功能的觸發區域
+                listObj.innerHTML += `
+                    <div class="t-item" onclick="openEditModal('${t.id}')">
+                        <div class="t-item-left">
+                            <div class="t-dot" style="background: ${t.color}"></div>
+                            <div class="t-info"><div class="t-cat">${t.cat} ${t.sub ? '- '+t.sub : ''}</div>${memoHtml}</div>
+                        </div>
+                        <div class="t-amt ${isInc ? 't-income' : 't-expense'}">${amtStr}</div>
+                    </div>
+                `;
+            });
+            totalObj.innerText = `$${dailyExpense.toLocaleString()}`;
+        }
+
+        // --- 編輯功能邏輯 ---
+        function openEditModal(id) {
+            const t = appData.transactions.find(item => item.id == id);
+            if(!t) return;
+            editingId = id;
+            document.getElementById('edit-amt').value = t.amt;
+            document.getElementById('edit-memo').value = t.memo || "";
+            document.getElementById('edit-modal').classList.add('show');
+        }
+        
+        function saveEdit() {
+            const t = appData.transactions.find(item => item.id == editingId);
+            if(t) {
+                t.amt = Number(document.getElementById('edit-amt').value);
+                t.memo = document.getElementById('edit-memo').value;
+                saveData();
+            }
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+        
+        function deleteEntry() {
+            if(confirm("確定要刪除這筆紀錄嗎？")) {
+                appData.transactions = appData.transactions.filter(item => item.id != editingId);
+                saveData();
+                document.getElementById('edit-modal').classList.remove('show');
+            }
+        }
+
+        // --- 鍵盤功能 ---
+        function openKeyboard(btn, category, isIncome = false) {
+            if(activeBtn) activeBtn.classList.remove('active'); activeBtn = btn; if(btn) btn.classList.add('active');
+            isIncomeMode = isIncome; currentInput = "0"; currentMemo = ""; document.getElementById('memo-text-span').innerText = "輸入備註";
+            updateDisplay(); renderSubTags(category, isIncome);
+            document.getElementById('keyboard').classList.add('open');
+        }
+        function closeKeyboard() { if(activeBtn) activeBtn.classList.remove('active'); activeBtn = null; document.getElementById('keyboard').classList.remove('open'); }
+        function inputNum(num) { if (currentInput === "0" && num !== "00") currentInput = num.toString(); else if (currentInput.length < 8) currentInput += num.toString(); updateDisplay(); }
+        function updateDisplay() { document.getElementById('input-amt').innerText = Number(currentInput).toLocaleString(); }
+        function clearNum() { currentInput = "0"; updateDisplay(); }
+        function confirmMemo() { currentMemo = document.getElementById('memo-input').value.trim(); document.getElementById('memo-text-span').innerText = currentMemo || "輸入備註"; document.getElementById('memo-modal').classList.remove('show'); }
+        
+        function renderSubTags(cat, isInc) {
+            const container = document.getElementById('sub-tags-container'); container.innerHTML = '';
+            (categoryData[cat] || []).forEach(tag => {
+                const el = document.createElement('div'); el.className = `sub-tag ${isInc?'sub-tag-income':''}`; el.innerText = tag;
+                el.onclick = () => { Array.from(container.children).forEach(t=>t.classList.remove('selected')); el.classList.add('selected'); currentSubTag = tag; };
+                container.appendChild(el);
+            });
+            setTimeout(() => container.classList.add('show'), 50);
+        }
+        
+        function submitEntry() {
+            let amt = Number(currentInput); 
+            if(amt > 0) {
+                let cat = activeBtn ? activeBtn.querySelector('span').innerText : (isIncomeMode?'收入':'其他生活');
+                let color = isIncomeMode ? 'var(--accent-jade)' : (colorMap[cat] || 'var(--cat-other)');
+                appData.transactions.unshift({ id: Date.now(), type: isIncomeMode ? 'income' : 'expense', date: document.getElementById('date-str').innerText, cat: cat, sub: currentSubTag||'一般', amt: amt, memo: currentMemo, color: color });
+                saveData();
+            }
+            closeKeyboard();
+        }
+
+        // --- 掃描引擎 (jsQR 萬用版) ---
+        const InvoiceParser = {
+            parseSummary: function(data) {
+                if (data.length < 50 || data.startsWith("**")) return null;
+                try {
+                    const amount = parseInt(data.substring(29, 37), 16);
+                    const invNum = data.substring(0, 10);
+                    return isNaN(amount) ? null : { invNum, amount };
+                } catch(e) { return null; }
+            },
+            parseDetails: function(data) {
+                if (!data.startsWith("**")) return null;
+                try {
+                    const parts = data.substring(2).split(":");
+                    let items = [];
+                    for (let i = 0; i < parts.length; i += 3) {
+                        let name = parts[i] ? parts[i].trim() : "";
+                        if (name === "") continue;
+                        let qty = (parts[i+1] && !isNaN(parseInt(parts[i+1]))) ? parts[i+1].trim() : "1";
+                        items.push(`${name} x${qty}`);
+                    }
+                    return items.join(", ");
+                } catch(e) { return null; }
+            }
+        };
+
+        let scanActive = false, videoStream = null;
+        async function openScanner() {
+            if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') { alert("請在 HTTPS 環境測試，以啟用相機權限。"); return; }
+            document.getElementById('scanner-modal').style.display = 'flex';
+            const video = document.getElementById('preview-video');
+            const canvas = document.getElementById('scan-canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = videoStream; await video.play(); scanActive = true;
+                const tick = () => {
+                    if (!scanActive) return;
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        if (code) handleScan(code.data);
+                    }
+                    requestAnimationFrame(tick);
+                };
+                tick();
+            } catch(e) { alert("相機啟動失敗，請確認是否允許存取鏡頭。"); }
+        }
+
+        function handleScan(raw) {
+            const s = InvoiceParser.parseSummary(raw);
+            const d = InvoiceParser.parseDetails(raw);
+            const status = document.getElementById('scan-status');
+            const todayStr = document.getElementById('date-str').innerText;
+
+            if (s) {
+                const existing = appData.transactions.find(t => t.id === 'INV_' + s.invNum);
+                if (!existing) {
+                    appData.transactions.unshift({ id: 'INV_' + s.invNum, type: 'expense', date: todayStr, cat: '發票掃描', sub: '待分類', amt: s.amount, memo: "號碼:" + s.invNum, color: 'var(--cat-other)' });
+                    saveData();
+                    document.getElementById('step-l').classList.remove('active');
+                    document.getElementById('step-r').classList.add('active');
+                    status.innerText = `已讀取 $${s.amount}，請掃描右側明細...`;
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    scanActive = false; setTimeout(() => { if(document.getElementById('scanner-modal').style.display==='flex') scanActive = true; }, 1500);
+                }
+            } else if (d) {
+                const last = appData.transactions.find(t => t.id.toString().startsWith('INV_'));
+                if (last) {
+                    last.memo += " | " + d; saveData();
+                    status.innerText = "明細注入完成，功德圓滿。";
+                    if (navigator.vibrate) navigator.vibrate([30, 100]);
+                    setTimeout(closeScanner, 1000);
+                }
+            }
+        }
+
+        function closeScanner() {
+            scanActive = false; if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+            document.getElementById('scanner-modal').style.display = 'none';
+            document.getElementById('step-l').classList.add('active');
+            document.getElementById('step-r').classList.remove('active');
+            document.getElementById('scan-status').innerText = "對準發票左方 QR 碼";
+        }
+
+        // --- 其他工具 ---
+        const Code39 = {
+            chars: {
+                '0': '000110100', '1': '100100001', '2': '001100001', '3': '101100000', '4': '000110001', '5': '100110000', '6': '001110000', '7': '000100101', '8': '100100100', '9': '001100100', 'A': '100001001', 'B': '001001001', 'C': '101001000', 'D': '000011001', 'E': '100011000', 'F': '001011000', 'G': '000001101', 'H': '100001100', 'I': '001001100', 'J': '000011100', 'K': '100000011', 'L': '001000011', 'M': '101000010', 'N': '000010011', 'O': '100010010', 'P': '001010010', 'Q': '000000111', 'R': '100000110', 'S': '001000110', 'T': '000010110', 'U': '110000001', 'V': '011000001', 'W': '111000000', 'X': '010010001', 'Y': '110010000', 'Z': '011010000', '-': '010000101', '.': '110000100', ' ': '011000100', '*': '010010100', '+': '010001010', '/': '010100010', '%': '000101010', '$': '010101000'
+            },
+            generateSVG: function(text) {
+                text = text.toUpperCase(); let barcodeText = '*' + text + '*'; let svgLines = ''; let xPosition = 0;
+                const narrow = 2; const wide = narrow * 3; const gap = narrow; const height = 60;
+                for (let i = 0; i < barcodeText.length; i++) {
+                    let char = barcodeText[i]; let code = this.chars[char]; if (!code) continue; 
+                    for (let j = 0; j < 9; j++) {
+                        let isBar = (j % 2 === 0); let isWide = (code[j] === '1'); let lineWidth = isWide ? wide : narrow;
+                        if (isBar) { svgLines += `<rect x="${xPosition}" y="0" width="${lineWidth}" height="${height}" fill="#2C2A29" />`; }
+                        xPosition += lineWidth;
+                    }
+                    xPosition += gap; 
+                }
+                return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${xPosition} ${height}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">${svgLines}</svg>`;
+            }
+        };
+
+        function showCarrier() {
+            const modal = document.getElementById('carrier-modal'); const svgContainer = document.getElementById('barcode-svg-container'); const textContainer = document.getElementById('modal-carrier-txt'); const hintContainer = document.getElementById('carrier-hint');
+            let code = appData.carrier; 
+            if (code) { svgContainer.innerHTML = Code39.generateSVG(code); textContainer.innerText = code; textContainer.style.color = "var(--text-main)"; hintContainer.innerText = "給店員嗶一下，發票存雲端"; } 
+            else { svgContainer.innerHTML = `<svg viewBox="0 0 300 80" style="width: 100%; height: 75px; fill: rgba(150,142,134,0.15);"><rect x="10" y="0" width="6" height="80"></rect><rect x="22" y="0" width="2" height="80"></rect><rect x="30" y="0" width="8" height="80"></rect><rect x="44" y="0" width="2" height="80"></rect><rect x="52" y="0" width="6" height="80"></rect><rect x="64" y="0" width="4" height="80"></rect><rect x="74" y="0" width="8" height="80"></rect></svg>`; textContainer.innerText = "尚未設定"; textContainer.style.color = "var(--accent-gold)"; hintContainer.innerText = "請至左側「偏好設定」綁定載具"; }
+            modal.classList.add('show');
+        }
+
+        function exportEcosystemData(type) {
+            let ecoData = { accounting: JSON.parse(localStorage.getItem('joy_accounting_app_data')) || {}, health: JSON.parse(localStorage.getItem('joy_health_history')) || {}, mom: JSON.parse(localStorage.getItem('joy_mom_data')) || {}, pet: JSON.parse(localStorage.getItem('joy_pet_data')) || {} };
+            if (type === 'json') {
+                let content = JSON.stringify(ecoData, null, 2); let filename = `JoyEcosystem_Backup_${new Date().getTime()}.json`; let blob = new Blob([content], { type: 'application/json' }); let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            } else {
+                let csvContent = "\uFEFF模組,紀錄類型,日期,時間,分類/項目,數值/狀態,備註\n";
+                if(ecoData.accounting.transactions) ecoData.accounting.transactions.forEach(t => csvContent += `財務記帳,${t.type === 'income'?'收入':'支出'},${t.date},,${t.cat}-${t.sub},${t.amt},${t.memo||''}\n`);
+                if(ecoData.health.bp) ecoData.health.bp.forEach(t => csvContent += `健康日誌,血壓,${t.date},,${t.tag||''},${t.sys}/${t.dia},${t.memo||''}\n`);
+                if(ecoData.health.bs) ecoData.health.bs.forEach(t => csvContent += `健康日誌,血糖,${t.date},,${t.tag||''},${t.val},${t.memo||''}\n`);
+                if(ecoData.health.wt) ecoData.health.wt.forEach(t => csvContent += `健康日誌,體重,${t.date},,,${t.val},${t.memo||''}\n`);
+                if(ecoData.health.med) ecoData.health.med.forEach(t => csvContent += `健康日誌,服藥,${t.date},${t.time||''},,${t.status},${t.memo||''}\n`);
+                if(ecoData.health.periods) ecoData.health.periods.forEach(t => csvContent += `健康日誌,一般經期,${t.startDate}~${t.endDate},,週期長度,${t.length}天,\n`);
+                if(ecoData.mom.bp) ecoData.mom.bp.forEach(t => csvContent += `孕母育兒,產檢血壓,${t.date},,,${t.sys}/${t.dia},\n`);
+                if(ecoData.mom.gdm) ecoData.mom.gdm.forEach(t => csvContent += `孕母育兒,妊娠血糖,${t.date},,${t.tag||''},${t.val},${t.memo||''}\n`);
+                if(ecoData.mom.wt) ecoData.mom.wt.forEach(t => csvContent += `孕母育兒,孕期體重,${t.date},,,${t.val},\n`);
+                if(ecoData.mom.periods) ecoData.mom.periods.forEach(t => csvContent += `孕母育兒,備孕經期,${t.startDate}~${t.endDate},,週期長度,${t.length}天,\n`);
+                if(ecoData.pet.wt) ecoData.pet.wt.forEach(t => csvContent += `毛孩手冊,體重,${t.date},,,${t.val},${t.memo||''}\n`);
+                if(ecoData.pet.actions) ecoData.pet.actions.forEach(t => csvContent += `毛孩手冊,日常照護,${t.date},${t.time||''},${t.type},完成,${t.memo||''}\n`);
+                if(ecoData.pet.medical) ecoData.pet.medical.forEach(t => csvContent += `毛孩手冊,醫療防護,${t.date},${t.time||''},${t.type},完成,${t.memo||''}\n`);
+                let filename = `JoyEcosystem_Full_Export_${new Date().getTime()}.csv`; let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            }
+            document.getElementById('backup-modal').classList.remove('show');
+        }
+
+        // --- 發票對獎光速引擎 ---
+        function openLotteryModal() {
+            document.getElementById('lottery-modal').classList.add('show');
+            document.getElementById('lottery-result-area').style.display = 'none';
+        }
+
+        function runLotteryEngine() {
+            const sp = document.getElementById('prize-special').value.trim();
+            const gp = document.getElementById('prize-grand').value.trim();
+            const fp1 = document.getElementById('prize-first-1').value.trim();
+            const fp2 = document.getElementById('prize-first-2').value.trim();
+            const fp3 = document.getElementById('prize-first-3').value.trim();
+            
+            const firstPrizes = [fp1, fp2, fp3].filter(n => n.length === 8);
+            const resultArea = document.getElementById('lottery-result-area');
+            
+            if (sp.length !== 8 && gp.length !== 8 && firstPrizes.length === 0) {
+                alert("請至少輸入一組完整的8位數獎號。");
+                return;
+            }
+
+            let totalWinAmount = 0;
+            let winCount = 0;
+            
+            // 撈出所有透過掃描建檔的發票 (ID 開頭為 INV_)
+            let scanInvoices = appData.transactions.filter(t => t.id && t.id.toString().startsWith('INV_'));
+
+            scanInvoices.forEach(inv => {
+                let invNum = inv.id.toString().substring(4); // 取得8碼數字
+                if (!invNum || invNum.length !== 8) return;
+
+                let isWin = false;
+
+                // 比對特別獎與特獎
+                if (sp === invNum) { totalWinAmount += 10000000; isWin = true; }
+                else if (gp === invNum) { totalWinAmount += 2000000; isWin = true; }
+
+                // 比對頭獎至六獎
+                if (!isWin) {
+                    for (let fp of firstPrizes) {
+                        if (invNum === fp) { totalWinAmount += 200000; isWin = true; break; }
+                        if (invNum.endsWith(fp.substring(1))) { totalWinAmount += 40000; isWin = true; break; } // 二獎
+                        if (invNum.endsWith(fp.substring(2))) { totalWinAmount += 10000; isWin = true; break; } // 三獎
+                        if (invNum.endsWith(fp.substring(3))) { totalWinAmount += 4000; isWin = true; break; }  // 四獎
+                        if (invNum.endsWith(fp.substring(4))) { totalWinAmount += 1000; isWin = true; break; }  // 五獎
+                        if (invNum.endsWith(fp.substring(5))) { totalWinAmount += 200; isWin = true; break; }   // 六獎
+                    }
+                }
+                if (isWin) winCount++;
+            });
+
+            // 渲染結果與純淨向量動畫
+            resultArea.style.display = 'flex';
+            if (winCount > 0) {
+                // 中獎：琉璃金光
+                resultArea.innerHTML = `
+                    <svg viewBox="0 0 100 100" width="60" height="60" style="margin-bottom: 10px;">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="4 6">
+                            <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="10s" repeatCount="indefinite"/>
+                        </circle>
+                        <path d="M50 20 L55 45 L80 50 L55 55 L50 80 L45 55 L20 50 L45 45 Z" fill="var(--accent-gold)">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                    </svg>
+                    <div style="font-size: 1.1rem; color: var(--accent-gold); font-weight: 500; letter-spacing: 1px;">恭喜！中獎 ${winCount} 張</div>
+                    <div style="font-size: 1.5rem; color: var(--text-main); font-weight: bold; margin-top: 5px;">$${totalWinAmount.toLocaleString()}</div>
+                `;
+            } else {
+                // 未中獎：靜心水波落葉
+                resultArea.innerHTML = `
+                    <svg viewBox="0 0 100 100" width="50" height="50" style="margin-bottom: 10px;">
+                        <circle cx="50" cy="50" r="30" fill="none" stroke="var(--accent-jade)" stroke-width="1.5" opacity="0.5">
+                            <animate attributeName="r" values="10;45" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <path d="M40 60 C 20 40, 50 20, 60 40 C 70 60, 50 70, 40 60 Z" fill="none" stroke="var(--accent-jade)" stroke-width="2"/>
+                    </svg>
+                    <div style="font-size: 1rem; color: var(--accent-jade); letter-spacing: 2px;">福報積累中，隨喜讚嘆</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 5px;">本次比對了 ${scanInvoices.length} 張發票</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
